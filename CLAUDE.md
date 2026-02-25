@@ -105,7 +105,9 @@ public class HeroData : ScriptableObject
 4. **public 필드 사용 금지** — `[SerializeField] private` + public property
 5. **하드코딩 금지** — 매직 넘버는 SO 또는 const로 정의
 6. **null 체크** — GetComponent, Find 계열 사용 시 반드시 null 체크
-7. **코루틴 vs async**: 간단한 딜레이는 코루틴, 복잡한 비동기는 async/await
+7. **코루틴 vs async**: 간단한 딜레이는 코루틴, 복잡한 비동기는 async/await. `ConfigureAwait(false)` 사용 금지 — Unity SynchronizationContext 유지 필수
+8. **EventBus 구독 해제 필수** — `Subscribe`한 모든 MonoBehaviour는 반드시 `OnDisable()`에서 `Unsubscribe` 호출. `OnEnable`/`OnDisable` 쌍으로 작성
+9. **EventBus.Clear() 사용 제한** — 씬 전환 시 호출 금지 (DontDestroyOnLoad 매니저 구독 파괴). 게임 완전 재시작 시에만 허용
 
 ### Key Systems Reference
 

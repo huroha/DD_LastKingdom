@@ -8,7 +8,7 @@
 - [⏭️] Skipped
 
 ## Progress Summary
-5 / 65 tasks complete (8%)
+6 / 65 tasks complete (9%)
 
 ---
 
@@ -48,7 +48,7 @@
   - Size: S
   - Dependencies: 없음
 
-- [ ] EventBus (전역 이벤트 시스템)
+- [✅] EventBus (전역 이벤트 시스템)
   - File: `Assets/Scripts/Utils/EventBus.cs`
   - Details: static C# event/Action 기반, 타입 안전한 이벤트 발행/구독
   - Acceptance: 이벤트 발행 → 구독자 수신 테스트
