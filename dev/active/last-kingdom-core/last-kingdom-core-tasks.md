@@ -8,7 +8,7 @@
 - [⏭️] Skipped
 
 ## Progress Summary
-0 / 65 tasks complete (0%)
+5 / 65 tasks complete (8%)
 
 ---
 
@@ -16,32 +16,32 @@
 > **Goal**: 턴제 전투 프로토타입 — Greybox 상태에서 핵심 전투 루프 동작 확인
 
 ### 1.1 프로젝트 셋업
-- [ ] Unity 6 프로젝트 생성 (URP 2D 템플릿)
+- [✅] Unity 6 프로젝트 생성 (URP 2D 템플릿)
   - Details: Unity Hub에서 "2D (URP)" 템플릿 선택, 프로젝트명 "LastKingdom"
   - Acceptance: URP 2D Renderer 확인, 샘플 씬 60fps 동작
   - Size: S
   - Dependencies: Unity 6 설치
 
-- [ ] 폴더 구조 생성
+- [✅] 폴더 구조 생성
   - Details: Context 문서의 폴더 구조 그대로 생성
   - Acceptance: Scripts/, Data/, Prefabs/, Scenes/, Art/, Audio/ 등 전체 구조 확인
   - Size: S
   - Dependencies: 프로젝트 생성
 
-- [ ] 필수 패키지 설치
+- [✅] 필수 패키지 설치
   - Details: TextMeshPro, Input System, Newtonsoft JSON (com.unity.nuget.newtonsoft-json)
   - Acceptance: Package Manager에서 설치 확인
   - Size: S
   - Dependencies: 프로젝트 생성
 
-- [ ] CLAUDE.md + dev/README.md 작성
+- [✅] CLAUDE.md + dev/README.md 작성
   - Details: 프로젝트 표준, 코딩 컨벤션, 네이밍 규칙 정의
   - Acceptance: 문서 존재 및 아키텍처 패턴 명시
   - Size: S
   - Dependencies: 없음
 
 ### 1.2 기반 시스템
-- [ ] Generic Singleton 베이스 클래스
+- [✅] Generic Singleton 베이스 클래스
   - File: `Assets/Scripts/Utils/Singleton.cs`
   - Details: MonoBehaviour 상속, DontDestroyOnLoad, 중복 방지
   - Acceptance: 여러 매니저에서 상속 사용 가능
