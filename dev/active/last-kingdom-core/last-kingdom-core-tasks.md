@@ -8,7 +8,7 @@
 - [⏭️] Skipped
 
 ## Progress Summary
-6 / 65 tasks complete (9%)
+8 / 65 tasks complete (12%)
 
 ---
 
@@ -55,14 +55,14 @@
   - Size: M
   - Dependencies: 없음
 
-- [ ] GameManager 구현
+- [✅] GameManager 구현
   - File: `Assets/Scripts/Managers/GameManager.cs`
   - Details: 게임 상태(Title/Town/Dungeon/Combat) 관리, Singleton
   - Acceptance: 상태 전환 로그 출력 확인
   - Size: M
   - Dependencies: Singleton.cs
 
-- [ ] SceneFlowManager 구현
+- [✅] SceneFlowManager 구현
   - File: `Assets/Scripts/Managers/SceneFlowManager.cs`
   - Details: Async 씬 로딩, 페이드 전환, 로딩 화면
   - Acceptance: Town→Combat 씬 전환 동작, 페이드 확인

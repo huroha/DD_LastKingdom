@@ -67,8 +67,8 @@ Assets/
 ### Naming
 - **클래스/구조체**: PascalCase (`TurnManager`, `HeroData`)
 - **public 메서드/프로퍼티**: PascalCase (`GetCurrentUnit()`, `MaxHealth`)
-- **private 필드**: _camelCase (`_currentTurn`, `_heroList`)
-- **SerializeField private**: _camelCase with `[SerializeField]`
+- **private 필드**: m_PascalCase (`m_CurrentTurn`, `m_HeroList`)
+- **SerializeField private**: m_PascalCase with `[SerializeField]`
 - **상수/enum**: PascalCase (`MaxPartySize`, `HeroClass.Attacker`)
 - **이벤트**: On + PastTense (`OnTurnEnded`, `OnHeroDied`)
 - **인터페이스**: I + PascalCase (`IDungeonMapProvider`, `IDamageable`)
@@ -81,20 +81,20 @@ Assets/
 public class HeroData : ScriptableObject
 {
     [Header("Basic Info")]
-    [SerializeField] private string _heroName;
-    [SerializeField] private HeroClass _heroClass;
+    [SerializeField] private string m_heroName;
+    [SerializeField] private HeroClass m_heroClass;
     
     [Header("Stats")]
-    [SerializeField] private StatBlock _baseStats;
+    [SerializeField] private StatBlock m_baseStats;
     
     [Header("Skills")]
-    [SerializeField] private SkillData[] _skills = new SkillData[4];
+    [SerializeField] private SkillData[] m_skills = new SkillData[4];
     
     // Public read-only properties
-    public string HeroName => _heroName;
-    public HeroClass HeroClass => _heroClass;
-    public StatBlock BaseStats => _baseStats;
-    public IReadOnlyList<SkillData> Skills => _skills;
+    public string HeroName => m_heroName;
+    public HeroClass HeroClass => m_heroClass;
+    public StatBlock BaseStats => m_baseStats;
+    public IReadOnlyList<SkillData> Skills => m_skills;
 }
 ```
 
