@@ -81,20 +81,20 @@ Assets/
 public class HeroData : ScriptableObject
 {
     [Header("Basic Info")]
-    [SerializeField] private string m_heroName;
-    [SerializeField] private HeroClass m_heroClass;
+    [SerializeField] private string m_HeroName;
+    [SerializeField] private HeroClass m_HeroClass;
     
     [Header("Stats")]
-    [SerializeField] private StatBlock m_baseStats;
+    [SerializeField] private StatBlock m_BaseStats;
     
     [Header("Skills")]
-    [SerializeField] private SkillData[] m_skills = new SkillData[4];
+    [SerializeField] private SkillData[] m_Skills = new SkillData[4];
     
     // Public read-only properties
-    public string HeroName => m_heroName;
-    public HeroClass HeroClass => m_heroClass;
-    public StatBlock BaseStats => m_baseStats;
-    public IReadOnlyList<SkillData> Skills => m_skills;
+    public string HeroName => m_HeroName;
+    public HeroClass HeroClass => m_HeroClass;
+    public StatBlock BaseStats => m_BaseStats;
+    public IReadOnlyList<SkillData> Skills => m_Skills;
 }
 ```
 

@@ -8,7 +8,7 @@
 - [⏭️] Skipped
 
 ## Progress Summary
-8 / 65 tasks complete (12%)
+12 / 65 tasks complete (18%)
 
 ---
 
@@ -70,32 +70,27 @@
   - Dependencies: GameManager
 
 ### 1.3 데이터 레이어
-- [ ] HeroData ScriptableObject 정의
-  - File: `Assets/Scripts/Data/HeroData.cs`
-  - Details: 이름, 클래스(enum), 기본스탯(HP/ATK/DEF/SPD/ACC/DODGE/CRIT), 스킬 슬롯[4], canVirtue 플래그
-  - Acceptance: Inspector에서 데이터 입력 가능, CreateAssetMenu 동작
-  - Size: M
-  - Dependencies: 없음
+- [✅] NikkeData ScriptableObject 정의 (HeroData → NikkeData 로 변경)
+  - File: `Assets/Scripts/Data/NikkeData.cs`
+  - Details: 이름, 클래스(enum), 제조회사(enum), 스쿼드, 속성(enum), 기본스탯(StatBlock), 스킬 슬롯[7], canVirtue 플래그, 레벨/경험치 템플릿, 크리티컬 패시브
+  - Note: 스킬 7개 중 4개 선택 커스텀 시스템 반영
 
-- [ ] SkillData ScriptableObject 정의
+- [✅] SkillData ScriptableObject 정의
   - File: `Assets/Scripts/Data/SkillData.cs`
-  - Details: 이름, 사용가능위치 bool[4], 타겟범위 bool[4], 타겟타입, 기본데미지, 명중률, 크리티컬, 효과 리스트
-  - Acceptance: Inspector에서 직관적 편집 가능
-  - Size: M
-  - Dependencies: StatusEffectData (기본 구조만)
+  - Details: 이름, 스킬타입(근/원거리), 사용가능위치 bool[4], 타겟위치 bool[4], 타겟타입, 피해배율, 명중보정, 크리보정, 특수상태 조건, 적중 효과 리스트
 
-- [ ] EnemyData ScriptableObject 정의
+- [✅] SquadData ScriptableObject 정의 (신규 추가)
+  - File: `Assets/Scripts/Data/SquadData.cs`
+  - Details: 스쿼드명, 아이콘, 파티 명칭, 표시 최소 인원
+
+- [✅] EnemyData ScriptableObject 정의
   - File: `Assets/Scripts/Data/EnemyData.cs`
-  - Details: 이름, 스탯, 스킬 리스트, 드롭 테이블, 스프라이트
-  - Acceptance: Inspector에서 데이터 입력 가능
-  - Size: M
-  - Dependencies: SkillData
+  - Details: 이름, 적타입(enum), 속성, 스탯, 스킬 리스트, 드롭테이블(골드/보석), 스프라이트
 
-- [ ] 테스트 데이터 SO 에셋 생성
-  - Details: 영웅 2종 (킬로, 크라운), 적 2종, 스킬 4~5종 SO 에셋 파일 생성
-  - Acceptance: 전투 테스트에 충분한 데이터
+- [🔄] 테스트 데이터 SO 에셋 생성
+  - Details: 니케 2종(킬로/크라운), 적 2종(랩처/랩처엘리트), 스킬 5종, StatusEffect 1종, Squad 2종 에셋 생성 완료
+  - Acceptance: 에셋 생성 완료 — 내일 전투 테스트로 검증 예정
   - Size: M
-  - Dependencies: HeroData, SkillData, EnemyData
 
 ### 1.4 전투 시스템 핵심
 - [ ] CombatUnit 클래스
@@ -182,11 +177,10 @@
   - Size: L
   - Dependencies: CombatUnit, HeroData, SaveSystem(사망 처리)
 
-- [ ] StatusEffectData SO 정의
+- [✅] StatusEffectData SO 정의 (Phase 1.3에서 선행 완료)
   - File: `Assets/Scripts/Data/StatusEffectData.cs`
   - Details: 이름, 타입(DOT/Buff/Debuff), 지속턴, 틱데미지, 스탯보정 값, 스택 가능 여부
   - Size: M
-  - Dependencies: 없음
 
 - [ ] StatusEffectManager 구현
   - File: `Assets/Scripts/Combat/StatusEffectManager.cs`
@@ -363,7 +357,7 @@
 
 ### 3.3 콘텐츠
 - [ ] 영웅 클래스 4~6종 데이터 완성
-  - Details: 클래스별 고유 스킬 4개, 기본 스탯 차별화, SO 에셋 생성
+  - Details: 클래스별 고유 스킬 7개, 기본 스탯 차별화, SO 에셋 생성
   - Size: XL
   - Dependencies: HeroData, SkillData
 
