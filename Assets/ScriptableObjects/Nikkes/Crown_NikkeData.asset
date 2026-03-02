@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cead30f8b213ad443a5387d8789ed940, type: 3}
+  m_Name: Crown_NikkeData
+  m_EditorClassIdentifier: Assembly-CSharp::NikkeData
+  m_NikkeName: Crown
+  m_NikkeClass: 2
+  m_CanVirtue: 1
+  m_Manufacturer: 0
+  m_Element: 3
+  m_Squad: {fileID: 11400000, guid: b63fa638ddcdedb4086548dbba25858f, type: 2}
+  m_BaseStats:
+    maxHp: 280
+    minDamage: 35
+    maxDamage: 55
+    accuracyMod: 0
+    critChance: 5
+    defense: 25
+    dodge: 10
+    deathBlowResist: 67
+    speed: 5
+    resistance:
+      stun: 40
+      move: 40
+      poison: 40
+      disease: 40
+      bleed: 40
+      debuff: 40
+      trap: 40
+  m_MaxLevel: 6
+  m_ExpThresholds: 00000000640000002c01000058020000e8030000dc050000
+  m_StatGrowthPerLevel:
+    maxHp: 18
+    minDamage: 0
+    maxDamage: 0
+    accuracyMod: 0
+    critChance: 0
+    defense: 1
+    dodge: 0
+    deathBlowResist: 0
+    speed: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+  m_Skills:
+  - {fileID: 11400000, guid: 1af9adf875143234ea659f8e9ac6e0f9, type: 2}
+  - {fileID: 11400000, guid: 6bfc8192882314a49973a1cca8b1f05e, type: 2}
+  - {fileID: 11400000, guid: 43b0ba489ea560e489968ed0b564b7da, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  m_PortraitSprite: {fileID: 0}
+  m_VirtuePortraitSprite: {fileID: 0}
+  m_OnCritSelfEffects: []
+  m_OnReceiveCritSelfEffects: []

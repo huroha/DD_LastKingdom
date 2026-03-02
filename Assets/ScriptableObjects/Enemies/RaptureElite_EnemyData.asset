@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3451d3a4df902f4492fbf42b744e5ec, type: 3}
+  m_Name: RaptureElite_EnemyData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  m_EnemyName: "Test\uB7A9\uCCD0 \uC568\uB9AC\uD2B8"
+  m_EnemyType: 1
+  m_Element: 2
+  m_BaseStats:
+    maxHp: 300
+    minDamage: 60
+    maxDamage: 90
+    accuracyMod: 5
+    critChance: 0
+    defense: 15
+    dodge: 10
+    deathBlowResist: 0
+    speed: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+  m_Skills:
+  - {fileID: 11400000, guid: aa0bba7d332e50e46b083318c321aeb2, type: 2}
+  m_DropTable:
+    minGold: 50
+    maxGold: 100
+    minGems: 1
+    maxGems: 2
+  m_CorpseHp: 10
+  m_Sprite: {fileID: 0}

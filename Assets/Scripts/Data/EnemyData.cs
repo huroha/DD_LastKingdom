@@ -42,6 +42,9 @@ public class EnemyData : ScriptableObject
     [Header("Drop")]
     [SerializeField] private DropTable m_DropTable;
 
+    [Header("Corpse")]
+    [SerializeField] private int m_CorpseHp;
+    
     [Header("Visuals")]
     [SerializeField] private Sprite m_Sprite;
 
@@ -51,5 +54,6 @@ public class EnemyData : ScriptableObject
     public StatBlock BaseStats => m_BaseStats;
     public IReadOnlyList<SkillData> Skills => m_Skills;
     public DropTable DropTable => m_DropTable;
+    public int CorpseHp => m_CorpseHp;
     public Sprite Sprite => m_Sprite;
 }

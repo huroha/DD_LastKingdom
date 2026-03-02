@@ -8,7 +8,7 @@
 - [⏭️] Skipped
 
 ## Progress Summary
-12 / 65 tasks complete (18%)
+16 / 65 tasks complete (25%)
 
 ---
 
@@ -87,30 +87,30 @@
   - File: `Assets/Scripts/Data/EnemyData.cs`
   - Details: 이름, 적타입(enum), 속성, 스탯, 스킬 리스트, 드롭테이블(골드/보석), 스프라이트
 
-- [🔄] 테스트 데이터 SO 에셋 생성
+- [✅] 테스트 데이터 SO 에셋 생성
   - Details: 니케 2종(킬로/크라운), 적 2종(랩처/랩처엘리트), 스킬 5종, StatusEffect 1종, Squad 2종 에셋 생성 완료
-  - Acceptance: 에셋 생성 완료 — 내일 전투 테스트로 검증 예정
+  - Acceptance: CombatUnitTest.cs로 SO 데이터 로드 및 CombatUnit 인스턴스 생성 검증 완료
   - Size: M
 
 ### 1.4 전투 시스템 핵심
-- [ ] CombatUnit 클래스
+- [✅] CombatUnit 클래스
   - File: `Assets/Scripts/Combat/CombatUnit.cs`
-  - Details: 런타임 유닛 데이터 (현재HP, 현재스탯, 위치 슬롯, 살아있음 여부)
-  - Acceptance: SO 데이터로부터 인스턴스 생성 가능
+  - Details: 런타임 유닛 데이터. UnitState 4단계(Alive/DeathsDoor/Corpse/Dead), TakeDamage(isDot), Heal, AddEbla. Nikke 생성자는 currentHp/ebla/activeEffects 주입 (전투 간 상태 유지), Enemy 생성자는 MaxHp 초기화. ActiveStatusEffect.cs 동시 구현.
+  - Acceptance: SO 데이터로부터 인스턴스 생성, 데미지/힐/사망 판정 동작 확인
   - Size: M
-  - Dependencies: HeroData, EnemyData
+  - Dependencies: NikkeData, EnemyData
 
-- [ ] TurnManager 구현
+- [✅] TurnManager 구현
   - File: `Assets/Scripts/Combat/TurnManager.cs`
-  - Details: 모든 유닛 SPD 기반 내림차순 정렬, 현재 턴 유닛 추적, 턴 시작/종료 이벤트
-  - Acceptance: 4명 영웅 + 3명 적 → 올바른 행동 순서 정렬 확인
+  - Details: Pure C# Non-Singleton (CombatStateMachine이 소유). SPD 내림차순, Nikke 우선, 동 타입 동점 시 랜덤. RoundStarted/Ended/TurnStarted/Ended 이벤트 발행. CombatEvent.cs에 struct 이벤트 타입 선언.
+  - Acceptance: 킬로(SPD8)/크라운(SPD6)/랩처엘리트(SPD8)/랩처(SPD7) 올바른 정렬, 라운드 전환, Dead 유닛 제외 확인
   - Size: L
   - Dependencies: CombatUnit, EventBus
 
-- [ ] PositionSystem 구현
+- [✅] PositionSystem 구현
   - File: `Assets/Scripts/Combat/PositionSystem.cs`
-  - Details: 아군 슬롯[4] + 적 슬롯[4], 위치 이동/교환, 스킬 사용 가능 여부 판정
-  - Acceptance: 유닛 위치 변경, 스킬 위치 제약 동작
+  - Details: 가변 슬롯(new CombatUnit[count]). SlotIndex 1=최전방(적과 인접). CanUseSkill/GetValidTargets는 SkillData bool[] 배열 기반. Swap, RemoveUnit(제거 후 뒤 유닛 앞당김+SlotIndex 갱신). 시각 배치(4→3→2→1)는 UI 담당. GetValidTargets는 위치 후보 반환만 — Single/All 구분은 SkillExecutor 책임.
+  - Acceptance: 유닛 위치 변경, 스킬 위치 제약 동작, 시체 제거 시 포지션 앞당김 확인
   - Size: M
   - Dependencies: CombatUnit
 
