@@ -230,7 +230,7 @@ GameObject "CombatManager"
 - m_OnReceiveCritSelfEffects: StatusEffectData[]
 ```
 
-### SkillData.asset
+### SkillData.asset (Decision #22, #23에서 확장)
 ```csharp
 - m_SkillName: string
 - m_Description: string
@@ -239,10 +239,18 @@ GameObject "CombatManager"
 - m_RequiredState: SkillRequiredState (None / Awakened)
 - m_UsablePositions: bool[4]
 - m_TargetPositions: bool[4]
-- m_TargetType: TargetType (EnemySingle / EnemyAll / AllySingle / AllyAll / Self)
+- m_TargetType: TargetType (EnemySingle / EnemyMulti / EnemyAll / AllySingle / AllyMulti / AllyAll / Self)
 - m_DamageMultiplier: float
 - m_AccuracyMod: int
 - m_CritMod: float
+- m_HealAmount: int              # HP 회복량
+- m_EblaDamage: int              # 에블라 피해량
+- m_EblaHealAmount: int          # 에블라 감소량
+- m_MoveUserAmount: int          # 사용자 위치 이동 (양수=후방, 음수=전방)
+- m_MoveTargetAmount: int        # 대상 강제 이동 (양수=후방, 음수=전방)
+- m_IsGuard: bool                # 호위 스킬 여부
+- m_IsMark: bool                 # 마크 부여 여부
+- m_MarkDamageBonus: float       # 마크 대상 추가 피해 배율
 - m_OnHitEffects: StatusEffectData[]
 ```
 
@@ -262,13 +270,116 @@ GameObject "CombatManager"
 ```csharp
 - m_EffectName: string
 - m_Icon: Sprite
-- m_EffectType: StatusEffectType (Bleed / Poison / Disease / Stun / Buff / Debuff)
+- m_EffectType: StatusEffectType (Bleed / Poison / Disease / Stun / Buff / Debuff / Guard / Mark)
 - m_Duration: int
 - m_TickDamage: int
 - m_StatModifier: StatBlock
 - m_IsStackable: bool
 - m_MaxStack: int
 ```
+
+### 16. 데미지 공식: 범위 데미지 + PROT 방식 (2026-03-03)
+- **확정**: StatBlock의 `atk` → `minDamage / maxDamage` 범위로 변경
+- **데미지 공식**: `BaseDmg = Random(minDamage, maxDamage)` → `RawDmg = BaseDmg * SkillMultiplier` → `FinalDmg = RawDmg * (1 - defense/100)`
+- **defense**: % 기반 감소율 (DD 원작의 PROT). 0~100 범위
+- **Rationale**: DD 원작과 동일한 방식. 매 공격마다 변동성이 있어 전투에 긴장감 부여. PROT % 방식은 밸런스 조절이 직관적
+
+### 17. 명중/크리티컬 공식 (2026-03-03)
+- **명중 공식**: `HitChance = (UserACC + SkillAccuracyMod) - TargetDODGE`
+- **명중 클램프**: 0% ~ 100% (제한 없음. DD 원작의 5%/95%와 다르게 극단적 빌드 허용)
+- **크리티컬 공식**: `CritChance = baseCrit + SkillCritMod` → roll 판정 (명중 성공 시에만)
+- **크리티컬 효과**: 데미지 1.5배 + 적 에블라 +15, 파티원 전체 에블라 -5
+- **크리티컬 패시브**: NikkeData의 OnCritSelfEffects, OnReceiveCritSelfEffects 적용
+- **Rationale**: 크리티컬이 단순 데미지 보너스가 아닌 전술적 의미(에블라 관리)를 가짐
+
+### 18. 힐 스킬: 별도 m_HealAmount 필드 (2026-03-03)
+- **확정**: SkillData에 `m_HealAmount` 필드 별도 추가
+- **Rationale**: DamageMultiplier 음수 방식보다 데미지+힐 동시 스킬 표현 가능. DD 원작도 힐량이 별도 수치
+- **힐 판정**: 명중 판정 없음 (항상 성공). 크리티컬 판정은 수행 (크리 시 힐량 1.5배)
+
+### 19. 다중 타겟: EnemyMulti/AllyMulti 추가 (2026-03-03)
+- **확정**: TargetType에 `EnemyMulti`, `AllyMulti` 추가
+- **동작**: TargetPositions bool[4] 기반으로 해당 포지션의 모든 유닛 타격
+- **예시**: TargetPositions [true, true, false, false] + EnemyMulti = 포지션 0-1 동시 공격
+- **기존 EnemyAll/AllyAll**: 전체 유닛 대상 (TargetPositions 무시)
+- **Rationale**: DD 원작의 "포지션 1-2만 공격" 패턴 표현 필수
+
+### 20. SPD 고정값 유지 (2026-03-03)
+- **확정**: TurnManager의 SPD 정렬에 랜덤 요소 추가하지 않음
+- **동일 SPD 처리**: Sort 전에 tiebreaker 값 미리 할당 (comparator 내 Random.Range 제거)
+- **Rationale**: 행동 순서 예측 가능성 유지. DD 원작(SPD+Random 1~8)과 다른 선택
+
+### 21. Move 방향 규약 (2026-03-03)
+- **확정**: `steps > 0` = 후방 이동 (index 증가), `steps < 0` = 전방 이동 (index 감소)
+- **기준**: SlotIndex 0 = 최전방 (Decision #15와 일관)
+- **Rationale**: index 증가 = 뒤로 물러남이 배열 구조와 직관적으로 일치
+
+### 22. SkillData 확장 필드 (2026-03-03)
+- **확정**: 아래 필드를 SkillData.cs에 추가
+- **추가 필드**:
+  - `m_HealAmount` (int): HP 회복량. 별도 필드로 데미지+힐 동시 스킬 표현 가능
+  - `m_EblaDamage` (int): 에블라(스트레스) 피해량. HP 대신/추가로 에블라 피해
+  - `m_EblaHealAmount` (int): 에블라 감소량. 힐 스킬과 조합 가능
+  - `m_MoveUserAmount` (int): 사용자 위치 이동량. Lunge류 스킬 (양수=후방, 음수=전방)
+  - `m_MoveTargetAmount` (int): 대상 강제 이동량. Knockback/Pull (양수=후방, 음수=전방)
+  - `m_IsGuard` (bool): 호위 스킬 여부. Defender가 아군 대신 피격
+  - `m_IsMark` (bool): 마크 부여 여부. 마크된 적에게 추가 피해
+  - `m_MarkDamageBonus` (float): 마크 대상 추가 피해 배율
+- **시체 타겟**: 별도 필드 없음. 모든 스킬이 Corpse 타겟 가능
+- **StatusEffectType 확장**: Guard, Mark 추가
+- **Riposte/Stealth**: Phase 1에서는 미추가. 필요 시 Phase 2에서 StatusEffectType 확장
+- **Rationale**: DD 원작의 핵심 전투 메커니즘(스트레스 공격, 위치 이동, 호위, 표식) 모작에 필수
+
+### 23. SkillData 확장 후 전체 필드 정리 (2026-03-03)
+```csharp
+SkillData.cs 최종 필드 목록:
+- m_SkillName: string
+- m_Description: string
+- m_SkillIcon: Sprite
+- m_SkillType: SkillType (Melee / Ranged)
+- m_RequiredState: SkillRequiredState (None / Awakened)
+- m_UsablePositions: bool[4]
+- m_TargetPositions: bool[4]
+- m_TargetType: TargetType (EnemySingle / EnemyMulti / EnemyAll / AllySingle / AllyMulti / AllyAll / Self)
+- m_DamageMultiplier: float
+- m_AccuracyMod: int
+- m_CritMod: float
+- m_HealAmount: int              // 신규
+- m_EblaDamage: int              // 신규
+- m_EblaHealAmount: int          // 신규
+- m_MoveUserAmount: int          // 신규
+- m_MoveTargetAmount: int        // 신규
+- m_IsGuard: bool                // 신규
+- m_IsMark: bool                 // 신규
+- m_MarkDamageBonus: float       // 신규
+- m_OnHitEffects: StatusEffectData[]
+```
+
+### 24. 핵심 게임 루프 상세 흐름 확정 (2026-03-03)
+- **확정**: 전체 게임 루프 흐름
+```
+마을 → [출정] → 던전 선택 + 파티 편성 → [원정 준비] → 보급품 구매 → [출정]
+→ 던전 (복도 이벤트/함정/파밍 + 방 전투) → [목표 달성 시 귀환 버튼 활성화]
+→ [귀환] → 정산 화면 (골동품→Gold, 재료, 경험치, 특성 지급) → [마을 복귀] → 마을
+```
+- **던전 목표 예시**: 던전 N% 탐사 / 방 전투 100% 완료 / 목표물 N개 수집
+- **귀환 버튼**: 목표 달성 전까지 비활성화 (QuestSystem 연동)
+- **정산 보상**: 골동품 → Gold 자동 치환 / 업그레이드 재료 / 경험치 / 특성(Quirk)
+
+### 25. 씬 구조 확정 — 패널 오버레이 방식 (2026-03-03)
+- **확정**: 씬 구조는 기존 유지. 새 화면들은 패널 오버레이로 처리
+```
+BootScene → TitleScene → TownScene ↔ DungeonScene ↔ CombatScene
+```
+- **TownScene 내 패널**: 던전 선택 + 파티 편성 패널 / 보급품 구매 패널
+- **DungeonScene 내 패널**: 정산 화면 패널
+- **Rationale**: 1인 개발 규모에 적합. 원작 DD와 동일한 방식. 씬 전환 없이 즉각적 전환. 씬 수 증가 방지
+
+### 26. Quirk(특성) 시스템 도입 확정 (2026-03-03)
+- **확정**: Quirk 시스템 구현. 정산 화면에서 보상으로 지급
+- **시점**: Phase 2에서 구현
+- **설계 방향**: 긍정/부정 특성이 정산 보상으로 랜덤 지급. NikkeData 런타임에 QuirkData[] 필드 필요
+- **Rationale**: 정산 보상 목록에 "특성 지급"이 명시됨. 리플레이 가치의 핵심 요소
 
 ## Testing Notes
 - **Phase 1 테스트**: CombatScene에서 전투 루프 수동 테스트

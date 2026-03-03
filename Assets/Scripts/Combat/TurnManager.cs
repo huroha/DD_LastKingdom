@@ -63,8 +63,12 @@ public class TurnManager
                 m_TurnOrder.Add(m_AllUnits[i]);
             }
         }
-        m_TurnOrder.Sort(CompareBySPD);     // List.Sort()에 넘기는 비교함수는 반환값에 의미가 정해져있음
-                                            // 음수 -> a를 b보다 앞에 배치 0-> 그대로 유지, 양수 -> b를 a보다 앞에
+      // Sort 전에 tiebreaker 미리 할당
+      for(int i=0; i< m_TurnOrder.Count; ++i)
+        {
+            m_TurnOrder[i].TurnOrderTieBreaker = Random.value;
+        }
+        m_TurnOrder.Sort(CompareBySPD);
     }
 
     private void AdvanceToNextAliveUnit()
@@ -82,8 +86,9 @@ public class TurnManager
         if (a.UnitType == CombatUnitType.Nikke && b.UnitType == CombatUnitType.Enemy) return -1;
         if (a.UnitType == CombatUnitType.Enemy && b.UnitType == CombatUnitType.Nikke) return 1;
 
-        // 같은 니케나 적이 같은 속도라면 랜덤 선택
-        return Random.Range(0,2) == 0 ? -1 : 1;
+        // 같은 니케나 적이 같은 속도라면 TieBreaker사용
+        return a.TurnOrderTieBreaker.CompareTo(b.TurnOrderTieBreaker);
     }
 
+    
 }

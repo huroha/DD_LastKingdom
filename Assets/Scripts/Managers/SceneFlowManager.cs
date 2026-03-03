@@ -11,7 +11,7 @@ public class SceneFlowManager : Singleton<SceneFlowManager>
     private const string SceneName_Dungeon = "DungeonScene";
     private const string SceneName_Combat = "CombatScene";
 
-    [SerializeField] private float m_FadeDuration = 0.5f;   // private 임에도 Unity Inspector에 노출해줌 외부 수정은 불가
+    [SerializeField] private float m_FadeDuration = 0.5f;   // private 임에도 Unity Inspector에 노출해줌 수정가능 다른곳에서 접근불가
     [SerializeField] private float m_FastFadeDuration = 0.05f;   
 
     private CanvasGroup m_FadeCanvasGroup;

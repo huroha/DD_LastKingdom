@@ -9,7 +9,7 @@ using System.Collections.Generic;
 /// </summary>
 public static class EventBus
 {
-    private static readonly Dictionary<Type, List<Delegate>> _handlers = new Dictionary<Type, List<Delegate>>();
+    private static readonly Dictionary<Type, List<Delegate>> m_Handlers = new Dictionary<Type, List<Delegate>>();
 
     // TEvent는 하나의 큰 이벤트의 종류 ex) PlayerDiedEvent
     // 추가적으로 딕셔너리로 delegate로 관련된 하위 함수 이벤트들을 가지고있는다. ex ) OnPlayerDied_UI, OnPlayerDied_Sound 등등
@@ -19,20 +19,20 @@ public static class EventBus
     public static void Subscribe<TEvent>(Action<TEvent> handler)
     {
         Type type = typeof(TEvent);                                        
-        if (!_handlers.ContainsKey(type))                                   
-            _handlers[type] = new List<Delegate>();                        
-        _handlers[type].Add(handler);                                      
+        if (!m_Handlers.ContainsKey(type))
+            m_Handlers[type] = new List<Delegate>();
+        m_Handlers[type].Add(handler);                                      
     }                                                                      
                                                                            
     public static void Unsubscribe<TEvent>(Action<TEvent> handler)
     {
         Type type = typeof(TEvent);
-        if (!_handlers.ContainsKey(type))
+        if (!m_Handlers.ContainsKey(type))
             return;
-        
-        _handlers[type].Remove(handler);
-        if (_handlers[type].Count == 0)
-            _handlers.Remove(type);
+
+        m_Handlers[type].Remove(handler);
+        if (m_Handlers[type].Count == 0)
+            m_Handlers.Remove(type);
        
        
     }
@@ -40,9 +40,9 @@ public static class EventBus
     public static void Publish<TEvent>(TEvent evt)
     {
         Type type = typeof(TEvent);
-        if (!_handlers.ContainsKey(type))
+        if (!m_Handlers.ContainsKey(type))
             return;
-        List<Delegate> handlers = new List<Delegate>(_handlers[type]);      // 복사본을 순회
+        List<Delegate> handlers = new List<Delegate>(m_Handlers[type]);      // 복사본을 순회
         for(int i = 0; i < handlers.Count; ++i)
         {
             ((Action<TEvent>)handlers[i]).Invoke(evt);  
@@ -51,6 +51,6 @@ public static class EventBus
 
     public static void Clear()
     {
-        _handlers.Clear();
+        m_Handlers.Clear();
     }
 }

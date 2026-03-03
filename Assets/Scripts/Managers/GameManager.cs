@@ -10,7 +10,7 @@ public enum GameState
 
 public delegate void StateChangedHandler(GameState previous, GameState current);
 
-
+// 게임 전체 흐름 상태를 관리하는 싱글톤 매니저 (Title/ Town / Dungeon / Combat)
 public class GameManager : Singleton<GameManager>
 {
     public event StateChangedHandler OnGameStateChanged;
@@ -21,7 +21,7 @@ public class GameManager : Singleton<GameManager>
     {
         base.Awake();
         m_CurrentState = GameState.Title;
-        Debug.Log("[GameManager] Initialized. State : " + m_CurrentState);
+        Debug.Log("Awake  = [GameManager] Initialized. State : " + m_CurrentState);
     }
 
     public void ChangeState(GameState newState)

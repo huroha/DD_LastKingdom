@@ -47,16 +47,17 @@ public class CombatUnit
     // 적용중인 상태이상
     public List<ActiveStatusEffect> ActiveEffects { get; }
 
-
+    public float TurnOrderTieBreaker { get; set; }
 
     // 생성자
-    public CombatUnit(NikkeData data, int slotIndex,int currentHp, int ebla, List<ActiveStatusEffect> activeEffects)
+    public CombatUnit(NikkeData data, int slotIndex,int currentHp, int ebla,
+                     List<ActiveStatusEffect> activeEffects, SkillData[] selectedSkills = null)
     {
         UnitType = CombatUnitType.Nikke;
         UnitName = data.NikkeName;
         SlotIndex = slotIndex;
         NikkeData = data;
-        Skills = data.Skills;
+        Skills = BuildSkillList(data,selectedSkills);
 
         MaxHp = data.BaseStats.maxHp;
         CurrentHp = currentHp;              
@@ -174,4 +175,43 @@ public class CombatUnit
         CurrentStats = BaseStats;
     }
 
+    private static IReadOnlyList<SkillData> BuildSkillList(NikkeData data, SkillData[] selectedSkills)
+    {
+        SkillData[] result = new SkillData[4];
+        int filled = 0;
+
+        // 선택된 스킬 우선 채우기
+        if(selectedSkills != null)
+        {
+            for( int i=0; i< selectedSkills.Length && filled < 4; ++i)
+            {
+                if (selectedSkills[i] != null)
+                    result[filled++] = selectedSkills[i];
+            }
+        }
+
+        // 4개 미만이면 data.skill에서 index 순으로 채우기
+        for (int i = 0; i < data.Skills.Count && filled < 4; ++i)
+        {
+            SkillData candidate = data.Skills[i];
+            if (candidate == null)
+                continue;
+
+            // 이미 포함된 스킬이면 스킵
+            bool alreadyIncluded = false;
+            for( int j=0; j < filled; ++j)
+            {
+                if (result[j] == candidate)
+                {
+                    alreadyIncluded = true;
+                    break;
+                }
+            }
+
+            if(!alreadyIncluded)
+                result[filled++] = candidate;
+        }
+        return result;
+
+    }
 }

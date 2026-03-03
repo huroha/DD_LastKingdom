@@ -1,38 +1,36 @@
 using UnityEngine;
 
 
-/// <summary>
-/// MonoBehaviour 기반 제네릭 싱글톤 베이스 클래스.
-/// DontDestroyOnLoad 적용, 씬 전환 시 중복 인스턴스 자동 제거.
-/// </summary>
-public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+
+public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour      // where T 는 앞으로 T자리에는 Monobehaviour를 상속받은 유니티컴포넌트만 올것이라고 확정
 {
-    private static T _instance;
-    private static bool _isQuitting;
+    private static T m_instance;
+    private static bool m_isQuitting;
 
     public static T Instance
     {
         get
         {
-            if (_isQuitting)
+            if (m_isQuitting)
                 return null;
 
-            if (_instance == null)
+            if (m_instance == null)
             {
-                _instance = FindFirstObjectByType<T>();
-                if (_instance == null)
+                //씬에 해당 컴포넌트 <T>가 있는지 조사. 없어야 생성한다.
+                m_instance = FindFirstObjectByType<T>();
+                if (m_instance == null)
                 {
-                    var go = new GameObject(typeof(T).Name);
-                    _instance = go.AddComponent<T>();
+                    GameObject go = new GameObject(typeof(T).Name);
+                    m_instance = go.AddComponent<T>();
                 }
             }
-            return _instance;
+            return m_instance;
         }
     }
 
     protected virtual void Awake()
     {
-        if (_instance != null && _instance != this)
+        if (m_instance != null && m_instance != this)
         {
             Destroy(gameObject);
             return;
@@ -50,14 +48,14 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
             transform.SetParent(null);
         }
 
-        _instance = this as T;
+        m_instance = this as T;
         DontDestroyOnLoad(gameObject);
     }
 
     protected virtual void OnDestroy()
     {
         // 앱 종료 외의 시점에 매니저가 파괴되는 것은 설계 위반이다.
-        if (!_isQuitting)
+        if (!m_isQuitting)
         {
             Debug.LogError(
                 $"[Singleton] {typeof(T).Name} was destroyed unexpectedly. " +
@@ -67,13 +65,13 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
 
         // 중복 인스턴스의 Destroy 시에는 _instance를 건드리지 않는다.
-        if (_instance == this as T)
-            _instance = null;
+        if (m_instance == this as T)
+            m_instance = null;
     }
 
     protected virtual void OnApplicationQuit()
     {
-        _isQuitting = true;
+        m_isQuitting = true;
     }
 }
 

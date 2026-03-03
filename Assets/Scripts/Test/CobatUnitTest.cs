@@ -6,6 +6,8 @@ public class CombatUnitTest : MonoBehaviour
     [SerializeField] private NikkeData m_TestNikke;
     [SerializeField] private EnemyData m_TestEnemy;
 
+
+    
     private void Start()
     {
         TestNikke();
