@@ -103,6 +103,7 @@ public class HeroData : ScriptableObject
 2. **SO는 데이터 컨테이너**, 런타임 로직 최소화
 3. **매 프레임 GC 할당 금지** — string 연결, LINQ, boxing 주의. 캐싱 필수
 4. **public 필드 사용 금지** — `[SerializeField] private` + public property
+- 예외: 이벤트 데이터 struct (CombatEvent 등) — 읽기 전용 데이터 컨테이너는 public 필드 허용
 5. **하드코딩 금지** — 매직 넘버는 SO 또는 const로 정의
 6. **null 체크** — GetComponent, Find 계열 사용 시 반드시 null 체크
 7. **코루틴 vs async**: 간단한 딜레이는 코루틴, 복잡한 비동기는 async/await. `ConfigureAwait(false)` 사용 금지 — Unity SynchronizationContext 유지 필수

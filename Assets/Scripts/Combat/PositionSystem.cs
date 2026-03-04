@@ -6,6 +6,8 @@ public class PositionSystem
     private CombatUnit[] m_NikkeSlots;
     private CombatUnit[] m_EnemySlots;
 
+
+
     // 초기화
     public void Initialize(List<CombatUnit> nikkes, List<CombatUnit> enemies)
     {
@@ -28,11 +30,22 @@ public class PositionSystem
     public CombatUnit GetUnit(CombatUnitType team, int slotIndex)
     {
         CombatUnit[] slots = GetTeamSlots(team);
-        int index = slotIndex;
 
-        if (index < 0 || index >= slots.Length)
+        if (slotIndex < 0 || slotIndex >= slots.Length)
             return null;
-        return slots[index];
+        return slots[slotIndex];
+    }
+
+    public List<CombatUnit> GetAllUnits(CombatUnitType team)
+    {
+        List<CombatUnit> units = new List<CombatUnit>();
+        CombatUnit[] slots = GetTeamSlots(team);
+        for (int i=0; i< slots.Length; ++i)
+        {
+            if (slots[i] != null && slots[i].State != UnitState.Dead)
+                units.Add(slots[i]);
+        }
+        return units;
     }
 
     // 스킬 판정
@@ -171,7 +184,8 @@ public class PositionSystem
     private CombatUnit[] GetTargetSlots(CombatUnit user, TargetType targetType)
     {
         // 사용자의 기술타입이 Enemy가 들어있으면 true 버프기면 false가 된다
-        bool targetEnemy = targetType == TargetType.EnemySingle || targetType == TargetType.EnemyAll;
+        bool targetEnemy = targetType == TargetType.EnemySingle || targetType == TargetType.EnemyAll 
+                         || targetType == TargetType.EnemyMulti;
 
         // targetEnemy는 무조건 true 혹은 false니 그게 어떤 타입이 사용했는지만 알면됨
         if (user.UnitType == CombatUnitType.Nikke)

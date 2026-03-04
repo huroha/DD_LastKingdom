@@ -1,0 +1,22 @@
+
+public struct SkillResult
+{
+    public CombatUnit       User;
+    public SkillData        Skill;
+    public TargetResult[]   TargetResults;
+}
+
+
+public struct TargetResult
+{
+    public CombatUnit Target;
+    public bool IsHit;
+    public bool IsCrit;
+    public int DamageDealt;
+    public int HealAmount;
+    public int EblaDamageDealt;
+    public int EblaHealAmount;
+    public UnitState ResultState;
+    public StatusEffectData[] AppliedEffects;
+    public StatusEffectData[] ResistedEffects;
+}

@@ -8,7 +8,7 @@
 - [⏭️] Skipped
 
 ## Progress Summary
-16 / 65 tasks complete (25%)
+17 / 65 tasks complete (26%)
 
 ---
 
@@ -114,7 +114,7 @@
   - Size: M
   - Dependencies: CombatUnit
 
-- [ ] SkillExecutor 구현
+- [✅] SkillExecutor 구현
   - File: `Assets/Scripts/Combat/SkillExecutor.cs`
   - Details: 스킬 선택 → 타겟 유효성 검증 → 데미지 계산(ATK vs DEF, ACC vs DODGE, CRIT) → 적용
   - Acceptance: 스킬 사용 → HP 감소 → 사망 판정 동작
@@ -300,6 +300,14 @@
 
 ## Phase 3: Content & Polish (3주)
 > **Goal**: 아트 통합, 연출, UI 완성, 콘텐츠 채우기
+
+### 3.0 씬 구조 전환 (Phase 3 시작 시 우선 처리)
+- [ ] CombatScene → DungeonScene 내 CombatPanel 오버레이로 전환
+  - Details: DungeonScene에 CombatPanel 추가. 전투 시작 시 패널 활성화, 전투 종료 시 비활성화. SceneFlowManager의 Dungeon↔Combat 씬 전환 로직 제거. CombatScene은 전투 단독 테스트 씬으로 유지 가능
+  - Acceptance: 던전 이동 중 전투 진입 시 씬 전환 없이 CombatPanel 표시, 전투 종료 후 던전 맵 복귀
+  - Size: L
+  - Dependencies: DungeonScene 구현 완료, CombatStateMachine
+  - Ref: Decision #4, #25
 
 ### 3.1 아트 & 애니메이션
 - [ ] 영웅 스프라이트 통합 + Animator Controller

@@ -2,8 +2,8 @@
 
 ## Status
 - Phase: Phase 1.4 진행 중 (전투 시스템 핵심)
-- Progress: 12 / 65 tasks complete (18%)
-- Last Updated: 2026-03-02
+- Progress: 17 / 65 tasks complete (26%)
+- Last Updated: 2026-03-04
 
 ## Key Files
 
@@ -31,9 +31,12 @@ Assets/
 │   │   ├── CombatUnit.cs           # 런타임 유닛 (Pure C#) ✅
 │   │   ├── ActiveStatusEffect.cs   # 런타임 상태이상 인스턴스 (Pure C#) ✅
 │   │   ├── CombatEvent.cs          # 전투 EventBus 이벤트 타입 선언 ✅
+│   │   ├── CombatState.cs          # 전투 FSM 상태 enum ✅
+│   │   ├── SkillResult.cs          # 스킬 실행 결과 구조체 ✅
+│   │   ├── EnemyAction.cs          # 적 행동 결정 구조체 ✅
 │   │   ├── TurnManager.cs          # SPD 기반 행동 순서 (Pure C#) ✅
-│   │   ├── PositionSystem.cs       # 4슬롯 포지션 관리
-│   │   ├── SkillExecutor.cs        # 스킬 실행, 데미지 계산
+│   │   ├── PositionSystem.cs       # 4슬롯 포지션 관리 ✅
+│   │   ├── SkillExecutor.cs        # 스킬 실행, 데미지 계산 ✅
 │   │   ├── StatusEffectManager.cs  # DOT/Debuff 틱 처리
 │   │   └── CombatStateMachine.cs   # 전투 FSM
 │   ├── Systems/
@@ -121,10 +124,11 @@ Assets/
 - **Alternatives**: UI Toolkit (코드 기반, 웹 스타일 레이아웃)
 - **Trade-offs**: UGUI는 Canvas 재구축 비용이 있지만 본 프로젝트 규모에서는 문제없음
 
-### 4. 전투 씬 분리 (2026-02-25)
+### 4. 전투 씬 분리 (2026-02-25) — Phase 3에서 오버레이로 전환 예정
 - **Rationale**: 디버깅 용이, 메모리 격리, 관리 쉬움
 - **Alternatives**: Additive Scene Loading, 같은 씬 내 UI 오버레이
 - **Trade-offs**: 씬 전환 시 로딩 발생하지만 Async + 페이드 연출로 커버
+- **Phase 3 전환 예정**: 원작 DD와 동일하게 DungeonScene 내 CombatPanel 오버레이로 변경. CombatScene은 전투 단독 테스트 용도로 유지 가능. Decision #25(패널 오버레이 방식)와 일관성 유지
 
 ### 5. 애니메이션: Sprite Animation (FlipBook 스타일) (2026-02-25)
 - **Rationale**: 개발자의 DirectX 2D 경험과 일치. PNG 에셋 준비 가능
