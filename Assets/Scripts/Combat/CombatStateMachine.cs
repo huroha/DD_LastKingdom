@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -22,30 +22,32 @@ public class CombatStateMachine : MonoBehaviour
 
 
 
-    // ÀüÅõ ½Ã½ºÅÛ
+    // ì „íˆ¬ ì‹œìŠ¤í…œ
     private TurnManager     m_TurnManager;
     private PositionSystem  m_PositionSystem;
     private SkillExecutor   m_SkillExecutor;
     private EnemyAI         m_EnemyAI;
 
-    // FSM »óÅÂ
+    // FSM ìƒíƒœ
     private CombatState     m_CurrentState;
     private CombatUnit      m_ActiveUnit;
     private SkillData       m_SelectedSkill;
     private CombatUnit      m_SelectedTarget;
 
-    // ÇÃ·¹ÀÌ¾î ÀÔ·Â ÇÃ·¡±×
+    // í”Œë ˆì´ì–´ ì…ë ¥ í”Œë˜ê·¸
     private bool m_SkillConfirmed;
     private bool m_TargetConfirmed;
+    private bool m_MoveRequested;
+    private bool m_MoveConfirmed;
 
-    // ¿ÜºÎ ÀĞ±â¿ë ÇÁ·ÎÆÛÆ¼
+    // ì™¸ë¶€ ì½ê¸°ìš© í”„ë¡œí¼í‹°
     public CombatState CurrentState => m_CurrentState;
     public CombatUnit ActiveUnit => m_ActiveUnit;
     public PositionSystem PositionSystem => m_PositionSystem;
 
     public IReadOnlyList<CombatUnit> TurnOrder => m_TurnManager?.TurnOrder;
 
-    // UI ÀÌº¥Æ®
+    // UI ì´ë²¤íŠ¸
     public delegate void StateChangeHandler(CombatState newState);
     public event StateChangeHandler OnStateChanged;
 
@@ -62,12 +64,12 @@ public class CombatStateMachine : MonoBehaviour
         return m_SkillExecutor.ValidateSkill(unit, skill);
     }
 
-    // ÀüÅõ ½ÃÀÛ
+    // ì „íˆ¬ ì‹œì‘
     private void StartTestBattle()
     {
         List<CombatUnit> nikkes = new List<CombatUnit>();
 
-        // ´ÏÄÉ ¼øÈ¯ÇÏ¸é¼­ µ¥ÀÌÅÍ Ã¤¿ì±â
+        // ë‹ˆì¼€ ìˆœí™˜í•˜ë©´ì„œ ë°ì´í„° ì±„ìš°ê¸°
         for(int i=0; i<m_TestNikkes.Length; ++i)
         {
             NikkeData data = m_TestNikkes[i];
@@ -76,7 +78,7 @@ public class CombatStateMachine : MonoBehaviour
             nikkes.Add(new CombatUnit(data, i, data.BaseStats.maxHp, 0, null));
         }
 
-        // Àû ¼øÈ¯ÇÏ¸é¼­ µ¥ÀÌÅÍ Ã¤¿ì±â
+        // ì  ìˆœí™˜í•˜ë©´ì„œ ë°ì´í„° ì±„ìš°ê¸°
         List<CombatUnit> enemies = new List<CombatUnit>();
         for (int i=0; i<m_TestEnemies.Length; ++i)
         {
@@ -86,12 +88,12 @@ public class CombatStateMachine : MonoBehaviour
             enemies.Add(new CombatUnit(data, i));
         }
 
-        // Ã¤¿î µ¥ÀÌÅÍ¸¦ ³Ñ°ÜÁØ´Ù.
+        // ì±„ìš´ ë°ì´í„°ë¥¼ ë„˜ê²¨ì¤€ë‹¤.
         StartBattle(nikkes, enemies);
     }
     public void StartBattle(List<CombatUnit> nikkes, List<CombatUnit> enemies)
     {
-        // ½Ã½ºÅÛ ÀÎ½ºÅÏ½º »ı¼º
+        // ì‹œìŠ¤í…œ ì¸ìŠ¤í„´ìŠ¤ ìƒì„±
         m_PositionSystem = new PositionSystem();
         m_TurnManager = new TurnManager();
         m_SkillExecutor = new SkillExecutor(m_PositionSystem);
@@ -112,7 +114,7 @@ public class CombatStateMachine : MonoBehaviour
 
 
 
-    // ÄÚ·çÆ¾
+    // ì½”ë£¨í‹´
     private IEnumerator RunBattle()
     {
         SetState(CombatState.BattleStart);
@@ -124,6 +126,9 @@ public class CombatStateMachine : MonoBehaviour
             m_ActiveUnit = m_TurnManager.StartNextTurn();
             if (m_ActiveUnit == null)
                 break;
+
+            Debug.Log($"[Turn] Round {m_TurnManager.RoundNumber} â€” {m_ActiveUnit.UnitName} ({m_ActiveUnit.UnitType}, Slot{ m_ActiveUnit.SlotIndex}) HP: { m_ActiveUnit.CurrentHp}/{ m_ActiveUnit.MaxHp}");
+
             if (m_ActiveUnit.UnitType == CombatUnitType.Nikke)
                 yield return StartCoroutine(HandlePlayerTurn());
             else
@@ -155,32 +160,55 @@ public class CombatStateMachine : MonoBehaviour
     private IEnumerator HandlePlayerTurn()
     {
         bool turnHandled = false;
-
+        m_MoveRequested = false;  // ì „ì— ì‚¬ìš©ë¬ë˜ê±° ì‚¬ìš© ë°©ì§€
+        m_MoveConfirmed = false;
         while (!turnHandled)
         {
             SetState(CombatState.PlayerSelectSkill);
             m_SkillConfirmed = false;
             m_SelectedSkill = null;
-            m_SkillSelectPanel.Show(m_ActiveUnit, OnSkillSelected, OnSkillPass);
+            m_SkillSelectPanel.Show(m_ActiveUnit, OnSkillSelected, OnSkillPass, OnMoveRequested);
 
             while (!m_SkillConfirmed)
                 yield return null;
 
-            // ÆĞ½º ¼±ÅÃ ½Ã
+            // Move ìš”ì²­ëœ ê²½ìš°
+            if (m_MoveRequested)
+            {
+                m_MoveRequested = false;
+                List<CombatUnit> moveTargets = GetValidMoveTargets();
+                if (moveTargets.Count == 0)
+                    continue; // ì´ë™ ê°€ëŠ¥ ìŠ¬ë¡¯ ì—†ìœ¼ë©´ ë‹¤ì‹œ ìŠ¤í‚¬ ì„ íƒ
+
+                SetState(CombatState.PlayerSelectMoveTarget);
+                m_MoveConfirmed = false;
+                m_SelectedTarget = null;
+                m_TargetSelectPanel.Show(moveTargets, OnMoveTargetSelected, OnMoveCancel);
+
+                while (!m_MoveConfirmed)
+                    yield return null;
+
+                if (m_SelectedTarget != null)
+                    turnHandled = true;
+                continue;
+            }
+
+
+            // íŒ¨ìŠ¤ ì„ íƒ ì‹œ
             if (m_SelectedSkill == null)
             {
                 turnHandled = true;
                 continue;
             }
 
-            // Å¸°Ù ¼±ÅÃ ºÒÇÊ¿äÇÑ ½ºÅ³
+            // íƒ€ê²Ÿ ì„ íƒ ë¶ˆí•„ìš”í•œ ìŠ¤í‚¬
             if (!NeedsTargetSelection(m_SelectedSkill))
             {
                 turnHandled = true;
                 continue;
             }
 
-            // Å¸°Ù ¼±ÅÃ
+            // íƒ€ê²Ÿ ì„ íƒ
             SetState(CombatState.PlayerSelectTarget);
             m_TargetConfirmed = false;
             m_SelectedTarget = null;
@@ -192,10 +220,10 @@ public class CombatStateMachine : MonoBehaviour
 
             if (m_SelectedTarget != null)
                 turnHandled = true;
-            // Ãë¼Ò¸é ·çÇÁ Ã³À½À¸·Î µ¹¾Æ°¡ ½ºÅ³ Àç¼±ÅÃ
+            // ì·¨ì†Œë©´ ë£¨í”„ ì²˜ìŒìœ¼ë¡œ ëŒì•„ê°€ ìŠ¤í‚¬ ì¬ì„ íƒ
         }
 
-        // ÆĞ½º°¡ ¾Æ´Ò ¶§¸¸ ½ÇÇà
+        // íŒ¨ìŠ¤ê°€ ì•„ë‹ ë•Œë§Œ ì‹¤í–‰
         if (m_SelectedSkill != null)
         {
             SetState(CombatState.ExecuteSkill);
@@ -223,7 +251,7 @@ public class CombatStateMachine : MonoBehaviour
 
     }
 
-    // ÇïÆÛ
+    // í—¬í¼
     private bool NeedsTargetSelection(SkillData skill)
     {
         if (skill.TargetType == TargetType.EnemySingle || skill.TargetType == TargetType.AllySingle)
@@ -252,7 +280,9 @@ public class CombatStateMachine : MonoBehaviour
         m_CurrentState = newState;
         if (OnStateChanged != null)
             OnStateChanged(newState);
-        // OnstateChanged?.Invoke(newState)¿Í µ¿ÀÏÇÔ.
+        // OnstateChanged?.Invoke(newState)ì™€ ë™ì¼í•¨.
+        Debug.Log($"[FSM] {newState}");
+
     }
 
     private void ApplyPostBattleEbla()
@@ -295,5 +325,41 @@ public class CombatStateMachine : MonoBehaviour
         m_TargetConfirmed = true;
     }
 
+    private void OnMoveCancel()
+    {
+        m_SelectedTarget = null;
+        m_MoveConfirmed = true;
+    }
+
+    private void OnMoveRequested()
+    {
+        m_MoveRequested = true;
+        m_SkillConfirmed = true; // while(!m_SkillConfirmed) ë£¨í”„ íƒˆì¶œìš©
+    }
+
+    private void OnMoveTargetSelected(CombatUnit target)
+    {
+        int steps = target.SlotIndex - m_ActiveUnit.SlotIndex;
+        m_PositionSystem.Move(m_ActiveUnit, steps);
+        EventBus.Publish(new UnitMovedEvent(m_ActiveUnit, target));
+        m_SelectedTarget = target;
+        m_MoveConfirmed = true;
+    }
+
+    private List<CombatUnit> GetValidMoveTargets()
+    {
+        List<CombatUnit> targets = new List<CombatUnit>();
+        int currentSlot = m_ActiveUnit.SlotIndex;
+
+        CombatUnit forward = m_PositionSystem.GetUnit(CombatUnitType.Nikke, currentSlot - 1);
+        CombatUnit backward = m_PositionSystem.GetUnit(CombatUnitType.Nikke, currentSlot + 1);
+
+        if(forward != null)
+            targets.Add(forward);
+        if(backward != null)
+            targets.Add(backward);
+        return targets;
+
+    }
 
 }

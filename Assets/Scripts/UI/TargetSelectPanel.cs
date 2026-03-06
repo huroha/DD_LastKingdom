@@ -9,8 +9,12 @@ public class TargetSelectPanel : MonoBehaviour
     [SerializeField] private CombatStateMachine m_CombatStateMachine;
 
     [Header("Target Buttons")]
-    [SerializeField] private Button[]       m_EnemyButtons;   // 4°³
-    [SerializeField] private Button[]       m_NikkeButtons;   // 4°³
+    [SerializeField] private Button[]       m_EnemyButtons;   // 4ê°œ
+    [SerializeField] private Button[]       m_NikkeButtons;   // 4ê°œ
+
+    [Header("Unit Names")]
+    [SerializeField] private TextMeshProUGUI[] m_EnemyNames;
+    [SerializeField] private TextMeshProUGUI[] m_NikkeNames;
 
     [Header("Cancel Button")]
     [SerializeField] private Button m_CancelButton;
@@ -29,7 +33,7 @@ public class TargetSelectPanel : MonoBehaviour
     {
         for (int i = 0; i < m_EnemyButtons.Length; ++i)
         {
-            int index = i; // ·çÇÁ º¯¼ö¸¦ º°µµ º¯¼ö¿¡ Ä¸Ã³
+            int index = i; // ë£¨í”„ ë³€ìˆ˜ë¥¼ ë³„ë„ ë³€ìˆ˜ì— ìº¡ì²˜
             m_EnemyButtons[i].onClick.AddListener(() =>
             {
                 CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Enemy, index);
@@ -47,7 +51,15 @@ public class TargetSelectPanel : MonoBehaviour
         }
 
         m_CancelButton.onClick.AddListener(OnCancelButtonClicked);
+        EventBus.Subscribe<BattleStartedEvent>(OnBattleStarted);
+        EventBus.Subscribe<UnitMovedEvent>(OnUnitMoved);
+        gameObject.SetActive(false);
+    }
 
+    private void OnDestroy()
+    {
+        EventBus.Unsubscribe<BattleStartedEvent>(OnBattleStarted);
+        EventBus.Unsubscribe<UnitMovedEvent>(OnUnitMoved);
     }
 
     public void Show(List<CombatUnit> validTargets, TargetSelectedHandler onTargetSelected, CancelHandler onCancel)
@@ -61,6 +73,10 @@ public class TargetSelectPanel : MonoBehaviour
     }
     public void Hide() 
     {
+        for (int i = 0; i < m_NikkeButtons.Length; ++i)
+            m_NikkeButtons[i].interactable = false;
+        for (int i = 0; i < m_EnemyButtons.Length; ++i)
+            m_EnemyButtons[i].interactable = false;
         gameObject.SetActive(false);
     }
 
@@ -70,24 +86,63 @@ public class TargetSelectPanel : MonoBehaviour
         {
             CombatUnit unit =m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Enemy, i);
             m_EnemyButtons[i].interactable = m_ValidTargets.Contains(unit);
+            if (unit != null)
+                m_EnemyNames[i].text = unit.UnitName;
         }
 
         for (int i = 0; i < m_NikkeButtons.Length; ++i)
         {
             CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Nikke, i);
             m_NikkeButtons[i].interactable = m_ValidTargets.Contains(unit);
+            if (unit != null)
+                m_NikkeNames[i].text = unit.UnitName;
         }
     }
     private void OnTargetButtonClicked(CombatUnit target)
     {
         if (target == null)
             return;
+
+        if (m_OnTargetSelected == null) return;
+
         m_OnTargetSelected(target);
         Hide();
     }
     private void OnCancelButtonClicked() 
     {
+        if (m_OnCancel == null)
+            return;  
         m_OnCancel();
         Hide();
+    }
+
+    private void OnBattleStarted(BattleStartedEvent e)
+    {
+        for (int i = 0; i < m_NikkeButtons.Length; ++i)
+        {
+            m_NikkeButtons[i].gameObject.SetActive(i < e.Nikkes.Count);
+            if (i < e.Nikkes.Count)
+                m_NikkeNames[i].text = e.Nikkes[i].UnitName;
+        }
+
+        for (int i = 0; i < m_EnemyButtons.Length; ++i)
+        {
+            m_EnemyButtons[i].gameObject.SetActive(i < e.Enemies.Count);
+            if (i < e.Enemies.Count)
+                m_EnemyNames[i].text = e.Enemies[i].UnitName;
+        }
+    }
+
+
+
+    private void OnUnitMoved(UnitMovedEvent e)
+    {
+        if (!gameObject.activeSelf)
+            return;
+        for (int i = 0; i < m_NikkeButtons.Length; ++i)
+        {
+            CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Nikke, i);
+            if (unit != null) m_NikkeNames[i].text = unit.UnitName;
+        }
     }
 }

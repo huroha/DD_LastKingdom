@@ -5,6 +5,7 @@ public enum CombatState
     TurnStart,
     PlayerSelectSkill,
     PlayerSelectTarget,
+    PlayerSelectMoveTarget,
     EnemyDecide,
     ExecuteSkill,
     TurnEnd,

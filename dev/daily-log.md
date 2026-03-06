@@ -126,6 +126,37 @@
 
 ---
 
+## Day 7 — 2026-03-05 (전투 FSM + UI 구현)
+
+### 완료 작업
+- `EnemyAI.cs` — Pure C#, 랜덤 스킬 행동, 순환 순회
+- `CombatStateMachine.cs` — 코루틴 기반 FSM, 전투 전체 흐름 제어
+- `CombatHUD.cs` — EventBus 구독, HP/에블라 바, 턴 순서 텍스트 (StringBuilder)
+- `SkillSelectPanel.cs` — Show/Hide 패턴, 스킬 버튼 4개 + Pass 버튼
+- `TargetSelectPanel.cs` — Show/Hide 패턴, 타겟 버튼 8개 + Cancel 버튼
+- CombatScene 구성 (Canvas 계층, Inspector 연결)
+
+### 주요 결정
+- 코루틴 기반 FSM 채택 (Update switch 방식 대신) — 선형 흐름이 시나리오처럼 읽힘
+- UI-FSM 통신: 이벤트 방식 → Show() + delegate 콜백 방식으로 전환 (PassButton/Cancel 흐름 지원)
+- ApplyPostBattleEbla(): FreeRounds 이후 라운드 누적합 × Multiplier — 복도 귀환 후 유지
+
+### 발생/수정한 버그
+- Korean font 경고: LiberationSans 한글 미지원 → TMP Font Asset 교체
+- IndexOutOfRange (SkillSelectPanel): Skills.Count 기준 순회 → SkillButtons.Length 기준으로 수정
+- 클로저 캡처 버그 예방: 루프 내 `int index = i` 로컬 복사
+
+### /simplify 리뷰 수정
+- `OnUnitDied` HP 바 중복 초기화 → `RefreshHpBar()` 호출로 통합
+- `RefreshTurnOrder` string += → StringBuilder
+- `RefreshButtons` 중복 null 분기 → ternary 단일화
+
+### Obsidian 노트
+- `Day7 - CombatStateMachine & EnemyAI.md` 생성
+- `Day7 - Combat UI.md` 생성
+
+---
+
 ## Day 6 — 2026-03-04 (SkillExecutor 구현)
 
 ### 작업 내용

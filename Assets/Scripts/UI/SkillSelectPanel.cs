@@ -12,14 +12,19 @@ public class SkillSelectPanel : MonoBehaviour
     [Header("Pass Button")]
     [SerializeField] private Button m_PassButton;
 
+    [Header("Move Button")]
+    [SerializeField] private Button m_MoveButton;
+
     [Header("References")]
     [SerializeField] private CombatStateMachine m_CombatStateMachine;
 
     public delegate void SkillSelectedHandler(SkillData skill);
     public delegate void PassHandler();
+    public delegate void MoveHandler();
 
     private SkillSelectedHandler m_OnSkillSelected;
     private PassHandler m_OnPass;
+    private MoveHandler m_OnMove;
 
     private CombatUnit m_CurrentUnit;
 
@@ -31,13 +36,15 @@ public class SkillSelectPanel : MonoBehaviour
             m_SkillButtons[i].onClick.AddListener(() => OnSkillButtonClicked(index));
         }
         m_PassButton.onClick.AddListener(OnPassButtonClicked);
+        m_MoveButton.onClick.AddListener(OnMoveButtonClicked);
     }
 
-    public void Show(CombatUnit unit, SkillSelectedHandler onSkillSelected, PassHandler onPass)
+    public void Show(CombatUnit unit, SkillSelectedHandler onSkillSelected, PassHandler onPass, MoveHandler onMove)
     {
         m_CurrentUnit = unit;
         m_OnSkillSelected = onSkillSelected;
         m_OnPass = onPass;
+        m_OnMove = onMove;
         RefreshButtons();
         gameObject.SetActive(true);
     }
@@ -50,13 +57,7 @@ public class SkillSelectPanel : MonoBehaviour
     {
         for (int i = 0; i < m_SkillButtons.Length; ++i)
         {
-            if (i >= m_CurrentUnit.Skills.Count)
-            {
-                m_SkillButtons[i].interactable = false;
-                m_SkillNames[i].text = "";
-                continue;
-            }
-            SkillData skill = m_CurrentUnit.Skills[i];
+            SkillData skill = (i < m_CurrentUnit.Skills.Count) ? m_CurrentUnit.Skills[i] : null;
             if (skill == null)
             {
                 m_SkillButtons[i].interactable = false;
@@ -77,6 +78,11 @@ public class SkillSelectPanel : MonoBehaviour
     private void OnPassButtonClicked()
     {
         m_OnPass();
+        Hide();
+    }
+    private void OnMoveButtonClicked()
+    {
+        m_OnMove();
         Hide();
     }
 

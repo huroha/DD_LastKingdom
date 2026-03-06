@@ -76,3 +76,11 @@ public struct UnitStateChangedEvent
         NewState = newState;
     }
 }
+
+public struct UnitMovedEvent
+{
+    public CombatUnit UnitA;
+    public CombatUnit UnitB;
+    public UnitMovedEvent(CombatUnit a, CombatUnit b) { UnitA = a; UnitB = b; }
+
+}

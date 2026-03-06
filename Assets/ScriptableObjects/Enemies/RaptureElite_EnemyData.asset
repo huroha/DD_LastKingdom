@@ -19,7 +19,7 @@ MonoBehaviour:
     maxHp: 300
     minDamage: 60
     maxDamage: 90
-    accuracyMod: 5
+    accuracyMod: 70
     critChance: 0
     defense: 15
     dodge: 10

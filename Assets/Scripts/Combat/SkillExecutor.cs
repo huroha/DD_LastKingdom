@@ -65,7 +65,7 @@ public class SkillExecutor
                 result[i].IsHit = true;
             else
                 result[i].IsHit = RollHit(user, targets[i], skill);
-
+            Debug.Log($"[Skill] {user.UnitName} → {targets[i].UnitName} | Hit:{result[i].IsHit}");
 
             // [명중 성공 시]
             if (result[i].IsHit)
@@ -173,7 +173,7 @@ public class SkillExecutor
     {
         float hitChance = (user.CurrentStats.accuracyMod + skill.AccuracyMod) - target.CurrentStats.dodge;
         float roll = Random.Range(0f, 100f);
-
+        Debug.Log($"[HitRoll] ACC:{user.CurrentStats.accuracyMod} + SkillMod:{skill.AccuracyMod} -DODGE:{target.CurrentStats.dodge} = {hitChance} | Roll:{roll:F1}");
         return roll < hitChance;
     }
 
@@ -185,6 +185,8 @@ public class SkillExecutor
         int FinalDamage = (int)(RawDamage * (1f - target.CurrentStats.defense / 100f));
 
         FinalDamage = Mathf.Max(FinalDamage, 0);
+        Debug.Log($"[Damage] Base:{BaseDamage} × Multi:{skill.DamageMultiplier} = Raw:{RawDamage} → Final:{FinalDamage}(DEF:{ target.CurrentStats.defense}%)");
+
 
         return FinalDamage;
     }

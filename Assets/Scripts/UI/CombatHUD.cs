@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 
 public class CombatHUD : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class CombatHUD : MonoBehaviour
     [Header("References")]
     [SerializeField] private CombatStateMachine m_CombatStateMachine;
 
+    private System.Text.StringBuilder m_TurnOrderBuilder = new System.Text.StringBuilder(128);
+
     private void Awake()
     {
         Initialize(m_CombatStateMachine);
@@ -30,6 +33,7 @@ public class CombatHUD : MonoBehaviour
         EventBus.Subscribe<BattleStartedEvent>(OnBattleStarted);
         EventBus.Subscribe<SkillExecutedEvent>(OnSkillExecuted);
         EventBus.Subscribe<UnitDiedEvent>(OnUnitDied);
+        EventBus.Subscribe<UnitMovedEvent>(OnUnitMoved);
 
     }
     private void OnDisable()
@@ -37,6 +41,7 @@ public class CombatHUD : MonoBehaviour
         EventBus.Unsubscribe<BattleStartedEvent>(OnBattleStarted);
         EventBus.Unsubscribe<SkillExecutedEvent>(OnSkillExecuted);
         EventBus.Unsubscribe<UnitDiedEvent>(OnUnitDied);
+        EventBus.Unsubscribe<UnitMovedEvent>(OnUnitMoved);
     }
     public void Initialize(CombatStateMachine stateMachine)
     {
@@ -47,14 +52,33 @@ public class CombatHUD : MonoBehaviour
 
     private void OnBattleStarted(BattleStartedEvent e)
     {
+        // 전체 숨기기
+        for (int i=0; i<m_NikkeHpBars.Length; ++i)
+        {
+            m_NikkeHpBars[i].gameObject.SetActive(false);
+            m_NikkeEblaBars[i].gameObject.SetActive(false);
+            m_NikkeNames[i].gameObject.SetActive(false);
+        }
+        for (int i=0; i<m_EnemyHpBars.Length; ++i)
+        {
+            m_EnemyHpBars[i].gameObject.SetActive(false);
+            m_EnemyNames[i].gameObject.SetActive(false);
+        }
+
+        // 데이터 있는 슬롯만 표시
         for (int i = 0; i < e.Nikkes.Count; ++i)
         {
+            m_NikkeHpBars[i].gameObject.SetActive(true);
+            m_NikkeEblaBars[i].gameObject.SetActive(true);
+            m_NikkeNames[i].gameObject.SetActive(true);
             m_NikkeNames[i].text = e.Nikkes[i].UnitName;
             RefreshHpBar(e.Nikkes[i]);
         }
 
         for (int i=0; i< e.Enemies.Count; ++i)
         {
+            m_EnemyHpBars[i].gameObject.SetActive(true);
+            m_EnemyNames[i].gameObject.SetActive(true);
             m_EnemyNames[i].text = e.Enemies[i].UnitName;
             RefreshHpBar(e.Enemies[i]);
         }
@@ -75,17 +99,12 @@ public class CombatHUD : MonoBehaviour
 
     private  void OnUnitDied(UnitDiedEvent e)
     {
-        if(e.Unit.UnitType == CombatUnitType.Nikke)
-        {
-            m_NikkeNames[e.Unit.SlotIndex].text = "---";
-            m_NikkeHpBars[e.Unit.SlotIndex].value = 0;
-            m_NikkeEblaBars[e.Unit.SlotIndex].value = 0;
-        }
+        int index = e.Unit.SlotIndex;
+        if (e.Unit.UnitType == CombatUnitType.Nikke)
+            m_NikkeNames[index].text = "---";
         else
-        {
-            m_EnemyNames[e.Unit.SlotIndex].text = "---";
-            m_EnemyHpBars[e.Unit.SlotIndex].value = 0;
-        }
+            m_EnemyNames[index].text = "---";
+        RefreshHpBar(e.Unit);
     }
 
     private void RefreshHpBar(CombatUnit unit)
@@ -101,14 +120,38 @@ public class CombatHUD : MonoBehaviour
     }
     private void RefreshTurnOrder()
     {
-        if (m_CombatStateMachine.TurnOrder == null)
-            return;
-        string result = "";
-        for(int i=0; i<m_CombatStateMachine.TurnOrder.Count; ++i)
+        if (m_CombatStateMachine.TurnOrder == null) return;
+        m_TurnOrderBuilder.Clear();
+        for (int i = 0; i < m_CombatStateMachine.TurnOrder.Count; ++i)
         {
-            CombatUnit unit = m_CombatStateMachine.TurnOrder[i];
-            result += unit.UnitName + " -> ";
+            m_TurnOrderBuilder.Append(m_CombatStateMachine.TurnOrder[i].UnitName);
+            m_TurnOrderBuilder.Append(" -> ");
         }
-        m_TurnOrderText.text = result;
+        m_TurnOrderText.text = m_TurnOrderBuilder.ToString();
     }
+
+    private void OnUnitMoved(UnitMovedEvent e)
+    {
+        RefreshNikkeSlots();
+    }
+
+    private void RefreshNikkeSlots()
+    {
+        for (int i=0; i< m_NikkeNames.Length; ++i)
+        {
+            CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Nikke, i);
+            if(unit == null)
+            {
+                m_NikkeNames[i].text = "";
+                m_NikkeHpBars[i].value = 0;
+                m_NikkeEblaBars[i].value = 0;
+            }
+            else
+            {
+                m_NikkeNames[i].text = unit.UnitName;
+                RefreshHpBar(unit);
+            }
+        }
+    }
+
 }

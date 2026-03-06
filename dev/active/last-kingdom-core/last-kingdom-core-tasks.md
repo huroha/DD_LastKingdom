@@ -8,7 +8,7 @@
 - [⏭️] Skipped
 
 ## Progress Summary
-17 / 65 tasks complete (26%)
+22 / 65 tasks complete (34%)
 
 ---
 
@@ -121,14 +121,14 @@
   - Size: L
   - Dependencies: CombatUnit, PositionSystem, SkillData
 
-- [ ] CombatStateMachine 구현
+- [✅] CombatStateMachine 구현
   - File: `Assets/Scripts/Combat/CombatStateMachine.cs`
   - Details: 상태 = PlayerSelectSkill → PlayerSelectTarget → Execute → EnemyTurn → CheckResult → 반복 / Victory / Defeat
   - Acceptance: 전투 시작부터 승리/패배까지 풀 플로우 동작
   - Size: XL
   - Dependencies: TurnManager, PositionSystem, SkillExecutor
 
-- [ ] 적 AI 기초 (랜덤 행동)
+- [✅] 적 AI 기초 (랜덤 행동)
   - File: `Assets/Scripts/Combat/EnemyAI.cs`
   - Details: 사용 가능한 스킬 중 랜덤 선택, 유효 타겟 중 랜덤 선택
   - Acceptance: 적 턴에 자동으로 스킬 사용
@@ -136,29 +136,29 @@
   - Dependencies: CombatUnit, SkillExecutor
 
 ### 1.5 전투 UI
-- [ ] 전투 HUD 기초
+- [✅] 전투 HUD 기초
   - File: `Assets/Scripts/UI/CombatHUD.cs`
-  - Details: 영웅/적 HP바 (Slider), 행동 순서 초상화 리스트, 현재 턴 하이라이트
+  - Details: 영웅/적 HP바 (Slider), 에블라 바, 이름 텍스트, 턴 순서 텍스트 (StringBuilder 최적화)
   - Acceptance: HP 변화 실시간 반영, 행동 순서 시각적 확인
   - Size: L
   - Dependencies: CombatUnit, TurnManager
 
-- [ ] 스킬 선택 UI
+- [✅] 스킬 선택 UI
   - File: `Assets/Scripts/UI/SkillSelectPanel.cs`
-  - Details: 현재 유닛의 스킬 4개 버튼 표시, 위치 제약에 따라 비활성화
+  - Details: 현재 유닛의 스킬 4개 버튼 표시, 위치 제약에 따라 비활성화, Pass 버튼
   - Acceptance: 스킬 버튼 클릭 → 타겟 선택 모드 진입
   - Size: M
   - Dependencies: CombatHUD, PositionSystem
 
-- [ ] 타겟 선택 UI
+- [✅] 타겟 선택 UI
   - File: `Assets/Scripts/UI/TargetSelectPanel.cs`
-  - Details: 유효 타겟 하이라이트, 클릭으로 타겟 확정
+  - Details: 유효 타겟 하이라이트, 클릭으로 타겟 확정, Cancel 버튼
   - Acceptance: 유효 타겟만 선택 가능, 선택 시 스킬 실행
   - Size: M
   - Dependencies: SkillSelectPanel, SkillExecutor
 
 ### 1.6 테스트 씬
-- [ ] CombatScene 구성
+- [🔄] CombatScene 구성
   - Details: 전투 배경 스프라이트(placeholder), 유닛 배치 위치, Canvas + HUD, CombatManager 오브젝트
   - Acceptance: Play 시 전투 시작, 스킬 사용, 승리/패배까지 플레이 가능
   - Size: L
