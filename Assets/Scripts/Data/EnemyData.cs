@@ -44,6 +44,7 @@ public class EnemyData : ScriptableObject
 
     [Header("Corpse")]
     [SerializeField] private int m_CorpseHp;
+    [SerializeField] private int m_CorpseDecayTurns = 2;
     
     [Header("Visuals")]
     [SerializeField] private Sprite m_Sprite;
@@ -55,5 +56,6 @@ public class EnemyData : ScriptableObject
     public IReadOnlyList<SkillData> Skills => m_Skills;
     public DropTable DropTable => m_DropTable;
     public int CorpseHp => m_CorpseHp;
+    public int CorpseDecayTurns => m_CorpseDecayTurns;
     public Sprite Sprite => m_Sprite;
 }

@@ -1,7 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
+
+public enum SurpriseType
+{
+    None,
+    PlayerSurprise,
+    EnemySurprise
+}
 
 
 public class CombatStateMachine : MonoBehaviour
@@ -20,6 +28,8 @@ public class CombatStateMachine : MonoBehaviour
     [SerializeField] private int m_EblaFreeRounds = 4;
     [SerializeField] private int m_EblaRoundMultiplier = 1;
 
+    // 턴 넘김 패널티
+    private const int PASS_EBLA_PENALTY = 5;
 
 
     // 전투 시스템
@@ -91,7 +101,7 @@ public class CombatStateMachine : MonoBehaviour
         // 채운 데이터를 넘겨준다.
         StartBattle(nikkes, enemies);
     }
-    public void StartBattle(List<CombatUnit> nikkes, List<CombatUnit> enemies)
+    public void StartBattle(List<CombatUnit> nikkes, List<CombatUnit> enemies, SurpriseType surprise = SurpriseType.None)
     {
         // 시스템 인스턴스 생성
         m_PositionSystem = new PositionSystem();
@@ -109,6 +119,10 @@ public class CombatStateMachine : MonoBehaviour
 
         EventBus.Publish(new BattleStartedEvent(nikkes, enemies));
 
+        // TODO Phase 2: surprise 타입에 따라 기습 처리
+        // SurpriseType.PlayerSurprise → 적 전체 1라운드 스킵
+        // SurpriseType.EnemySurprise → 아군 위치 셔플 + 1라운드 스킵
+
         StartCoroutine(RunBattle());
     }
 
@@ -124,8 +138,22 @@ public class CombatStateMachine : MonoBehaviour
         {
             SetState(CombatState.TurnStart);
             m_ActiveUnit = m_TurnManager.StartNextTurn();
+
             if (m_ActiveUnit == null)
                 break;
+
+
+            // 스턴 체크
+            if (m_ActiveUnit.IsStunned)
+            {
+                RemoveStun(m_ActiveUnit);
+                SetState(CombatState.TurnEnd);
+                m_TurnManager.EndCurrentTurn();
+                yield return null;
+                continue;
+            }
+
+  
 
             Debug.Log($"[Turn] Round {m_TurnManager.RoundNumber} — {m_ActiveUnit.UnitName} ({m_ActiveUnit.UnitType}, Slot{ m_ActiveUnit.SlotIndex}) HP: { m_ActiveUnit.CurrentHp}/{ m_ActiveUnit.MaxHp}");
 
@@ -136,6 +164,7 @@ public class CombatStateMachine : MonoBehaviour
 
             SetState(CombatState.TurnEnd);
             m_TurnManager.EndCurrentTurn();
+            TickCorpseTimers();
             yield return null;
 
             SetState(CombatState.CheckBattleEnd);
@@ -197,6 +226,7 @@ public class CombatStateMachine : MonoBehaviour
             // 패스 선택 시
             if (m_SelectedSkill == null)
             {
+                m_ActiveUnit.AddEbla(PASS_EBLA_PENALTY);
                 turnHandled = true;
                 continue;
             }
@@ -252,12 +282,44 @@ public class CombatStateMachine : MonoBehaviour
     }
 
     // 헬퍼
+
+    private void TickCorpseTimers()
+    {
+        List<CombatUnit> corpses = m_PositionSystem.GetCorpses(CombatUnitType.Enemy);
+        for (int i=0; i<corpses.Count; ++i)
+        {
+            corpses[i].CorpseTimer--;
+            if (corpses[i].CorpseTimer <=0)
+            {
+                m_PositionSystem.RemoveUnit(corpses[i]);
+                EventBus.Publish(new UnitDiedEvent(corpses[i]));
+            }
+        }
+    }
+
+    // 스턴제거
+    private void RemoveStun(CombatUnit unit)
+    {
+        for (int i = unit.ActiveEffects.Count - 1; i >= 0; --i)
+        {
+            if (unit.ActiveEffects[i].Data.EffectType == StatusEffectType.Stun)
+            {
+                unit.ActiveEffects.RemoveAt(i);
+                break;
+            }
+        }
+    }
+
+
+    // 타겟이 필요한가
     private bool NeedsTargetSelection(SkillData skill)
     {
         if (skill.TargetType == TargetType.EnemySingle || skill.TargetType == TargetType.AllySingle)
             return true;
         return false;
     }
+
+    // 죽은 유닛 이벤트 발생
     private void ProcessDeadUnits(SkillResult result)
     {
         if (result.TargetResults == null)
@@ -275,6 +337,8 @@ public class CombatStateMachine : MonoBehaviour
             }
         }
     }
+
+    // State 설정
     private void SetState(CombatState newState)
     { 
         m_CurrentState = newState;
@@ -285,6 +349,7 @@ public class CombatStateMachine : MonoBehaviour
 
     }
 
+    // 전투 후반부 에블라 패널티
     private void ApplyPostBattleEbla()
     {
         int roundCheck = m_TurnManager.RoundNumber;

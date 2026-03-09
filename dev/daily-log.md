@@ -188,3 +188,37 @@
 - `AllyAll` 분기 간소화 (`user.UnitType` 직접 사용)
 - `PositionSystem.GetUnit()` 불필요한 `int index` 변수 제거
 - `CombatEvent.cs` 파라미터명 오타 수정 (`oldstate` → `oldState`)
+
+---
+
+## Day 8 — 2026-03-06 (CombatScene 통합 테스트)
+
+### 완료 작업
+- CombatScene Hierarchy 구성 및 Inspector 연결
+- HP 슬라이더 색상/Fill Rect 수정
+- SkillSelectPanel / TargetSelectPanel 초기화 버그 수정
+- 명중률 0% 문제 → SO 에셋 accuracyMod 값 조정
+- 빈 슬롯 UI 숨김 처리 (OnBattleStarted SetActive)
+- TargetSelectPanel 버튼 가시성 분리 (SetActive vs interactable)
+- **위치 이동 기능 추가**: Move 버튼, PlayerSelectMoveTarget 상태, GetValidMoveTargets()
+- `UnitMovedEvent` 추가 → CombatHUD/TargetSelectPanel 갱신 연동
+
+### 발견/수정한 버그
+| 버그 | 원인 | 수정 |
+|------|------|------|
+| Cancel NullReferenceException | Show() 전 클릭 가능 | null 체크 + Awake SetActive(false) |
+| 명중 항상 Miss | accuracyMod 수치 부족 | SO 에셋 수치 조정 |
+| Move 후 다음 턴 오작동 | m_MoveRequested 미리셋 | HandlePlayerTurn 시작에 플래그 리셋 |
+| 이동 후 버튼 사라짐 | Hide()가 SetActive 호출 | interactable만 제어하도록 변경 |
+| BattleStartedEvent 이중 발화 | Awake + OnEnable 둘 다 구독 | OnEnable/OnDisable 제거 |
+
+### /simplify 리뷰 수정
+- `OnDestroy` public → private
+- `OnUnitMoved` 비활성 시 early return 추가
+- `RefreshNikkeSlots()` 미사용 `nikkes` 변수 제거
+
+### 현재 상태
+- Phase 1.6 진행 중 — 전투 루프/이동 기능 동작 확인, 승리/패배 전체 플로우 검증 필요
+
+### Obsidian 노트
+- `Day8 - CombatScene 통합 테스트.md` 생성

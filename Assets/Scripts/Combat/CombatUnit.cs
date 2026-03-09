@@ -17,6 +17,7 @@ public enum UnitState
 
 public class CombatUnit
 {
+    private const int DEATHS_DOOR_EBLA = 18;
     // 유닛 식별
     public CombatUnitType   UnitType { get; }
     public string           UnitName { get; }
@@ -48,6 +49,8 @@ public class CombatUnit
     public List<ActiveStatusEffect> ActiveEffects { get; }
 
     public float TurnOrderTieBreaker { get; set; }
+
+    public int CorpseTimer { get; set; }
 
     // 생성자
     public CombatUnit(NikkeData data, int slotIndex,int currentHp, int ebla,
@@ -100,6 +103,7 @@ public class CombatUnit
                 {
                     CurrentHp = 0;
                     State = UnitState.DeathsDoor;
+                    AddEbla(DEATHS_DOOR_EBLA);
                 }
             }
             else if (State == UnitState.DeathsDoor)
@@ -126,6 +130,7 @@ public class CombatUnit
                     {
                         State = UnitState.Corpse;
                         CurrentHp = EnemyData.CorpseHp;
+                        CorpseTimer = EnemyData.CorpseDecayTurns;
                     }
                 }
             }
@@ -213,5 +218,18 @@ public class CombatUnit
         }
         return result;
 
+    }
+
+    public bool IsStunned
+    {
+        get
+        {
+            for(int i=0; i< ActiveEffects.Count; ++i)
+            {
+                if (ActiveEffects[i].Data.EffectType == StatusEffectType.Stun)
+                    return true;
+            }
+            return false;
+        }
     }
 }

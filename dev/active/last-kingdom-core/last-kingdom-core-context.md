@@ -1,9 +1,9 @@
 # Last Kingdom Core - Context & Decisions
 
 ## Status
-- Phase: Phase 1.4 진행 중 (전투 시스템 핵심)
-- Progress: 17 / 65 tasks complete (26%)
-- Last Updated: 2026-03-04
+- Phase: Phase 1.6 진행 중 (CombatScene 통합 테스트)
+- Progress: 22 / 65 tasks complete (34%)
+- Last Updated: 2026-03-07
 
 ## Key Files
 
@@ -384,6 +384,37 @@ BootScene → TitleScene → TownScene ↔ DungeonScene ↔ CombatScene
 - **시점**: Phase 2에서 구현
 - **설계 방향**: 긍정/부정 특성이 정산 보상으로 랜덤 지급. NikkeData 런타임에 QuirkData[] 필드 필요
 - **Rationale**: 정산 보상 목록에 "특성 지급"이 명시됨. 리플레이 가치의 핵심 요소
+
+### 27. 후반전 에블라 유지 (2026-03-07)
+- **확정**: `ApplyPostBattleEbla()` 유지 (FreeRounds 초과 시 라운드 기반 에블라 부여)
+- **Rationale**: DD 원작에서는 장기전 시 적 난입(Reinforcement)이 페널티. 본 프로젝트는 난입 미구현 대체 메커니즘으로 라운드 기반 에블라 채택
+- **DD와 차이**: 원작은 개별 이벤트 기반 스트레스만 존재. 본 프로젝트는 추가로 전투 길이 페널티 부여
+
+### 28. DOT 틱 타이밍: 턴 시작 시 (2026-03-07)
+- **확정**: StatusEffectManager의 DOT(출혈/중독/질병) 틱은 해당 유닛의 **턴 시작 시** 처리
+- **처리 순서**: 턴 시작 → DOT 틱 → 스턴 체크 → 행동 (또는 스턴 해제)
+- **Rationale**: DD 원작과 동일. 스턴 중에도 DOT 피해를 받음. 스턴+출혈 콤보의 전술적 가치 보존
+
+### 29. Affliction: 스탯 디버프만 (확장 가능) (2026-03-07)
+- **확정**: Phase 2 EblaSystem의 Affliction은 스탯 디버프만 구현
+- **확장 가능성**: 랜덤 행동(명령 거부, 아군 공격, 강제 패스, 파티 에블라 발언)은 인터페이스/전략 패턴으로 확장점만 마련
+- **구현 방향**: Affliction 발동 시 StatBlock 디버프 적용. 행동 개입 로직은 추후 AfflictionBehavior 클래스로 분리 가능
+- **Rationale**: 1인 개발 스코프 관리. 스탯 디버프만으로도 Affliction의 위험성 전달 가능
+
+### 30. 원정 상태 관리: ExpeditionManager 신설 (2026-03-07)
+- **확정**: DontDestroyOnLoad 싱글톤 `ExpeditionManager` 신설
+- **위치**: `Assets/Scripts/Managers/ExpeditionManager.cs`
+- **책임**: 원정(출정~귀환) 동안의 파티 상태(HP/Ebla/ActiveEffects), 보급품, 던전 진행도, 전리품 보유
+- **생명주기**: TownScene에서 출정 시 생성/초기화 → 던전/전투 씬에서 유지 → 귀환 정산 후 초기화
+- **전투 연동**: CombatStateMachine.StartBattle() 시 ExpeditionManager에서 파티 상태 읽기 → 전투 종료 시 결과 상태를 ExpeditionManager에 반영
+- **Rationale**: GameManager 비대화 방지. 원정 단위로 데이터 응집. SaveSystem 자동저장 단위와 일치
+
+### 31. 인벤토리 분리: 3개 독립 시스템 (2026-03-07)
+- **확정**: 보급품 / 전리품 / 장신구를 각각 독립 시스템으로 분리
+- **SupplyInventory**: 보급품 관리 (소모, 스택). 던전 내 사용
+- **LootInventory**: 전리품 관리 (골동품/보석). 귀환 시 정산(Gold 변환)
+- **TrinketSystem**: 장신구 장착/해제, 스탯 보정 (기존 tasks.md의 별도 태스크 유지)
+- **Rationale**: 세 카테고리의 동작 규칙이 거의 겹치지 않음. DD 원작과 동일한 구조. 통합 시 분기 코드가 오히려 복잡
 
 ## Testing Notes
 - **Phase 1 테스트**: CombatScene에서 전투 루프 수동 테스트

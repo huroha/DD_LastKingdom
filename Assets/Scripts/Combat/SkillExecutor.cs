@@ -118,7 +118,7 @@ public class SkillExecutor
             }
 
             // [위치 이동] ApplyPositionMove 호출 (명중 여부 무관)
-            ApplyPositionMove(user, skill, targets[i]);
+            ApplyPositionMove(user, skill, targets[i], result[i].IsHit);
 
             // TargetResult 채우기
             // - applied/resisted List → 배열로 변환 (for문 복사)
@@ -275,11 +275,21 @@ public class SkillExecutor
     private void ApplyCritEffects(CombatUnit user, CombatUnit target,
                                   List<CombatUnit> allNikkes)
     {
-        target.AddEbla(CRIT_EBLA_TO_ENEMY);
-        for(int i=0; i<allNikkes.Count; ++i)
+
+        if(user.UnitType == CombatUnitType.Nikke)
         {
-            allNikkes[i].AddEbla(CRIT_EBLA_PARTY_HEAL);
+            target.AddEbla(CRIT_EBLA_TO_ENEMY);
+            for(int i =0; i< allNikkes.Count; ++i)
+                allNikkes[i].AddEbla(CRIT_EBLA_PARTY_HEAL);
         }
+        else
+        {
+            target.AddEbla(CRIT_EBLA_TO_ENEMY);
+            for (int i = 0; i < allNikkes.Count; ++i)
+                allNikkes[i].AddEbla(5);
+        }
+
+
         if(user.NikkeData !=null)
         {
             for(int i=0; i< user.NikkeData.OnCritSelfEffects.Count; ++i)
@@ -297,12 +307,17 @@ public class SkillExecutor
     }
 
     // skill.MoveUserAmount → user 이동, skill.MoveTargetAmount → target 이동
-    private void ApplyPositionMove(CombatUnit user, SkillData skill,CombatUnit target)
+    private void ApplyPositionMove(CombatUnit user, SkillData skill,CombatUnit target, bool isHit)
     {
         if(skill.MoveUserAmount != 0)
             m_PositionSystem.Move(user, skill.MoveUserAmount);
-        if (skill.MoveTargetAmount != 0)
-            m_PositionSystem.Move(target, skill.MoveTargetAmount);
+
+        if(skill.MoveTargetAmount != 0 && isHit)
+        {
+            float roll = Random.Range(0f, 100f);
+            if(roll >= target.CurrentStats.resistance.move)
+                m_PositionSystem.Move(target, skill.MoveTargetAmount);
+        }
     }
 
 }

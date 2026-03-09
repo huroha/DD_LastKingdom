@@ -41,4 +41,5 @@ MonoBehaviour:
     minGems: 1
     maxGems: 2
   m_CorpseHp: 10
-  m_Sprite: {fileID: 0}
+  m_CorpseDecayTurns: 2
+  m_Sprite: {fileID: -7248700440356242262, guid: 5760e2a5301e76e46a1c80828b8a083b, type: 3}

@@ -42,10 +42,24 @@ public class PositionSystem
         CombatUnit[] slots = GetTeamSlots(team);
         for (int i=0; i< slots.Length; ++i)
         {
-            if (slots[i] != null && slots[i].State != UnitState.Dead)
+            if (slots[i] != null && slots[i].IsAlive)
                 units.Add(slots[i]);
         }
         return units;
+    }
+
+    public List<CombatUnit> GetCorpses(CombatUnitType team)
+    {
+        List<CombatUnit> corpses = new List<CombatUnit>();
+        CombatUnit[] slots = GetTeamSlots(team);
+        for (int i = 0; i < slots.Length; ++i)
+        {
+            if (slots[i] != null && slots[i].State == UnitState.Corpse)
+            {
+                corpses.Add(slots[i]);
+            }
+        }
+        return corpses;
     }
 
     // 스킬 판정
@@ -193,5 +207,8 @@ public class PositionSystem
         else
             return targetEnemy ? m_NikkeSlots : m_EnemySlots;
     }
+
+
+
 
 }

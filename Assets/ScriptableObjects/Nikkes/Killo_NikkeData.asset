@@ -64,7 +64,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  m_PortraitSprite: {fileID: 0}
+  m_PortraitSprite: {fileID: 4622978578163522592, guid: 113dc69549bcd254c988cccb648b18bc, type: 3}
   m_VirtuePortraitSprite: {fileID: 0}
   m_OnCritSelfEffects: []
   m_OnReceiveCritSelfEffects: []

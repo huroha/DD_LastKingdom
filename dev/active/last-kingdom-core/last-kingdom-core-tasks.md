@@ -189,6 +189,14 @@
   - Size: L
   - Dependencies: StatusEffectData, CombatUnit
 
+### 2.1b 원정 관리 (Decision #30)
+- [ ] ExpeditionManager 구현
+  - File: `Assets/Scripts/Managers/ExpeditionManager.cs`
+  - Details: DontDestroyOnLoad 싱글톤. 원정(출정~귀환) 동안 파티 상태(HP/Ebla/ActiveEffects), 보급품, 던전 진행도, 전리품 보유. TownScene 출정 시 초기화, 귀환 정산 후 초기화
+  - Acceptance: 던전→전투 씬 전환 시 파티 상태 유지, 전투 종료 후 결과 반영
+  - Size: L
+  - Dependencies: Singleton, CombatUnit, SupplyInventory, LootInventory
+
 ### 2.2 던전 시스템
 - [ ] IDungeonMapProvider 인터페이스 + ManualDungeonMapProvider 구현
   - File: `Assets/Scripts/Dungeon/IDungeonMapProvider.cs`, `Assets/Scripts/Dungeon/ManualDungeonMapProvider.cs`
@@ -266,13 +274,20 @@
   - Size: M
   - Dependencies: InventorySystem
 
-### 2.4 인벤토리 & 장비
-- [ ] InventorySystem 구현
-  - File: `Assets/Scripts/Systems/InventorySystem.cs`
-  - Details: 보급품 인벤토리 (던전 탐험용) + 전리품 인벤토리 (귀환 시 정산), 슬롯 제한
+### 2.4 인벤토리 & 장비 (Decision #31: 3개 독립 시스템)
+- [ ] SupplyInventory 구현
+  - File: `Assets/Scripts/Systems/SupplyInventory.cs`
+  - Details: 보급품 관리 (횃불/음식/삽/열쇠). 스택 가능, 던전 내 소모, 슬롯 제한
   - Acceptance: 아이템 추가/제거/사용, 슬롯 초과 시 경고
-  - Size: L
-  - Dependencies: SupplyItemData SO
+  - Size: M
+  - Dependencies: SupplyItemData SO, ExpeditionManager
+
+- [ ] LootInventory 구현
+  - File: `Assets/Scripts/Systems/LootInventory.cs`
+  - Details: 전리품 관리 (골동품/보석). 던전 내 사용 불가, 귀환 시 Gold 변환 정산
+  - Acceptance: 전리품 획득 → 정산 시 Gold 변환
+  - Size: M
+  - Dependencies: ExpeditionManager
 
 - [ ] TrinketSystem 구현
   - File: `Assets/Scripts/Systems/TrinketSystem.cs`
