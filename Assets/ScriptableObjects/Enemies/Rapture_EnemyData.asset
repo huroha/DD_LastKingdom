@@ -25,6 +25,7 @@ MonoBehaviour:
     dodge: 5
     deathBlowResist: 0
     speed: 6
+    moveRange: 0
     resistance:
       stun: 0
       move: 0
@@ -42,4 +43,5 @@ MonoBehaviour:
     maxGems: 1
   m_CorpseHp: 10
   m_CorpseDecayTurns: 2
-  m_Sprite: {fileID: -7827445732959796025, guid: 0baa6bd683fc4e041a7220ae4b28614d, type: 3}
+  m_Sprite: {fileID: -7382081116707789574, guid: 36dce3df22a4e2c4ca85e503dc0195d9, type: 3}
+  m_CorpseSprite: {fileID: 3001937120653127659, guid: 1071487d4fbc5dc41ae5759bd09631bd, type: 3}

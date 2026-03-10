@@ -32,6 +32,9 @@ public struct StatBlock
     [Header("속도")]
     public int speed;
 
+    [Header("이동")]
+    public int moveRange;                       // 이동 가능 칸 수 기본 1
+
     [Header("저항력")]
     public ResistanceBlock resistance;
 

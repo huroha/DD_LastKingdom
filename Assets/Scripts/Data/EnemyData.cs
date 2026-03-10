@@ -48,7 +48,7 @@ public class EnemyData : ScriptableObject
     
     [Header("Visuals")]
     [SerializeField] private Sprite m_Sprite;
-
+    [SerializeField] private Sprite m_CorpseSprite;
     public string EnemyName => m_EnemyName;
     public EnemyType EnemyType => m_EnemyType;
     public ElementType Element => m_Element;
@@ -58,4 +58,5 @@ public class EnemyData : ScriptableObject
     public int CorpseHp => m_CorpseHp;
     public int CorpseDecayTurns => m_CorpseDecayTurns;
     public Sprite Sprite => m_Sprite;
+    public Sprite CorpseSprite => m_CorpseSprite;
 }

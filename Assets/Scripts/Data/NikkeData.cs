@@ -52,7 +52,9 @@ public class NikkeData : ScriptableObject
     [SerializeField] private SkillData[] m_Skills = new SkillData[7];
 
     [Header("Visuals")]
-    [SerializeField] private Sprite m_PortraitSprite;
+    [SerializeField] private Sprite m_PortraitSprite;           // 초상화
+    [SerializeField] private Sprite m_CombatIdleSprite;           // Idle
+
     [SerializeField] private Sprite m_VirtuePortraitSprite;     // 각성 영웅만 사용
 
     [Header("Passive : Critical")]
@@ -70,6 +72,7 @@ public class NikkeData : ScriptableObject
     public StatBlock StatGrowthPerLevel     => m_StatGrowthPerLevel;
     public IReadOnlyList<SkillData> Skills  => m_Skills;
     public Sprite PortraitSprite            => m_PortraitSprite;   
+    public Sprite CombatIdleSprite            => m_CombatIdleSprite;   
     public Sprite VirtuePortraitSprite      => m_VirtuePortraitSprite;
     public Manufacturer Manufacturer        => m_Manufacturer;
     public SquadData Squad                  => m_Squad;

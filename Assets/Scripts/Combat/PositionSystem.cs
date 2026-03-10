@@ -81,6 +81,15 @@ public class PositionSystem
             return result;
         }
 
+        // All 타입 : TargetPosition 무시하고 해당 진영 전체 반환
+        if(skill.TargetType == TargetType.EnemyAll)
+        {
+            CombatUnitType enemyType = (user.UnitType == CombatUnitType.Nikke) ? CombatUnitType.Enemy : CombatUnitType.Nikke;
+            return GetAllUnits(enemyType);
+        }
+        if (skill.TargetType == TargetType.AllyAll)
+            return GetAllUnits(user.UnitType);
+
         CombatUnit[] targetSlots = GetTargetSlots(user, skill.TargetType);
 
         for(int i=0; i< targetSlots.Length; ++i)

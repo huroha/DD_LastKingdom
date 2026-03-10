@@ -222,3 +222,51 @@
 
 ### Obsidian 노트
 - `Day8 - CombatScene 통합 테스트.md` 생성
+
+---
+
+## Day 9 — 2026-03-09 (Phase1 버그 수정 + CombatFieldView)
+
+### 완료 작업
+- **카메라/씬 설정**: Orthographic Size 5.4 (PPU 100 기준 공식), 배경 이미지 정합
+- **UI 설정**: Canvas 레이어 순서(Hierarchy), HP Bar 9-Slice 적용
+- **phase1-review-fixes.md FIX-01~09 전부 수정 완료**
+- **CombatFieldView.cs 구현**: World Space 유닛 뷰 동적 생성 + Lerp 이동 + 사망 처리
+
+### phase1-review-fixes 수정 내역
+| 항목 | 파일 | 내용 |
+|------|------|------|
+| FIX-01 | PositionSystem | GetAllUnits 필터 IsAlive로 변경 (Corpse 승리 판정 제외) |
+| FIX-02 | CombatUnit, CombatStateMachine | IsStunned 프로퍼티 + 스턴 턴 스킵 + RemoveStun() |
+| FIX-03 | SkillExecutor | target 이동 전 resistance.move 저항 판정 추가 |
+| FIX-04 | SkillExecutor | target 이동을 IsHit == true일 때만 적용 |
+| FIX-05 | CombatUnit | DeathsDoor 전환 시 AddEbla(18) |
+| FIX-06 | SkillExecutor | ApplyCritEffects user.UnitType 분기 (적 크리 시 파티 에블라 증가) |
+| FIX-07 | CombatUnit, EnemyData, PositionSystem, CombatStateMachine | 시체 자동 소멸 (CorpseTimer, CorpseDecayTurns, GetCorpses, TickCorpseTimers) |
+| FIX-08 | CombatStateMachine | SurpriseType enum + StartBattle 파라미터 추가 (Phase 2 분기점) |
+| FIX-09 | CombatStateMachine | 패스 시 AddEbla(PASS_EBLA_PENALTY) |
+
+### CombatFieldView 구현
+- World Space SpriteRenderer 기반 (Canvas UI 아님)
+- `OnBattleStarted`: 유닛 GameObject 동적 생성, 슬롯 위치 배치
+- `OnUnitMoved`: MoveAllToCurrentSlots → LerpToPosition 코루틴
+- `OnUnitDied`: 코루틴 중단 + Destroy + 딕셔너리 제거
+- 슬롯 앵커: CombatField 하위 빈 Transform (NikkeSlots/EnemySlots)
+
+### /simplify 리뷰 수정 (10개)
+- null 체크 순서 역전 버그 (StateMachine)
+- ApplyCritEffects 에블라 이중 적용 + 잘못된 상수 버그
+- LerpToPosition 최종 위치 미확정
+- OnUnitDied 코루틴 미정지 후 Destroy
+- OnBattleStarted 이전 뷰 오브젝트 누수
+- m_EnemySlots 네이밍 오타
+- PASS_EBLA_PENALTY 오타
+- gameObject 변수명 충돌 → go
+- 매직 넘버 0.3f → m_UnitScale SerializeField
+
+### 현재 상태
+- 아군 이동 연출 동작 확인 (Lerp 슬라이딩)
+- 내일 전체 전투 플로우 추가 테스트 예정
+
+### Obsidian 노트
+- `Day9 - Phase1 버그수정 & CombatFieldView.md` 생성

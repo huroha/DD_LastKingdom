@@ -22,12 +22,13 @@ MonoBehaviour:
     maxHp: 280
     minDamage: 35
     maxDamage: 55
-    accuracyMod: 80
+    accuracyMod: 100
     critChance: 5
     defense: 25
     dodge: 10
     deathBlowResist: 67
     speed: 5
+    moveRange: 2
     resistance:
       stun: 40
       move: 40
@@ -48,6 +49,7 @@ MonoBehaviour:
     dodge: 0
     deathBlowResist: 0
     speed: 0
+    moveRange: 0
     resistance:
       stun: 0
       move: 0
@@ -64,7 +66,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  m_PortraitSprite: {fileID: -3371497870711704084, guid: 75423a9606906084da699dd74e450735, type: 3}
+  m_PortraitSprite: {fileID: 1032635755590463704, guid: 08cba6c78a218644fb5b9da39711e2f3, type: 3}
+  m_CombatIdleSprite: {fileID: -3371497870711704084, guid: 75423a9606906084da699dd74e450735, type: 3}
   m_VirtuePortraitSprite: {fileID: 0}
   m_OnCritSelfEffects: []
   m_OnReceiveCritSelfEffects: []

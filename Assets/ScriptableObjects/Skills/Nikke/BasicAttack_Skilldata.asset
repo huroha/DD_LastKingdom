@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   m_SkillName: "\uAE30\uBCF8\uACF5\uACA9"
   m_Description: "test \uC6A9 \uAE30\uBCF8\uACF5"
-  m_SkillIcon: {fileID: 0}
+  m_SkillIcon: {fileID: -1664365120770344498, guid: 6d6e0318c54188546a5543fc5903d018, type: 3}
   m_SkillType: 0
   m_RequiredState: 0
   m_UsablePositions: 01010101

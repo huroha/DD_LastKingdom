@@ -1,14 +1,27 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections.Generic;
+
 
 public class CombatHUD : MonoBehaviour
 {
     [Header("Nikke Slots")]
     [SerializeField] private Slider[]           m_NikkeHpBars;    // 4개
-    [SerializeField] private Slider[]           m_NikkeEblaBars;    // 4개
+
+    [System.Serializable]
+    private struct EblaBarCells
+    {
+        public GameObject Root;
+        public Image[] Cells;       // 10개
+    }
+    [SerializeField] private EblaBarCells[]     m_NikkeEblaBars;
     [SerializeField] private TextMeshProUGUI[]  m_NikkeNames;    // 4개
+
+
+    [SerializeField] private Sprite m_EblaEmptySprite;
+    [SerializeField] private Sprite m_EblaPhase1Sprite;
+    [SerializeField] private Sprite m_EblaPhase2Sprite;
+
 
     [Header("Enemy Slots")]
     [SerializeField] private Slider[]           m_EnemyHpBars;  // 4개
@@ -34,6 +47,7 @@ public class CombatHUD : MonoBehaviour
         EventBus.Subscribe<SkillExecutedEvent>(OnSkillExecuted);
         EventBus.Subscribe<UnitDiedEvent>(OnUnitDied);
         EventBus.Subscribe<UnitMovedEvent>(OnUnitMoved);
+        EventBus.Subscribe<TurnEndedEvent>(OnTurnEnded);
 
     }
     private void OnDisable()
@@ -42,6 +56,7 @@ public class CombatHUD : MonoBehaviour
         EventBus.Unsubscribe<SkillExecutedEvent>(OnSkillExecuted);
         EventBus.Unsubscribe<UnitDiedEvent>(OnUnitDied);
         EventBus.Unsubscribe<UnitMovedEvent>(OnUnitMoved);
+        EventBus.Unsubscribe<TurnEndedEvent>(OnTurnEnded);
     }
     public void Initialize(CombatStateMachine stateMachine)
     {
@@ -56,8 +71,8 @@ public class CombatHUD : MonoBehaviour
         for (int i=0; i<m_NikkeHpBars.Length; ++i)
         {
             m_NikkeHpBars[i].gameObject.SetActive(false);
-            m_NikkeEblaBars[i].gameObject.SetActive(false);
             m_NikkeNames[i].gameObject.SetActive(false);
+            m_NikkeEblaBars[i].Root.SetActive(false);
         }
         for (int i=0; i<m_EnemyHpBars.Length; ++i)
         {
@@ -69,8 +84,8 @@ public class CombatHUD : MonoBehaviour
         for (int i = 0; i < e.Nikkes.Count; ++i)
         {
             m_NikkeHpBars[i].gameObject.SetActive(true);
-            m_NikkeEblaBars[i].gameObject.SetActive(true);
             m_NikkeNames[i].gameObject.SetActive(true);
+            m_NikkeEblaBars[i].Root.SetActive(true);
             m_NikkeNames[i].text = e.Nikkes[i].UnitName;
             RefreshHpBar(e.Nikkes[i]);
         }
@@ -113,10 +128,15 @@ public class CombatHUD : MonoBehaviour
         if (unit.UnitType == CombatUnitType.Nikke)
         {
             m_NikkeHpBars[index].value = (float)unit.CurrentHp / unit.MaxHp;
-            m_NikkeEblaBars[index].value = unit.Ebla / 200f;
+            UpdateEblaBar(index, unit.Ebla);
         }
         else
-            m_EnemyHpBars[index].value = (float)unit.CurrentHp / unit.MaxHp;
+        {
+            if(unit.State == UnitState.Corpse)
+                m_EnemyHpBars[index].value = (float)unit.CurrentHp / Mathf.Max(unit.EnemyData.CorpseHp, 1);
+            else
+                m_EnemyHpBars[index].value = (float)unit.CurrentHp / unit.MaxHp;
+        }
     }
     private void RefreshTurnOrder()
     {
@@ -144,13 +164,44 @@ public class CombatHUD : MonoBehaviour
             {
                 m_NikkeNames[i].text = "";
                 m_NikkeHpBars[i].value = 0;
-                m_NikkeEblaBars[i].value = 0;
+                m_NikkeEblaBars[i].Root.SetActive(false);
+                UpdateEblaBar(i, 0);
             }
             else
             {
                 m_NikkeNames[i].text = unit.UnitName;
                 RefreshHpBar(unit);
             }
+        }
+    }
+
+    private void UpdateEblaBar(int index, int ebla)
+    {
+        Image[] cells = m_NikkeEblaBars[index].Cells;
+        int phase1Count = Mathf.CeilToInt(Mathf.Min(ebla, 100) / 10f);
+        int phase2Count = ebla > 100 ? Mathf.CeilToInt((ebla - 100) / 10f) : 0;
+
+        for (int i=0; i< cells.Length; ++i)
+        {
+            if (i < phase2Count)
+                cells[i].sprite = m_EblaPhase2Sprite;
+            else if (i < phase1Count)
+                cells[i].sprite = m_EblaPhase1Sprite;
+            else
+                cells[i].sprite = m_EblaEmptySprite;
+        }
+    }
+
+    private void OnTurnEnded(TurnEndedEvent e)
+    {
+        for(int i=0; i< m_NikkeHpBars.Length; ++i)
+        {
+            // 활성 니케 에블라 갱신
+            if (!m_NikkeHpBars[i].gameObject.activeSelf)
+                continue;
+            CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Nikke, i);
+            if (unit != null)
+                UpdateEblaBar(i, unit.Ebla);
         }
     }
 

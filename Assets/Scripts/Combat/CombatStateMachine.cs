@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 
 
 public enum SurpriseType
@@ -231,12 +230,7 @@ public class CombatStateMachine : MonoBehaviour
                 continue;
             }
 
-            // 타겟 선택 불필요한 스킬
-            if (!NeedsTargetSelection(m_SelectedSkill))
-            {
-                turnHandled = true;
-                continue;
-            }
+            
 
             // 타겟 선택
             SetState(CombatState.PlayerSelectTarget);
@@ -311,14 +305,6 @@ public class CombatStateMachine : MonoBehaviour
     }
 
 
-    // 타겟이 필요한가
-    private bool NeedsTargetSelection(SkillData skill)
-    {
-        if (skill.TargetType == TargetType.EnemySingle || skill.TargetType == TargetType.AllySingle)
-            return true;
-        return false;
-    }
-
     // 죽은 유닛 이벤트 발생
     private void ProcessDeadUnits(SkillResult result)
     {
@@ -329,11 +315,13 @@ public class CombatStateMachine : MonoBehaviour
             CombatUnit target = result.TargetResults[i].Target;
             if(target != null)
             {
-                if(target.State == UnitState.Dead)
+                if (target.State == UnitState.Dead)
                 {
                     m_PositionSystem.RemoveUnit(target);
                     EventBus.Publish(new UnitDiedEvent(target));
                 }
+                else if (target.State == UnitState.Corpse)
+                    EventBus.Publish(new UnitDiedEvent(target));
             }
         }
     }
@@ -415,14 +403,18 @@ public class CombatStateMachine : MonoBehaviour
     {
         List<CombatUnit> targets = new List<CombatUnit>();
         int currentSlot = m_ActiveUnit.SlotIndex;
+        int range = m_ActiveUnit.CurrentStats.moveRange;
 
-        CombatUnit forward = m_PositionSystem.GetUnit(CombatUnitType.Nikke, currentSlot - 1);
-        CombatUnit backward = m_PositionSystem.GetUnit(CombatUnitType.Nikke, currentSlot + 1);
+        for(int i=1; i<=range; ++i)
+        {
+            CombatUnit forward = m_PositionSystem.GetUnit(CombatUnitType.Nikke, currentSlot - i);
+            CombatUnit backward = m_PositionSystem.GetUnit(CombatUnitType.Nikke, currentSlot + i);
 
-        if(forward != null)
-            targets.Add(forward);
-        if(backward != null)
-            targets.Add(backward);
+            if (forward != null)
+                targets.Add(forward);
+            if (backward != null)
+                targets.Add(backward);
+        }
         return targets;
 
     }

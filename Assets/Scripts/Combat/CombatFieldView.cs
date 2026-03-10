@@ -14,6 +14,10 @@ public class CombatFieldView : MonoBehaviour
     private Dictionary<CombatUnit, SpriteRenderer> m_UnitViews;
     // 중복 코루틴 방지용
     private Dictionary<CombatUnit, Coroutine> m_MoveCoroutines;
+    // 시체 관리용
+    private Dictionary<CombatUnit, SpriteRenderer> m_CorpseViews;
+
+
 
     private void OnEnable()
     {
@@ -40,6 +44,7 @@ public class CombatFieldView : MonoBehaviour
 
         m_UnitViews = new Dictionary<CombatUnit, SpriteRenderer>();
         m_MoveCoroutines = new Dictionary<CombatUnit, Coroutine>();
+        m_CorpseViews = new Dictionary<CombatUnit, SpriteRenderer>();
 
         for (int i=0; i<e.Nikkes.Count; ++i)
         {
@@ -65,11 +70,28 @@ public class CombatFieldView : MonoBehaviour
     {
         if(m_MoveCoroutines.ContainsKey(e.Unit))
             StopCoroutine(m_MoveCoroutines[e.Unit]);
+        m_MoveCoroutines.Remove(e.Unit);
 
-        Destroy(m_UnitViews[e.Unit].gameObject);
+        // Corpse -> Dead : 시체 제거
+        if(m_CorpseViews.ContainsKey(e.Unit))
+        {
+            Destroy(m_CorpseViews[e.Unit].gameObject);
+            m_CorpseViews.Remove(e.Unit);
+            return;
+        }
+
+
+        SpriteRenderer view = m_UnitViews[e.Unit];
         m_UnitViews.Remove(e.Unit);
 
-        m_MoveCoroutines.Remove(e.Unit);
+        // 적이고 시체 스프라이트가 있으면 교체, 없으면 제거?
+        if(e.Unit.UnitType == CombatUnitType.Enemy && e.Unit.EnemyData.CorpseSprite != null)
+        {
+            view.sprite = e.Unit.EnemyData.CorpseSprite;
+            m_CorpseViews[e.Unit] = view;
+        }
+        else
+            Destroy(view.gameObject);
     }
 
     private SpriteRenderer CreateUnitView(CombatUnit unit, Vector3 pos)
@@ -79,11 +101,15 @@ public class CombatFieldView : MonoBehaviour
 
         if(unit.UnitType == CombatUnitType.Nikke)
         {
-            sr.sprite = unit.NikkeData.PortraitSprite;
+            sr.sprite = unit.NikkeData.CombatIdleSprite;
         }
         else if(unit.UnitType == CombatUnitType.Enemy)
         {
             sr.sprite = unit.EnemyData.Sprite;
+            go.AddComponent<BoxCollider2D>();
+            UnitClickHandler handler = go.AddComponent<UnitClickHandler>();
+            CombatUnit captured = unit;
+            handler.Initialize(() => LogEnemyInfo(captured));
         }
         go.transform.position = pos;
         go.transform.localScale = Vector3.one * m_UnitScale;
@@ -133,6 +159,14 @@ public class CombatFieldView : MonoBehaviour
         view.transform.position = target;
         m_MoveCoroutines.Remove(unit);
 
+    }
+
+    private void LogEnemyInfo(CombatUnit unit)
+    {
+        StatBlock stats = unit.CurrentStats;
+        Debug.Log($"[Enemy] {unit.UnitName} | HP:{unit.CurrentHp}/{unit.MaxHp} | " +
+                  $"\nDMG:{stats.minDamage}-{stats.maxDamage} | ACC:{stats.accuracyMod} | DODGE:{stats.dodge}" +
+                  $"\nDEF:{stats.defense:F0}% | SPD:{stats.speed} | State:{unit.State}");
     }
 
 }

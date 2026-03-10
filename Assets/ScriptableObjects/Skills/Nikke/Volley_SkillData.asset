@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   m_SkillName: "\uC5F0\uC0AC"
   m_Description: "\uD14C\uC2A4\uD2B8\uC6A9 \uC5F0\uC0AC"
-  m_SkillIcon: {fileID: 0}
+  m_SkillIcon: {fileID: -3747880761942071452, guid: 2ccf2f137e2fc544eb99c5c381640a5a, type: 3}
   m_SkillType: 1
   m_RequiredState: 0
   m_UsablePositions: 00000101
@@ -23,4 +23,12 @@ MonoBehaviour:
   m_DamageMultiplier: 0.7
   m_AccuracyMod: 0
   m_CritMod: 0
+  m_HealAmount: 0
+  m_EblaDamage: 0
+  m_EblaHealAmount: 0
+  m_MoveUserAmount: 0
+  m_MoveTargetAmount: 0
+  m_IsGuard: 0
+  m_IsMark: 0
+  m_MarkDamageBonus: 0
   m_OnHitEffects: []
