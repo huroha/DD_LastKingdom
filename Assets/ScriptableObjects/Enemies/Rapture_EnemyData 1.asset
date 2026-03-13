@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3451d3a4df902f4492fbf42b744e5ec, type: 3}
+  m_Name: Rapture_EnemyData 1
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  m_EnemyName: "Test\uB7A9\uCCD02"
+  m_EnemyType: 0
+  m_Element: 0
+  m_BaseStats:
+    maxHp: 150
+    minDamage: 35
+    maxDamage: 55
+    accuracyMod: 70
+    critChance: 0
+    defense: 5
+    dodge: 5
+    deathBlowResist: 0
+    speed: 6
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+  m_Skills:
+  - {fileID: 11400000, guid: aa0bba7d332e50e46b083318c321aeb2, type: 2}
+  - {fileID: 11400000, guid: 32784ae15fe6233499914810f0b889db, type: 2}
+  m_DropTable:
+    minGold: 20
+    maxGold: 50
+    minGems: 0
+    maxGems: 1
+  m_CorpseHp: 100
+  m_CorpseDecayTurns: 3
+  m_Sprite: {fileID: -7382081116707789574, guid: 36dce3df22a4e2c4ca85e503dc0195d9, type: 3}
+  m_CorpseSprite: {fileID: 3001937120653127659, guid: 1071487d4fbc5dc41ae5759bd09631bd, type: 3}

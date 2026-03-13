@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cead30f8b213ad443a5387d8789ed940, type: 3}
+  m_Name: Crown_NikkeData2
+  m_EditorClassIdentifier: Assembly-CSharp::NikkeData
+  m_NikkeName: Crown2
+  m_NikkeClass: 2
+  m_CanVirtue: 1
+  m_Manufacturer: 0
+  m_Element: 3
+  m_Squad: {fileID: 11400000, guid: b63fa638ddcdedb4086548dbba25858f, type: 2}
+  m_BaseStats:
+    maxHp: 280
+    minDamage: 35
+    maxDamage: 55
+    accuracyMod: 100
+    critChance: 0
+    defense: 25
+    dodge: 10
+    deathBlowResist: 67
+    speed: 5
+    moveRange: 2
+    resistance:
+      stun: 40
+      move: 40
+      poison: 40
+      disease: 40
+      bleed: 40
+      debuff: 40
+      trap: 40
+  m_MaxLevel: 6
+  m_ExpThresholds: 00000000640000002c01000058020000e8030000dc050000
+  m_StatGrowthPerLevel:
+    maxHp: 18
+    minDamage: 0
+    maxDamage: 0
+    accuracyMod: 0
+    critChance: 0
+    defense: 1
+    dodge: 0
+    deathBlowResist: 0
+    speed: 0
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+  m_Skills:
+  - {fileID: 11400000, guid: 6cb3785aff0211040872254893e154e3, type: 2}
+  - {fileID: 11400000, guid: bfe0b70f675e7ae43b35727974556082, type: 2}
+  - {fileID: 11400000, guid: 1a22aa7c6e39b9d4292f8c28f479c54c, type: 2}
+  - {fileID: 11400000, guid: 169f057941835e24cbe8e2c22ff53acd, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  m_PortraitSprite: {fileID: 1032635755590463704, guid: 08cba6c78a218644fb5b9da39711e2f3, type: 3}
+  m_CombatIdleSprite: {fileID: -3371497870711704084, guid: 75423a9606906084da699dd74e450735, type: 3}
+  m_VirtuePortraitSprite: {fileID: 0}
+  m_OnCritSelfEffects: []
+  m_OnReceiveCritSelfEffects: []

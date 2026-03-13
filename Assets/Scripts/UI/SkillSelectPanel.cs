@@ -55,6 +55,9 @@ public class SkillSelectPanel : MonoBehaviour
 
     private void RefreshButtons()
     {
+      
+
+
         for (int i = 0; i < m_SkillButtons.Length; ++i)
         {
             SkillData skill = (i < m_CurrentUnit.Skills.Count) ? m_CurrentUnit.Skills[i] : null;

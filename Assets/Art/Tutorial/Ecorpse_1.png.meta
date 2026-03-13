@@ -116,10 +116,10 @@ TextureImporter:
       name: Ecorpse_1_0
       rect:
         serializedVersion: 2
-        x: 6
+        x: 0
         y: 0
         width: 1018
-        height: 702
+        height: 1024
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

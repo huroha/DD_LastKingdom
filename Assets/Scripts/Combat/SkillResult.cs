@@ -10,6 +10,7 @@ public struct SkillResult
 public struct TargetResult
 {
     public CombatUnit Target;
+    public UnitState PreviousState;
     public bool IsHit;
     public bool IsCrit;
     public int DamageDealt;

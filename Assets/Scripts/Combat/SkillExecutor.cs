@@ -93,6 +93,7 @@ public class SkillExecutor
                 // 아니면: target.TakeDamage(damage)
                 else
                 {
+                    result[i].PreviousState = targets[i].State;
                     targets[i].TakeDamage(damage);
                     result[i].DamageDealt = damage;
                 }
@@ -171,18 +172,21 @@ public class SkillExecutor
     // 명중 판정: roll < (user.CurrentStats.accuracyMod + skill.AccuracyMod) - target.CurrentStats.dodge
     private bool RollHit(CombatUnit user, CombatUnit target, SkillData skill) 
     {
-        float hitChance = (user.CurrentStats.accuracyMod + skill.AccuracyMod) - target.CurrentStats.dodge;
+
+        float dodge = (target.State == UnitState.Corpse) ? 0f : target.CurrentStats.dodge;
+        float hitChance = (user.CurrentStats.accuracyMod + skill.AccuracyMod) - dodge;
         float roll = Random.Range(0f, 100f);
-        Debug.Log($"[HitRoll] ACC:{user.CurrentStats.accuracyMod} + SkillMod:{skill.AccuracyMod} -DODGE:{target.CurrentStats.dodge} = {hitChance} | Roll:{roll:F1}");
+        Debug.Log($"[HitRoll] ACC:{user.CurrentStats.accuracyMod} + SkillMod:{skill.AccuracyMod} -DODGE:{dodge} = {hitChance} | Roll:{roll:F1}");
         return roll < hitChance;
     }
 
     // 데미지 계산: BaseDamage → RawDamage → FinalDamage (defense % 감소)
     private int CalcDamage(CombatUnit user, CombatUnit target, SkillData skill)
     {
+        float defence = (target.State == UnitState.Corpse) ? 0f : target.CurrentStats.defense;
         int BaseDamage = Random.Range(user.CurrentStats.minDamage, user.CurrentStats.maxDamage + 1);
         int RawDamage = (int)(BaseDamage * skill.DamageMultiplier);
-        int FinalDamage = (int)(RawDamage * (1f - target.CurrentStats.defense / 100f));
+        int FinalDamage = (int)(RawDamage * (1f - defence / 100f));
 
         FinalDamage = Mathf.Max(FinalDamage, 0);
         Debug.Log($"[Damage] Base:{BaseDamage} × Multi:{skill.DamageMultiplier} = Raw:{RawDamage} → Final:{FinalDamage}(DEF:{ target.CurrentStats.defense}%)");
@@ -278,15 +282,19 @@ public class SkillExecutor
 
         if(user.UnitType == CombatUnitType.Nikke)
         {
-            target.AddEbla(CRIT_EBLA_TO_ENEMY);
+            if(target.UnitType == CombatUnitType.Enemy)
+                target.AddEbla(CRIT_EBLA_TO_ENEMY);
             for(int i =0; i< allNikkes.Count; ++i)
                 allNikkes[i].AddEbla(CRIT_EBLA_PARTY_HEAL);
         }
         else
         {
-            target.AddEbla(CRIT_EBLA_TO_ENEMY);
-            for (int i = 0; i < allNikkes.Count; ++i)
-                allNikkes[i].AddEbla(5);
+            if (target.UnitType == CombatUnitType.Nikke)
+            {
+                target.AddEbla(CRIT_EBLA_TO_ENEMY);
+                for (int i = 0; i < allNikkes.Count; ++i)
+                    allNikkes[i].AddEbla(5);
+            }
         }
 
 
@@ -310,13 +318,20 @@ public class SkillExecutor
     private void ApplyPositionMove(CombatUnit user, SkillData skill,CombatUnit target, bool isHit)
     {
         if(skill.MoveUserAmount != 0)
-            m_PositionSystem.Move(user, skill.MoveUserAmount);
-
+        {
+            if (m_PositionSystem.Move(user, skill.MoveUserAmount))
+                EventBus.Publish(new UnitMovedEvent(user, user));
+        }
         if(skill.MoveTargetAmount != 0 && isHit)
         {
+            if (target.State == UnitState.Corpse || target.State == UnitState.Dead)
+                return;
             float roll = Random.Range(0f, 100f);
             if(roll >= target.CurrentStats.resistance.move)
-                m_PositionSystem.Move(target, skill.MoveTargetAmount);
+            {
+                if (m_PositionSystem.Move(target, skill.MoveTargetAmount))
+                    EventBus.Publish(new UnitMovedEvent(target, target));
+            }
         }
     }
 

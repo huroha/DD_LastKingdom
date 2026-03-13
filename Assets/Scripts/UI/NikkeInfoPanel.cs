@@ -3,9 +3,13 @@ using UnityEngine.UI;
 using TMPro;
 
 
+
+
 public class NikkeInfoPanel : MonoBehaviour
 {
     private CombatUnit m_CurrentUnit;
+    [Header("References")]
+    [SerializeField] private CombatStateMachine m_CombatStateMachine;
 
     [Header("Portrait & Identity")]
     [SerializeField] private Image m_Portrait;
@@ -39,15 +43,20 @@ public class NikkeInfoPanel : MonoBehaviour
         //Portrait & Identity
         m_Portrait.sprite = data.PortraitSprite;
         m_NameText.text = data.NikkeName;
-        m_ClassText.text = data.NikkeClass.ToString();
+        m_ClassText.text = GetManufacturerDisplayName(data.Manufacturer) +"  "+ GetClassDisplayName(data.NikkeClass);
 
         // Skill Icon
         for (int i=0; i< m_SkillIcons.Length; ++i)
         {
+
             bool hasSkill = i < unit.Skills.Count && unit.Skills[i] != null;
             m_SkillIcons[i].gameObject.SetActive(hasSkill);
             if (hasSkill)
+            {
                 m_SkillIcons[i].sprite = unit.Skills[i].SkillIcon;
+                bool isValid =(m_CombatStateMachine != null) && m_CombatStateMachine.ValidateSkill(unit, unit.Skills[i]);
+                m_SkillIcons[i].color = isValid ? Color.white : new Color(0.4f, 0.4f, 0.4f, 1f);
+            }
         }
 
         // hp & Ebla
@@ -88,4 +97,30 @@ public class NikkeInfoPanel : MonoBehaviour
         m_HpText.text = $"{m_CurrentUnit.CurrentHp} / {m_CurrentUnit.MaxHp}";
         m_EblaText.text = $"{m_CurrentUnit.Ebla} / 200";
     }
+
+    private static string GetClassDisplayName(NikkeClass nikkeClass)
+    {
+        switch (nikkeClass)
+        {
+            case NikkeClass.Attacker: return "공격형";
+            case NikkeClass.Supporter: return "지원형";
+            case NikkeClass.Defender: return "방어형";
+            default: return nikkeClass.ToString();
+        }
+    }
+
+    private static string GetManufacturerDisplayName(Manufacturer manufacturer)
+    {
+        switch (manufacturer)
+        {
+            case Manufacturer.Pilgrim: return "필그림";
+            case Manufacturer.Elysion: return "엘리시온";
+            case Manufacturer.Missilis: return "미실리스";
+            case Manufacturer.Tetra: return "테트라";
+            case Manufacturer.Abnormal: return "어브노멀";
+            default: return manufacturer.ToString();
+        }
+    }
+
+
 }

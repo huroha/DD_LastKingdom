@@ -164,6 +164,13 @@ public class CombatUnit
         if (State == UnitState.DeathsDoor && CurrentHp > 0)
             State = UnitState.Alive;
     }
+    
+    public void Kill()
+    {
+        State = UnitState.Dead;
+        CurrentHp = 0;
+    }
+
 
     // ¿¡ºí¶ó
     public void AddEbla(int amount)

@@ -116,10 +116,10 @@ TextureImporter:
       name: killo_combatfix_0
       rect:
         serializedVersion: 2
-        x: 277
+        x: 0
         y: 0
-        width: 438
-        height: 947
+        width: 1024
+        height: 1024
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

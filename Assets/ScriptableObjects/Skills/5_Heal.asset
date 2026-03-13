@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf8234ddd9a51424a99679d27d50c99b, type: 3}
+  m_Name: 5_Heal
+  m_EditorClassIdentifier: Assembly-CSharp::SkillData
+  m_SkillName: "\uD790"
+  m_Description: "hp\uD68C\uBCF5"
+  m_SkillIcon: {fileID: 6599174363886279535, guid: de30e951bfa6f4443bf591d84e2a8399, type: 3}
+  m_SkillType: 1
+  m_RequiredState: 0
+  m_UsablePositions: 01010101
+  m_TargetPositions: 01010101
+  m_TargetType: 3
+  m_DamageMultiplier: 0
+  m_AccuracyMod: 0
+  m_CritMod: 100
+  m_HealAmount: 25
+  m_EblaDamage: 0
+  m_EblaHealAmount: 0
+  m_MoveUserAmount: 0
+  m_MoveTargetAmount: 0
+  m_IsGuard: 0
+  m_IsMark: 0
+  m_MarkDamageBonus: 0
+  m_OnHitEffects: []

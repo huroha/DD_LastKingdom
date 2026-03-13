@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c585489809c0344097809140fb04d25, type: 3}
+  m_Name: Bleed_test
+  m_EditorClassIdentifier: Assembly-CSharp::StatusEffectData
+  m_EffectName: "\uCD9C\uD608"
+  m_Icon: {fileID: 8592474136457853735, guid: e8f27980546fb994fa71cb6c3fc86b27, type: 3}
+  m_EffectType: 0
+  m_Duration: 3
+  m_TickDamage: 3
+  m_StatModifier:
+    maxHp: 0
+    minDamage: 0
+    maxDamage: 0
+    accuracyMod: 0
+    critChance: 0
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 0
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+  m_IsStackable: 1
+  m_MaxStack: 2

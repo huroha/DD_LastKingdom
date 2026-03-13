@@ -77,10 +77,9 @@ public class CombatFieldView : MonoBehaviour
         {
             Destroy(m_CorpseViews[e.Unit].gameObject);
             m_CorpseViews.Remove(e.Unit);
+            MoveAllToCurrentSlots();
             return;
         }
-
-
         SpriteRenderer view = m_UnitViews[e.Unit];
         m_UnitViews.Remove(e.Unit);
 
@@ -91,7 +90,10 @@ public class CombatFieldView : MonoBehaviour
             m_CorpseViews[e.Unit] = view;
         }
         else
+        {
             Destroy(view.gameObject);
+            MoveAllToCurrentSlots();
+        }
     }
 
     private SpriteRenderer CreateUnitView(CombatUnit unit, Vector3 pos)
@@ -102,6 +104,10 @@ public class CombatFieldView : MonoBehaviour
         if(unit.UnitType == CombatUnitType.Nikke)
         {
             sr.sprite = unit.NikkeData.CombatIdleSprite;
+            go.AddComponent<BoxCollider2D>();
+            UnitClickHandler handler = go.AddComponent<UnitClickHandler>();
+            CombatUnit captured = unit;
+            handler.Initialize(() => LogNikkeInfo(captured));
         }
         else if(unit.UnitType == CombatUnitType.Enemy)
         {
@@ -138,15 +144,23 @@ public class CombatFieldView : MonoBehaviour
 
             Vector3 targetPos = GetSlotPosition(unit);
             if(m_MoveCoroutines.ContainsKey(unit))
-            {
                 StopCoroutine(m_MoveCoroutines[unit]);
-            }
-            m_MoveCoroutines[unit] = StartCoroutine(LerpToPosition(unit, targetPos));
+            m_MoveCoroutines[unit] = StartCoroutine(LerpToPosition(unit,view, targetPos));
         }
+
+        foreach (KeyValuePair<CombatUnit, SpriteRenderer> pair in m_CorpseViews)
+        {
+            CombatUnit unit = pair.Key;
+            SpriteRenderer view = pair.Value;
+            Vector3 targetPos = GetSlotPosition(unit);
+            if (m_MoveCoroutines.ContainsKey(unit))
+                StopCoroutine(m_MoveCoroutines[unit]);
+            m_MoveCoroutines[unit] = StartCoroutine(LerpToPosition(unit, view, targetPos));
+        }
+
     }
-    private IEnumerator LerpToPosition(CombatUnit unit, Vector3 target)
+    private IEnumerator LerpToPosition(CombatUnit unit, SpriteRenderer view , Vector3 target)
     {
-        SpriteRenderer view = m_UnitViews[unit];
         Vector3 startPos = view.transform.position;
 
         float t = 0;
@@ -168,5 +182,11 @@ public class CombatFieldView : MonoBehaviour
                   $"\nDMG:{stats.minDamage}-{stats.maxDamage} | ACC:{stats.accuracyMod} | DODGE:{stats.dodge}" +
                   $"\nDEF:{stats.defense:F0}% | SPD:{stats.speed} | State:{unit.State}");
     }
-
+    private void LogNikkeInfo(CombatUnit unit)
+    {
+        StatBlock stats = unit.CurrentStats;
+        Debug.Log($"[Nikke] {unit.UnitName} | HP:{unit.CurrentHp}/{unit.MaxHp} | Ebla:{unit.Ebla}/200" +
+                  $"\nDMG:{stats.minDamage}-{stats.maxDamage} | ACC:{stats.accuracyMod} | DODGE:{stats.dodge}" +
+                  $"\nDEF:{stats.defense:F0}% | SPD:{stats.speed} | CRIT:{stats.critChance:F1}% | State:{unit.State}");
+    }
 }

@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bf8234ddd9a51424a99679d27d50c99b, type: 3}
-  m_Name: Volley_SkillData
+  m_Name: 6_StressAttack
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  m_SkillName: "\uC5F0\uC0AC"
-  m_Description: "\uD14C\uC2A4\uD2B8\uC6A9 \uC5F0\uC0AC"
-  m_SkillIcon: {fileID: -3747880761942071452, guid: 2ccf2f137e2fc544eb99c5c381640a5a, type: 3}
-  m_SkillType: 1
+  m_SkillName: "\uC2A4\uD2B8\uB808\uC2A4"
+  m_Description: "\uC5D0\uBE14\uB77C\uCD94\uAC00"
+  m_SkillIcon: {fileID: 0}
+  m_SkillType: 0
   m_RequiredState: 0
-  m_UsablePositions: 00000101
-  m_TargetPositions: 00000101
-  m_TargetType: 1
-  m_DamageMultiplier: 0.7
+  m_UsablePositions: 01010101
+  m_TargetPositions: 01010101
+  m_TargetType: 0
+  m_DamageMultiplier: 0.5
   m_AccuracyMod: 0
   m_CritMod: 0
   m_HealAmount: 0
-  m_EblaDamage: 0
+  m_EblaDamage: 25
   m_EblaHealAmount: 0
   m_MoveUserAmount: 0
   m_MoveTargetAmount: 0

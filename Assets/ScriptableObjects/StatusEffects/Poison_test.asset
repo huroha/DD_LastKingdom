@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c585489809c0344097809140fb04d25, type: 3}
-  m_Name: Bleed_StatusEffectData
+  m_Name: Poison_test
   m_EditorClassIdentifier: Assembly-CSharp::StatusEffectData
-  m_EffectName: Bleed
-  m_Icon: {fileID: 0}
-  m_EffectType: 0
+  m_EffectName: "\uC911\uB3C5"
+  m_Icon: {fileID: -6592538365307346872, guid: f129567a2f27b7049b4a673994d8266c, type: 3}
+  m_EffectType: 1
   m_Duration: 3
   m_TickDamage: 3
   m_StatModifier:
@@ -27,6 +27,7 @@ MonoBehaviour:
     dodge: 0
     deathBlowResist: 0
     speed: 0
+    moveRange: 0
     resistance:
       stun: 0
       move: 0

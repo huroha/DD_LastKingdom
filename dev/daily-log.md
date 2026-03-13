@@ -270,3 +270,71 @@
 
 ### Obsidian 노트
 - `Day9 - Phase1 버그수정 & CombatFieldView.md` 생성
+
+---
+
+## Day 10 — 2026-03-10 (CombatScene 테스트 & UI 보완)
+
+### 완료 작업
+- **EblaBar NullReferenceException 수정**: Inspector에서 Cells 배열 직접 할당
+- **Ebla Bar 계산 수정**: `/ 10` (floor) → `Mathf.CeilToInt(/ 10f)` (ceil)
+- **Ebla UI 실시간 갱신**: CombatHUD + NikkeInfoPanel에 TurnEndedEvent 구독 추가
+- **모든 스킬 타겟 선택 강제**: `NeedsTargetSelection()` 제거, 원작 DD 방식 통일
+- **EnemyAll/AllyAll UI 처리**: `GetValidTargets()`에서 All 타입은 전원 반환, 아무 유닛 클릭으로 발동
+- **moveRange 스탯 추가**: `StatBlock.moveRange` + `GetValidMoveTargets()` 범위 확장
+- **적 시체 스프라이트**: `EnemyData.CorpseSprite` + `m_CorpseViews` 딕셔너리 (Corpse/Dead 분리 처리)
+- **ProcessDeadUnits Corpse 분기**: Corpse 전환 시 UnitDiedEvent 즉시 발행 (RemoveUnit 없이)
+- **NikkeInfoPanel 보완**: `m_CurrentUnit` 추적 + TurnEndedEvent HP/Ebla 갱신
+- **UnitClickHandler**: 적 스프라이트 클릭 시 콘솔 정보 출력 (전투 중 언제든 사용 가능)
+
+### 발견/수정한 버그
+| 버그 | 원인 | 수정 |
+|------|------|------|
+| EblaBar NullReferenceException | Cells 배열 미할당 | Inspector 직접 채움 |
+| Ebla 5 → 0칸 표시 | 정수 나눗셈 floor | CeilToInt로 변경 |
+| 에블라 UI 미갱신 | TurnEndedEvent 미구독 | 구독 추가 |
+| Self 스킬 자동 발동 | NeedsTargetSelection Self 미처리 | 메서드 제거 |
+| Corpse 공격 시 KeyNotFoundException | Remove 후 재접근 | view 로컬 캐싱 |
+| Corpse HP 0 표시 | ProcessDeadUnits Corpse 미처리 | Corpse 분기 추가 |
+| CorpseHp=0 Division by Zero | 분모 0 | Mathf.Max(..., 1) 방어 코드 |
+| 불필요한 using | 자동완성 오염 | NUnit, System.Net 제거 |
+
+### 현재 상태
+- CombatScene 전투 루프 대부분 동작 확인
+- 내일 승리/패배 전체 플로우 + CorpseDecayTurns 동작 테스트 예정
+
+### Obsidian 노트
+- `Day10 - CombatScene 테스트 & UI 보완.md` 생성
+
+---
+
+## Day 11 — 2026-03-13 (CombatScene 버그수정 & 타겟 하이라이트)
+
+### 완료 작업
+- **니케 사망 시 HPBar 미숨김 수정**: `RefreshNikkeSlots()`에서 unit == null 시 HPBar/Name `SetActive(false)` 누락 → 추가
+- **NikkeInfoPanel null 체크 추가**: `m_CombatStateMachine` 미연결 시 `ValidateSkill()` NPE → null guard 추가
+- **아군 사망 시 파티원 에블라 증가**: `ALLY_DEATH_EBLA = 20`, `ApplyAllyDeathEbla()` 추가 (ProcessDeadUnits에서 Nikke 사망 시 호출)
+- **타겟 선택 하이라이트 미리보기 구현** (TargetSelectPanel 신규 기능)
+  - 스킬 선택 시 유효 타겟 슬롯 dim 이미지 표시
+  - 호버 시 실제 피격 슬롯 bright 전환 (Single vs Multi/All 분기)
+  - EventTrigger 기반 호버 이벤트 코드 등록
+  - `Show()` 시그니처에 `SkillData skill` 추가
+
+### 발견/수정한 버그
+| 버그 | 원인 | 수정 |
+|------|------|------|
+| 니케 사망 HPBar value 0인 채 잔존 | `RefreshNikkeSlots()` SetActive 누락 | `SetActive(false)` 추가 |
+| NikkeInfoPanel NPE | `m_CombatStateMachine` null 상태 | null guard 추가 |
+| 스킬 미선택 호버 NPE | `m_ValidTargets == null` 상태 호버 발화 | `OnButtonHoverEnter/Exit` null guard |
+| 하이라이트 이미지 초기 활성화 | Inspector active 기본값 | `Awake()` HideAllHighlights + Inspector 비활성화 |
+| 타겟 클릭 후 NPE | `Hide()`에서 RefreshHighlights → null 접근 | HideAllHighlights 교체 + m_ValidTargets = null 선행 |
+| 미사용 변수 | `OnUnitDied`의 `int index` 미사용 | 제거 |
+| using 잔존 오염 | Unity.VisualScripting 불필요 import | 제거 |
+| 메서드명 오타 | `ReslovePreviewTargets` | `ResolvePreviewTargets` 수정 |
+
+### 현재 상태
+- Phase 1.6 진행 중 — CombatScene 전투 루프 안정화
+- StatusEffectManager(Bleed/Poison 틱) 미구현 — Phase 2 태스크 유지
+
+### Obsidian 노트
+- `Day11 - CombatScene 버그수정 & 타겟 하이라이트.md` 생성

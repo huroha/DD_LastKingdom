@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bf8234ddd9a51424a99679d27d50c99b, type: 3}
-  m_Name: HeavyStrike_SkillData
+  m_Name: 12_PoisonAttack
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  m_SkillName: "\uAC15\uD0C0"
-  m_Description: "\uD14C\uC2A4\uD2B8\uC6A9 \uAC15\uD0C0"
-  m_SkillIcon: {fileID: -7872625448334526423, guid: b10ce4e0619a41545811d6ee5bc91c12, type: 3}
-  m_SkillType: 0
+  m_SkillName: "\uC911\uB3C5"
+  m_Description: "\uC911\uB3C5 \uD14C\uC2A4\uD2B8"
+  m_SkillIcon: {fileID: 3676643492622624954, guid: b32225481539bab42ad66659d0b44997, type: 3}
+  m_SkillType: 1
   m_RequiredState: 0
-  m_UsablePositions: 01010000
-  m_TargetPositions: 01010000
+  m_UsablePositions: 00000101
+  m_TargetPositions: 01010101
   m_TargetType: 0
-  m_DamageMultiplier: 1.2
-  m_AccuracyMod: -10
-  m_CritMod: 10
+  m_DamageMultiplier: 0.6
+  m_AccuracyMod: 0
+  m_CritMod: 0
   m_HealAmount: 0
   m_EblaDamage: 0
   m_EblaHealAmount: 0
@@ -32,4 +32,4 @@ MonoBehaviour:
   m_IsMark: 0
   m_MarkDamageBonus: 0
   m_OnHitEffects:
-  - {fileID: 11400000, guid: 9dcf7895691dda146a2afdb6459c5a35, type: 2}
+  - {fileID: 11400000, guid: 6cda9b919b3ed0443b2763fc26d5474d, type: 2}

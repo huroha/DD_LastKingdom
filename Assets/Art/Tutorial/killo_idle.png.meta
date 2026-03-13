@@ -116,10 +116,10 @@ TextureImporter:
       name: killo_idle_0
       rect:
         serializedVersion: 2
-        x: 244
+        x: 0
         y: 0
-        width: 457
-        height: 944
+        width: 1024
+        height: 1024
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

@@ -26,7 +26,7 @@ MonoBehaviour:
     critChance: 5
     defense: 25
     dodge: 10
-    deathBlowResist: 67
+    deathBlowResist: 0
     speed: 5
     moveRange: 2
     resistance:
@@ -61,8 +61,8 @@ MonoBehaviour:
   m_Skills:
   - {fileID: 11400000, guid: 1af9adf875143234ea659f8e9ac6e0f9, type: 2}
   - {fileID: 11400000, guid: 6bfc8192882314a49973a1cca8b1f05e, type: 2}
+  - {fileID: 11400000, guid: 696598c6e05f0824c93937068cff509d, type: 2}
   - {fileID: 11400000, guid: 43b0ba489ea560e489968ed0b564b7da, type: 2}
-  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

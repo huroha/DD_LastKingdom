@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf8234ddd9a51424a99679d27d50c99b, type: 3}
+  m_Name: 11_BleedStrike
+  m_EditorClassIdentifier: Assembly-CSharp::SkillData
+  m_SkillName: "\uCD9C\uD608"
+  m_Description: "\uCD9C\uD608 \uD14C\uC2A4\uD2B8"
+  m_SkillIcon: {fileID: 4140019076259646118, guid: 9f6e551f3a3fdf34aafb5295026dec9a, type: 3}
+  m_SkillType: 0
+  m_RequiredState: 0
+  m_UsablePositions: 01010101
+  m_TargetPositions: 01010101
+  m_TargetType: 0
+  m_DamageMultiplier: 0.8
+  m_AccuracyMod: 0
+  m_CritMod: 0
+  m_HealAmount: 0
+  m_EblaDamage: 0
+  m_EblaHealAmount: 0
+  m_MoveUserAmount: 0
+  m_MoveTargetAmount: 0
+  m_IsGuard: 0
+  m_IsMark: 0
+  m_MarkDamageBonus: 0
+  m_OnHitEffects:
+  - {fileID: 11400000, guid: 9dcf7895691dda146a2afdb6459c5a35, type: 2}

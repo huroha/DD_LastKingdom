@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf8234ddd9a51424a99679d27d50c99b, type: 3}
+  m_Name: 8_Lunge
+  m_EditorClassIdentifier: Assembly-CSharp::SkillData
+  m_SkillName: "\uB7F0\uC9C0"
+  m_Description: "\uC774\uB3D9 \uD14C\uC2A4\uD2B8"
+  m_SkillIcon: {fileID: -5639167475752493037, guid: e7ea26b1f97d0a24d8a41710f1e158f7, type: 3}
+  m_SkillType: 0
+  m_RequiredState: 0
+  m_UsablePositions: 00010101
+  m_TargetPositions: 01000000
+  m_TargetType: 0
+  m_DamageMultiplier: 1.2
+  m_AccuracyMod: 0
+  m_CritMod: 0
+  m_HealAmount: 0
+  m_EblaDamage: 0
+  m_EblaHealAmount: 0
+  m_MoveUserAmount: -1
+  m_MoveTargetAmount: 0
+  m_IsGuard: 0
+  m_IsMark: 0
+  m_MarkDamageBonus: 0
+  m_OnHitEffects: []
