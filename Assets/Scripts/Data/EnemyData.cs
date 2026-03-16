@@ -32,6 +32,7 @@ public class EnemyData : ScriptableObject
     [SerializeField] private string m_EnemyName;
     [SerializeField] private EnemyType m_EnemyType;
     [SerializeField] private ElementType m_Element;
+    [SerializeField] private int m_SlotSize;
 
     [Header("Stats")]
     [SerializeField] private StatBlock m_BaseStats;
@@ -59,4 +60,5 @@ public class EnemyData : ScriptableObject
     public int CorpseDecayTurns => m_CorpseDecayTurns;
     public Sprite Sprite => m_Sprite;
     public Sprite CorpseSprite => m_CorpseSprite;
+    public int SlotSize => m_SlotSize;
 }

@@ -12,7 +12,7 @@ public class PositionSystem
     public void Initialize(List<CombatUnit> nikkes, List<CombatUnit> enemies)
     {
         m_NikkeSlots = new CombatUnit[nikkes.Count];
-        m_EnemySlots = new CombatUnit[enemies.Count]; 
+        m_EnemySlots = new CombatUnit[4]; 
 
 
         for(int i=0; i<nikkes.Count; ++i)
@@ -22,7 +22,10 @@ public class PositionSystem
 
         for (int i=0; i< enemies.Count; ++i)
         {
-            m_EnemySlots[enemies[i].SlotIndex] = enemies[i];
+            CombatUnit unit = enemies[i];
+            m_EnemySlots[unit.SlotIndex] = unit;
+            if (unit.SlotSize == 2)
+                m_EnemySlots[unit.SlotIndex + 1] = unit;
         }
     }
 
@@ -98,7 +101,7 @@ public class PositionSystem
             if (!skill.TargetPositions[i]) continue;    // 스킬 타겟팅 검사
 
             CombatUnit target = targetSlots[i];
-            if(target != null && target.State != UnitState.Dead)
+            if(target != null && target.State != UnitState.Dead && !result.Contains(target))
                 result.Add(target);
         }
         return result;
@@ -132,12 +135,10 @@ public class PositionSystem
     {
         // 양수 = 후진, 음수 = 전진
 
- 
-
         if (steps == 0)
             return false;
-        CombatUnit[] slots = GetTeamSlots(unit.UnitType);
 
+        CombatUnit[] slots = GetTeamSlots(unit.UnitType);
         int lastOccupied = 0;
         for (int i = slots.Length - 1; i >= 0; --i)
         {
@@ -148,52 +149,136 @@ public class PositionSystem
             }
         }
 
-        int oldIndex = unit.SlotIndex;
-        int newIndex = Mathf.Clamp(oldIndex + steps, 0 , lastOccupied);
-
-        if (newIndex == oldIndex)
-            return false;
-        if(newIndex > oldIndex) // 후진 : 사이 유닛들을 앞으로 밈
+        if (unit.SlotSize == 1)
         {
-            for( int i= oldIndex; i< newIndex; ++i)
+
+            int oldIndex = unit.SlotIndex;
+            int newIndex = Mathf.Clamp(oldIndex + steps, 0, lastOccupied);
+
+            if (newIndex == oldIndex)
+                return false;
+            if (newIndex > oldIndex)
             {
-                slots[i] = slots[i + 1];
-                if (slots[i] != null)
-                    slots[i].SlotIndex = i;
+                for (int i = oldIndex; i < newIndex; ++i)
+                {
+                    slots[i] = slots[i + 1];
+                    if (slots[i] != null && (i == 0 || slots[i - 1] != slots[i]))
+                        slots[i].SlotIndex = i;
+                }
             }
+            else
+            {
+                for (int i = oldIndex; i > newIndex; --i)
+                {
+                    slots[i] = slots[i - 1];
+                    if (slots[i] != null)
+                        slots[i].SlotIndex = i;
+                }
+            }
+
+            slots[newIndex] = unit;
+            unit.SlotIndex = newIndex;
+            return true;
         }
         else
         {
-            for (int i=oldIndex; i> newIndex; --i)
-            {
-                slots[i] = slots[i - 1];
-                if(slots[i] != null)
-                    slots[i].SlotIndex = i;
-            }
+            return MoveLargeUnit(unit, steps, slots);
         }
 
-        slots[newIndex] = unit;
+
+    }
+    private bool MoveLargeUnit(CombatUnit unit, int steps, CombatUnit[] slots)
+    {
+        int oldIndex = unit.SlotIndex;
+        int size = unit.SlotSize;
+        int newIndex = oldIndex + steps;
+
+        if (newIndex < 0 || newIndex + size - 1 >= slots.Length)
+            return false;
+
+        int numDisplaced = Mathf.Abs(steps);
+        CombatUnit[] displaced = new CombatUnit[numDisplaced];
+        int[] targetSlots = new int[numDisplaced];
+
+        for (int k = 0; k < numDisplaced; ++k)
+        {
+            int neededSlot = steps < 0 ? newIndex + k : oldIndex + size + k;
+            int freedSlot = steps < 0 ? newIndex + size + k : oldIndex + k;
+            displaced[k] = slots[neededSlot];
+            targetSlots[k] = freedSlot;
+        }
+
+        // size-2 displaced 유닛이 freed 슬롯보다 크면 → 이동 확장 (스왑)
+        for (int k = 0; k < numDisplaced; ++k)
+        {
+            if (displaced[k] == null || displaced[k].SlotSize <= numDisplaced) continue;
+            bool first = true;
+            for (int j = 0; j < k; ++j)
+                if (displaced[j] == displaced[k]) { first = false; break; }
+            if (!first) continue;
+
+            int extendedSteps = steps < 0 ? -displaced[k].SlotSize : displaced[k].SlotSize;
+            int extendedNewIndex = oldIndex + extendedSteps;
+            if (extendedNewIndex < 0 || extendedNewIndex + size - 1 >= slots.Length)
+                return false;
+            return MoveLargeUnit(unit, extendedSteps, slots);
+        }
+
+        // unit 기존 슬롯 비우기
+        for (int i = oldIndex; i < oldIndex + size; ++i)
+            slots[i] = null;
+
+        // displaced 유닛들 기존 슬롯 비우기 (size-2 대응)
+        for (int k = 0; k < numDisplaced; ++k)
+        {
+            if (displaced[k] == null) continue;
+            bool first = true;
+            for (int j = 0; j < k; ++j)
+                if (displaced[j] == displaced[k]) { first = false; break; }
+            if (!first) continue;
+            for (int s = 0; s < displaced[k].SlotSize; ++s)
+                slots[displaced[k].SlotIndex + s] = null;
+        }
+
+        // displaced 유닛들 새 슬롯에 배치
+        for (int k = 0; k < numDisplaced; ++k)
+        {
+            if (displaced[k] == null) continue;
+            bool first = true;
+            for (int j = 0; j < k; ++j)
+                if (displaced[j] == displaced[k]) { first = false; break; }
+            if (!first) continue;
+            displaced[k].SlotIndex = targetSlots[k];
+            for (int s = 0; s < displaced[k].SlotSize; ++s)
+                slots[targetSlots[k] + s] = displaced[k];
+        }
+
+        // unit 새 슬롯에 배치
+        for (int i = newIndex; i < newIndex + size; ++i)
+            slots[i] = unit;
         unit.SlotIndex = newIndex;
+
         return true;
 
     }
-
     public void RemoveUnit(CombatUnit unit)
     {
         CombatUnit[] slots = GetTeamSlots(unit.UnitType);
         int index = unit.SlotIndex;
+        int size = unit.SlotSize;
 
         if (index < 0 || index >= slots.Length)
             return;
-        for(int i= index; i<slots.Length -1; ++i)
+
+        for(int i= index; i< slots.Length - size; ++i)
         {
-            slots[i] = slots[i + 1];
+            slots[i] = slots[i + size];
             if (slots[i] != null)
-            {
                 slots[i].SlotIndex = i;
-            }
         }
-        slots[slots.Length - 1] = null;
+        
+        for (int i= slots.Length - size; i<slots.Length; ++i)
+            slots[i] = null;
     }
 
     private CombatUnit[] GetTeamSlots(CombatUnitType team)

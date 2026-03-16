@@ -23,6 +23,8 @@ public class CombatUnit
     public string           UnitName { get; }
     public int              SlotIndex { get; set; }
 
+    public int SlotSize     { get; }
+
     // 원본 데이터 참조
     public NikkeData        NikkeData { get; }
     public EnemyData        EnemyData { get; }
@@ -61,6 +63,7 @@ public class CombatUnit
         SlotIndex = slotIndex;
         NikkeData = data;
         Skills = BuildSkillList(data,selectedSkills);
+        SlotSize = 1;
 
         MaxHp = data.BaseStats.maxHp;
         CurrentHp = currentHp;              
@@ -79,6 +82,7 @@ public class CombatUnit
         SlotIndex = slotIndex;
         EnemyData = data;
         Skills = data.Skills;
+        SlotSize = data.SlotSize;
 
         MaxHp = data.BaseStats.maxHp;
         CurrentHp = MaxHp;

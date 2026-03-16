@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 63.7, y: -8}
+  m_AnchoredPosition: {x: 187, y: -8}
   m_SizeDelta: {x: 10, y: 33}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5340959429735904318
@@ -103,7 +103,7 @@ RectTransform:
   m_GameObject: {fileID: 854372509207691363}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2.5, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 955340224918945362}
@@ -258,7 +258,7 @@ RectTransform:
   m_GameObject: {fileID: 6255007763486569438}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.82, y: 1.1, z: 1}
+  m_LocalScale: {x: 2.5, y: 1.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1457263912424896399}
@@ -267,7 +267,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2.5, y: -2}
+  m_AnchoredPosition: {x: 14, y: -2}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4673792297968946451
@@ -348,7 +348,7 @@ RectTransform:
   m_GameObject: {fileID: 6550915265934967372}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1, z: 1}
+  m_LocalScale: {x: 2.7, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8333598524925732860}
@@ -386,7 +386,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 8545952644128457203, guid: f356474e9a34a764e986286dbbe56c19, type: 3}
+  m_Sprite: {fileID: 2329681005054931558, guid: 90eef2fe3f8aa7b46b3f703eaba4c211, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -406,7 +406,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8333598524925732860}
   m_Layer: 5
-  m_Name: EnemySlot_0
+  m_Name: LargeEnemySlot_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

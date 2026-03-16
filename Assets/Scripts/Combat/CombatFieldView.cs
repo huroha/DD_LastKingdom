@@ -8,6 +8,7 @@ public class CombatFieldView : MonoBehaviour
     [SerializeField] private Transform[] m_EnemySlots;
     [SerializeField] private float m_MoveDuration = 0.3f;
     [SerializeField] private float m_UnitScale = 0.3f;
+    [SerializeField] private float m_LargetUnitScale = 0.1f;
 
 
     // CombatUnit -> «ÿ¥Á ¿Ø¥÷¿« SpriteRenderer ∏ «Œ
@@ -100,6 +101,7 @@ public class CombatFieldView : MonoBehaviour
     {
         GameObject go = new GameObject(unit.UnitName);
         SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
+        float scale = unit.SlotSize == 2 ? m_LargetUnitScale : m_UnitScale;
 
         if(unit.UnitType == CombatUnitType.Nikke)
         {
@@ -118,7 +120,7 @@ public class CombatFieldView : MonoBehaviour
             handler.Initialize(() => LogEnemyInfo(captured));
         }
         go.transform.position = pos;
-        go.transform.localScale = Vector3.one * m_UnitScale;
+        go.transform.localScale = Vector3.one * scale;
         return sr;
 
     }
@@ -132,6 +134,9 @@ public class CombatFieldView : MonoBehaviour
 
     private Vector3 GetSlotPosition(CombatUnit unit)
     {
+        Transform[] unitSlots = GetSlots(unit.UnitType);
+        if (unit.SlotSize == 2)
+            return (unitSlots[unit.SlotIndex].position + unitSlots[unit.SlotIndex + 1].position) / 2f;
         return GetSlots(unit.UnitType)[unit.SlotIndex].position;
     }
 

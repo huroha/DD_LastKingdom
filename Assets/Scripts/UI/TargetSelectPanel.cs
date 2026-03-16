@@ -12,6 +12,8 @@ public class TargetSelectPanel : MonoBehaviour
     [Header("Target Buttons")]
     [SerializeField] private Button[]       m_EnemyButtons;   // 4개
     [SerializeField] private Button[]       m_NikkeButtons;   // 4개
+    [SerializeField] private Button[]       m_LargeEnemyButtons;
+
 
     [Header("Unit Names")]
     [SerializeField] private TextMeshProUGUI[] m_EnemyNames;
@@ -20,6 +22,7 @@ public class TargetSelectPanel : MonoBehaviour
     [Header("Highlights")]
     [SerializeField] private Image[] m_EnemyHighlights; // 4개
     [SerializeField] private Image[] m_NikkeHighlights;
+    [SerializeField] private Image[] m_LargeEnemyHighlights;
 
     [Header("Cancel Button")]
     [SerializeField] private Button m_CancelButton;
@@ -52,6 +55,17 @@ public class TargetSelectPanel : MonoBehaviour
                 OnTargetButtonClicked(unit);
             });
         }
+
+        for (int i = 0; i < m_LargeEnemyButtons.Length; ++i)
+        {
+            int index = i;
+            m_LargeEnemyButtons[i].onClick.AddListener(() =>
+            {
+                CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Enemy, index);
+                OnTargetButtonClicked(unit);
+            });
+        }
+
         for (int i=0; i<m_NikkeButtons.Length; ++i)
         {
             int index = i;
@@ -98,6 +112,24 @@ public class TargetSelectPanel : MonoBehaviour
             trigger.triggers.Add(exit);
         }
 
+        for (int i = 0; i < m_LargeEnemyButtons.Length; ++i)
+        {
+            int index = i;
+            UnityEngine.EventSystems.EventTrigger trigger =
+                m_LargeEnemyButtons[i].gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+
+            UnityEngine.EventSystems.EventTrigger.Entry enter = new UnityEngine.EventSystems.EventTrigger.Entry();
+            enter.eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter;
+            enter.callback.AddListener(_ => OnButtonHoverEnter(CombatUnitType.Enemy, index));
+            trigger.triggers.Add(enter);
+
+            UnityEngine.EventSystems.EventTrigger.Entry exit = new UnityEngine.EventSystems.EventTrigger.Entry();
+            exit.eventID = UnityEngine.EventSystems.EventTriggerType.PointerExit;
+            exit.callback.AddListener(_ => OnButtonHoverExit());
+            trigger.triggers.Add(exit);
+        }
+
+
 
         EventBus.Subscribe<BattleStartedEvent>(OnBattleStarted);
         EventBus.Subscribe<UnitMovedEvent>(OnUnitMoved);
@@ -130,17 +162,34 @@ public class TargetSelectPanel : MonoBehaviour
             m_NikkeButtons[i].interactable = false;
         for (int i = 0; i < m_EnemyButtons.Length; ++i)
             m_EnemyButtons[i].interactable = false;
+        for (int i = 0; i < m_LargeEnemyButtons.Length; ++i)
+            m_LargeEnemyButtons[i].interactable = false;
+
         gameObject.SetActive(false);
     }
 
     private void RefreshButtons()
     {
-        for (int i=0; i< m_EnemyButtons.Length; ++i)
+        for (int i = 0; i < m_EnemyButtons.Length; ++i)
         {
-            CombatUnit unit =m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Enemy, i);
+            CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Enemy, i);
+            if (unit == null || unit.SlotSize == 2)
+            {
+                m_EnemyButtons[i].gameObject.SetActive(false);
+                continue;
+            }
+            m_EnemyButtons[i].gameObject.SetActive(true);
             m_EnemyButtons[i].interactable = m_ValidTargets.Contains(unit);
-            if (unit != null)
-                m_EnemyNames[i].text = unit.UnitName;
+            m_EnemyNames[i].text = unit.UnitName;
+        }
+
+        for (int i = 0; i < m_LargeEnemyButtons.Length; ++i)
+        {
+            CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Enemy, i);
+            bool isAnchor = unit != null && unit.SlotSize == 2 && unit.SlotIndex == i;
+            m_LargeEnemyButtons[i].gameObject.SetActive(isAnchor);
+            if (isAnchor)
+                m_LargeEnemyButtons[i].interactable = m_ValidTargets.Contains(unit);
         }
 
         for (int i = 0; i < m_NikkeButtons.Length; ++i)
@@ -150,6 +199,7 @@ public class TargetSelectPanel : MonoBehaviour
             if (unit != null)
                 m_NikkeNames[i].text = unit.UnitName;
         }
+
     }
     private void OnTargetButtonClicked(CombatUnit target)
     {
@@ -158,8 +208,8 @@ public class TargetSelectPanel : MonoBehaviour
 
         if (m_OnTargetSelected == null) return;
 
-        m_OnTargetSelected(target);
         Hide();
+        m_OnTargetSelected(target);
     }
     private void OnCancelButtonClicked() 
     {
@@ -181,19 +231,31 @@ public class TargetSelectPanel : MonoBehaviour
         for (int i = 0; i < m_EnemyButtons.Length; ++i)
         {
             m_EnemyButtons[i].gameObject.SetActive(i < e.Enemies.Count);
-            if (i < e.Enemies.Count)
+            if (i < e.Enemies.Count && e.Enemies[i].SlotSize == 1)
                 m_EnemyNames[i].text = e.Enemies[i].UnitName;
+        }
+
+        for (int i = 0; i < m_LargeEnemyButtons.Length; ++i)
+            m_LargeEnemyButtons[i].gameObject.SetActive(false);
+
+        for (int i = 0; i < e.Enemies.Count; ++i)
+        {
+            CombatUnit enemy = e.Enemies[i];
+            if (enemy.SlotSize == 2)
+            {
+                int largeIndex = enemy.SlotIndex;
+                for (int s = enemy.SlotIndex; s < enemy.SlotIndex + enemy.SlotSize; ++s)
+                    m_EnemyButtons[s].gameObject.SetActive(false);
+                m_LargeEnemyButtons[largeIndex].gameObject.SetActive(true);
+            }
         }
     }
     private void OnUnitMoved(UnitMovedEvent e)
     {
         if (!gameObject.activeSelf)
             return;
-        for (int i = 0; i < m_NikkeButtons.Length; ++i)
-        {
-            CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Nikke, i);
-            if (unit != null) m_NikkeNames[i].text = unit.UnitName;
-        }
+        RefreshButtons();
+        RefreshHighlights();
     }
 
     private void OnButtonHoverEnter(CombatUnitType type, int index)
@@ -241,8 +303,18 @@ public class TargetSelectPanel : MonoBehaviour
 
     private void SetHighlightColor(CombatUnit unit, Color color)
     {
-        Image[] highlights = (unit.UnitType == CombatUnitType.Enemy) ? m_EnemyHighlights : m_NikkeHighlights;
+        if (unit.UnitType == CombatUnitType.Enemy && unit.SlotSize == 2)
+        {
+            int largeIndex = unit.SlotIndex;
+            if (largeIndex < m_LargeEnemyHighlights.Length)
+            {
+                m_LargeEnemyHighlights[largeIndex].gameObject.SetActive(true);
+                m_LargeEnemyHighlights[largeIndex].color = color;
+            }
+            return;
+        }
 
+        Image[] highlights = (unit.UnitType == CombatUnitType.Enemy) ? m_EnemyHighlights : m_NikkeHighlights;
         int slot = unit.SlotIndex;
         if (slot < highlights.Length)
         {
@@ -253,10 +325,12 @@ public class TargetSelectPanel : MonoBehaviour
 
     private void HideAllHighlights()
     {
-        for (int i=0; i< m_EnemyHighlights.Length; ++i)
+        for (int i = 0; i < m_EnemyHighlights.Length; ++i)
             m_EnemyHighlights[i].gameObject.SetActive(false);
-        for (int i=0; i< m_NikkeHighlights.Length; ++i)
+        for (int i = 0; i < m_NikkeHighlights.Length; ++i)
             m_NikkeHighlights[i].gameObject.SetActive(false);
+        for (int i = 0; i < m_LargeEnemyHighlights.Length; ++i)
+            m_LargeEnemyHighlights[i].gameObject.SetActive(false);
     }
 
 }

@@ -15,6 +15,7 @@ MonoBehaviour:
   m_EnemyName: "Test\uB7A9\uCCD02"
   m_EnemyType: 0
   m_Element: 0
+  m_SlotSize: 1
   m_BaseStats:
     maxHp: 150
     minDamage: 35

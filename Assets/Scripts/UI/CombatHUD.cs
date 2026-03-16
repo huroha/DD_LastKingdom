@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 
 
 public class CombatHUD : MonoBehaviour
@@ -26,6 +27,21 @@ public class CombatHUD : MonoBehaviour
     [Header("Enemy Slots")]
     [SerializeField] private Slider[]           m_EnemyHpBars;  // 4개
     [SerializeField] private TextMeshProUGUI[]  m_EnemyNames;   // 4개
+
+    [Header("Large Enemy Slots")]
+    [SerializeField] private Slider[] m_LargeEnemyHpBars;
+    [SerializeField] private Image[] m_LargeEnemyTurnTickers;
+    [SerializeField] private RectTransform[] m_LargeEnemyBarAnchors;
+
+
+    [Header("Turn Tickers")]
+    [SerializeField] private Image[] m_NikkeTurnTickers;
+    [SerializeField] private Image[] m_EnemyTurnTickers;
+
+    [Header("Active turn Bar")]
+    [SerializeField] private Image m_ActiveTurnBar;
+    [SerializeField] private RectTransform[] m_NikkeBarAnchor;
+    [SerializeField] private RectTransform[] m_EnemyBarAnchor;
 
     [Header("Turn Order")]
     [SerializeField] private TextMeshProUGUI m_TurnOrderText;
@@ -56,6 +72,8 @@ public class CombatHUD : MonoBehaviour
         EventBus.Subscribe<UnitDiedEvent>(OnUnitDied);
         EventBus.Subscribe<UnitMovedEvent>(OnUnitMoved);
         EventBus.Subscribe<TurnEndedEvent>(OnTurnEnded);
+        EventBus.Subscribe<RoundStartedEvent>(OnRoundStarted);
+        EventBus.Subscribe<TurnStartedEvent>(OnTurnStarted);
 
     }
     private void OnDisable()
@@ -65,12 +83,15 @@ public class CombatHUD : MonoBehaviour
         EventBus.Unsubscribe<UnitDiedEvent>(OnUnitDied);
         EventBus.Unsubscribe<UnitMovedEvent>(OnUnitMoved);
         EventBus.Unsubscribe<TurnEndedEvent>(OnTurnEnded);
+        EventBus.Unsubscribe<RoundStartedEvent>(OnRoundStarted);
+        EventBus.Unsubscribe<TurnStartedEvent>(OnTurnStarted);
     }
 
     // 이벤트 함수
     private void OnUnitDied(UnitDiedEvent e)
     {
 
+        SetTickerVisible(e.Unit, false);
         if (e.Unit.State == UnitState.Dead)
         {
             if (e.Unit.UnitType == CombatUnitType.Nikke)
@@ -80,6 +101,7 @@ public class CombatHUD : MonoBehaviour
         }
         else if (e.Unit.State == UnitState.Corpse)
             RefreshHpBar(e.Unit);
+
     }
 
     private void OnTurnEnded(TurnEndedEvent e)
@@ -92,11 +114,27 @@ public class CombatHUD : MonoBehaviour
             CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Nikke, i);
             if (unit != null)
                 UpdateEblaBar(i, unit.Ebla);
+
         }
+        SetTickerVisible(e.Unit, false);
+        m_ActiveTurnBar.gameObject.SetActive(false);
+    }
+    private void OnTurnStarted(TurnStartedEvent e)
+    {
+        SnapTurnBar(e.Unit);
     }
     private void OnUnitMoved(UnitMovedEvent e)
     {
         RefreshNikkeSlots();
+
+        for (int i = 0; i < m_NikkeTurnTickers.Length; ++i)
+            m_NikkeTurnTickers[i].gameObject.SetActive(false);
+        for (int i = 0; i < m_EnemyTurnTickers.Length; ++i)
+            m_EnemyTurnTickers[i].gameObject.SetActive(false);
+        for (int i = 0; i < m_LargeEnemyTurnTickers.Length; ++i)
+            m_LargeEnemyTurnTickers[i].gameObject.SetActive(false);
+
+        RefreshTurnTickers();
     }
     private void OnBattleStarted(BattleStartedEvent e)
     {
@@ -106,11 +144,19 @@ public class CombatHUD : MonoBehaviour
             m_NikkeHpBars[i].gameObject.SetActive(false);
             m_NikkeNames[i].gameObject.SetActive(false);
             m_NikkeEblaBars[i].Root.SetActive(false);
+            m_NikkeTurnTickers[i].gameObject.SetActive(false);
         }
         for (int i = 0; i < m_EnemyHpBars.Length; ++i)
         {
             m_EnemyHpBars[i].gameObject.SetActive(false);
             m_EnemyNames[i].gameObject.SetActive(false);
+            m_EnemyTurnTickers[i].gameObject.SetActive(false);
+        }
+
+        for (int i = 0; i < m_LargeEnemyHpBars.Length; ++i)
+        {
+            m_LargeEnemyHpBars[i].gameObject.SetActive(false);
+            m_LargeEnemyTurnTickers[i].gameObject.SetActive(false);
         }
 
         // 데이터 있는 슬롯만 표시
@@ -125,12 +171,24 @@ public class CombatHUD : MonoBehaviour
 
         for (int i = 0; i < e.Enemies.Count; ++i)
         {
-            m_EnemyHpBars[i].gameObject.SetActive(true);
-            m_EnemyNames[i].gameObject.SetActive(true);
-            m_EnemyNames[i].text = e.Enemies[i].UnitName;
-            RefreshHpBar(e.Enemies[i]);
+            CombatUnit enemy = e.Enemies[i];
+            if(enemy.SlotSize == 2)
+            {
+                int largeIndex = enemy.SlotIndex;
+                m_LargeEnemyHpBars[largeIndex].gameObject.SetActive(true);
+            }
+            else
+            {
+                m_EnemyHpBars[i].gameObject.SetActive(true);
+                m_EnemyNames[i].gameObject.SetActive(true);
+                m_EnemyNames[i].text = e.Enemies[i].UnitName;
+            }
+
+            RefreshHpBar(enemy);
         }
         RefreshTurnOrder();
+        RefreshTurnTickers();
+        m_ActiveTurnBar.gameObject.SetActive(false);
     }
 
     private void OnSkillExecuted(SkillExecutedEvent e)
@@ -154,7 +212,44 @@ public class CombatHUD : MonoBehaviour
         RefreshTurnOrder();
     }
 
+    private void OnRoundStarted(RoundStartedEvent e)
+    {
+        for(int i=0; i<m_NikkeTurnTickers.Length; ++i)
+            m_NikkeTurnTickers[i].gameObject.SetActive(false);
+        for(int i=0; i<m_EnemyTurnTickers.Length; ++i)
+            m_EnemyTurnTickers[i].gameObject.SetActive(false);
+        for (int i = 0; i < m_LargeEnemyTurnTickers.Length; ++i)
+            m_LargeEnemyTurnTickers[i].gameObject.SetActive(false);
 
+        RefreshTurnTickers();
+
+    }
+
+    private void SnapTurnBar(CombatUnit unit)
+    {
+        if (unit == null)
+            return;
+
+        RectTransform anchor = null;
+
+        if (unit.UnitType == CombatUnitType.Nikke)
+        {
+            anchor = m_NikkeBarAnchor[unit.SlotIndex];
+        }
+        else
+        {
+            if (unit.SlotSize == 2)
+                anchor = m_LargeEnemyBarAnchors[unit.SlotIndex];
+            else
+                anchor = m_EnemyBarAnchor[unit.SlotIndex];
+        }
+
+        if (anchor == null)
+            return;
+
+        m_ActiveTurnBar.rectTransform.position = anchor.position;
+        m_ActiveTurnBar.gameObject.SetActive(true);
+    }
 
     private void RefreshHpBar(CombatUnit unit)
     {
@@ -166,10 +261,11 @@ public class CombatHUD : MonoBehaviour
         }
         else
         {
+            Slider bar = unit.SlotSize == 2 ? m_LargeEnemyHpBars[unit.SlotIndex] : m_EnemyHpBars[unit.SlotIndex];
             if(unit.State == UnitState.Corpse)
-                m_EnemyHpBars[index].value = (float)unit.CurrentHp / Mathf.Max(unit.EnemyData.CorpseHp, 1);
+                bar.value = (float)unit.CurrentHp / Mathf.Max(unit.EnemyData.CorpseHp, 1);
             else
-                m_EnemyHpBars[index].value = (float)unit.CurrentHp / unit.MaxHp;
+                bar.value = (float)unit.CurrentHp / unit.MaxHp;
         }
     }
     private void RefreshTurnOrder()
@@ -211,7 +307,13 @@ public class CombatHUD : MonoBehaviour
         for(int i=0; i< m_EnemyHpBars.Length; ++i)
         {
             CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Enemy, i);
+
             if (unit == null)
+            {
+                m_EnemyHpBars[i].gameObject.SetActive(false);
+                m_EnemyNames[i].gameObject.SetActive(false);
+            }
+            else if(unit.SlotSize == 2)
             {
                 m_EnemyHpBars[i].gameObject.SetActive(false);
                 m_EnemyNames[i].gameObject.SetActive(false);
@@ -224,6 +326,20 @@ public class CombatHUD : MonoBehaviour
                 RefreshHpBar(unit);
             }
         }
+        // Large HP바 갱신
+        for (int i = 0; i < m_LargeEnemyHpBars.Length; ++i)
+        {
+            int anchorSlot = i * 2;
+            CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Enemy, i);
+            if (unit != null && unit.SlotSize == 2 && unit.SlotIndex == i)
+            {
+                m_LargeEnemyHpBars[i].gameObject.SetActive(true);
+                RefreshHpBar(unit);
+            }
+            else
+                m_LargeEnemyHpBars[i].gameObject.SetActive(false);
+        }
+
     }
 
     private void UpdateEblaBar(int index, int ebla)
@@ -242,5 +358,43 @@ public class CombatHUD : MonoBehaviour
                 cells[i].sprite = m_EblaEmptySprite;
         }
     }
+
+    private void SetTickerVisible(CombatUnit unit, bool visible)
+    {
+        if (unit == null)
+            return;
+        if(unit.UnitType == CombatUnitType.Nikke)
+        {
+            if (m_NikkeTurnTickers[unit.SlotIndex] == null)
+                return;
+            m_NikkeTurnTickers[unit.SlotIndex].gameObject.SetActive(visible);
+        }
+        else
+        {
+            if(unit.SlotSize == 2)
+            {
+                int largeIndex = unit.SlotIndex;
+                if (m_LargeEnemyTurnTickers[largeIndex] == null)
+                    return;
+                m_LargeEnemyTurnTickers[largeIndex].gameObject.SetActive(visible);
+            }
+            else
+            {
+                if (m_EnemyTurnTickers[unit.SlotIndex] == null)
+                    return;
+                m_EnemyTurnTickers[unit.SlotIndex].gameObject.SetActive(visible);
+            }
+        }
+    }
+
+    private void RefreshTurnTickers()
+    {
+        IReadOnlyList<CombatUnit> order = m_CombatStateMachine.TurnOrder;
+        if (order == null)
+            return;
+        for(int i=0; i<order.Count; ++i)
+            SetTickerVisible(order[i], true);
+    }
+
 
 }

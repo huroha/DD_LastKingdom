@@ -15,6 +15,7 @@ MonoBehaviour:
   m_EnemyName: "Test\uB7A9\uCCD0 \uC568\uB9AC\uD2B8"
   m_EnemyType: 1
   m_Element: 2
+  m_SlotSize: 2
   m_BaseStats:
     maxHp: 300
     minDamage: 60
@@ -28,7 +29,7 @@ MonoBehaviour:
     moveRange: 0
     resistance:
       stun: 0
-      move: 100
+      move: 0
       poison: 0
       disease: 0
       bleed: 0
