@@ -338,3 +338,46 @@
 
 ### Obsidian 노트
 - `Day11 - CombatScene 버그수정 & 타겟 하이라이트.md` 생성
+
+---
+
+## Day 12 — 2026-03-16 (TurnTicker / ActiveTurnBar / Large Enemy 시스템)
+
+### 완료 작업
+- **TurnTicker 구현**: 라운드 내 행동할 유닛에 Image UI 표시. RoundStartedEvent로 전원 show, TurnEndedEvent/UnitDiedEvent로 해당 유닛 hide
+- **ActiveTurnBar 구현**: 현재 턴 유닛 위치에 snap되는 펄스 애니메이션 바. Unity Animator 루프 클립(TurnBarPulse) 제작, TurnStartedEvent로 위치 이동, TurnEndedEvent로 hide. RectTransform.position anchor 배열(m_NikkeBarAnchor / m_EnemyBarAnchor) 방식
+- **Large Enemy(2슬롯) 시스템 전체 구현**:
+  - `EnemyData.m_SlotSize` 필드 추가 (기본값 1)
+  - `CombatUnit.SlotSize` 프로퍼티 추가 (Nikke=1, Enemy=EnemyData.SlotSize)
+  - `PositionSystem.Initialize`: size-2 유닛 slots[SlotIndex], slots[SlotIndex+1] 동일 참조
+  - `PositionSystem.MoveLargeUnit` 전면 재작성: displaced/targetSlots 배열 방식, size-2 displaced 유닛 swap 확장(재귀), IsFirstOccurrence 헬퍼
+  - `PositionSystem.Move` forward shift 버그 수정: `slots[i-1] != slots[i]` 조건으로 size-2 SlotIndex 중복 갱신 방지
+  - `CombatFieldView`: size-2 시 두 슬롯 중점 위치, m_LargetUnitScale 적용
+  - `CombatHUD`: m_LargeEnemyHpBars/TurnTickers/BarAnchors 3개, OnUnitMoved에 HideAllTickers+RefreshTurnTickers 추가, SetTickerVisible/SnapTurnBar/RefreshHpBar size-2 분기
+  - `TargetSelectPanel`: m_LargeEnemyButtons/Highlights 3개, RefreshButtons isAnchor 체크, OnTargetButtonClicked Hide() 선행 후 콜백
+- **LargeEnemySlot 2개→3개**: 4칸 슬롯에서 size-2 유닛 시작 위치가 0, 1, 2 세 곳 가능 — 모든 SlotIndex/2 → SlotIndex 직접 사용으로 변경
+
+### 발견/수정한 버그
+| 버그 | 원인 | 수정 |
+|------|------|------|
+| Large pull -1 잘못된 결과 | displaced/targetSlots 방향 오류 | MoveLargeUnit 전면 재작성 |
+| Move +2 넉백 시 size-2 유닛 겹침 | forward shift에서 SlotIndex 중복 갱신 | `slots[i-1] != slots[i]` 조건 추가 |
+| AABB에서 B -1 시 실패 | numDisplaced=1인데 displaced가 size-2 | extendedSteps 재귀 호출로 swap 처리 |
+| pull -2 시 2번째 displaced 미처리 | 단일 blocker만 처리 | numDisplaced 루프로 전체 처리 |
+| TargetSelectPanel Large 버튼 갱신 번쩍 | Hide() 전에 콜백 → UnitMovedEvent | Hide() 먼저, 콜백 나중 |
+| TurnTicker 이동 후 위치 갱신 안됨 | OnUnitMoved에 ticker 갱신 없음 | HideAllTickers + RefreshTurnTickers 추가 |
+| 3번째 LargeHighlight 초기 활성 | LargeEnemySlot 배열 크기 불일치 | 슬롯 수 2개→3개로 통일 |
+| Ally 스킬 버튼 클릭 안됨 | RefreshButtons에서 NikkeButton interactable 미설정 | ValidTargets.Contains() 체크 추가 |
+
+### /simplify 리뷰 수정
+- `HideAllTickers()` 메서드 추출 (코드 중복 제거)
+- `IsFirstOccurrence()` static 헬퍼 추출 (MoveLargeUnit 내 중복 로직)
+- `m_PreviewTargets` List 캐싱 (매 호버마다 new List 방지)
+- `m_LargeEnemyNames` 미사용 배열 제거
+
+### 현재 상태
+- Large Enemy(2슬롯) 이동/전투/UI 전체 동작 확인
+- Phase 1.6 계속 진행 중
+
+### Obsidian 노트
+- `Day12 - Large Enemy & 이동 시스템.md` 생성

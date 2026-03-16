@@ -32,7 +32,7 @@ public class EnemyData : ScriptableObject
     [SerializeField] private string m_EnemyName;
     [SerializeField] private EnemyType m_EnemyType;
     [SerializeField] private ElementType m_Element;
-    [SerializeField] private int m_SlotSize;
+    [SerializeField] private int m_SlotSize = 1;
 
     [Header("Stats")]
     [SerializeField] private StatBlock m_BaseStats;

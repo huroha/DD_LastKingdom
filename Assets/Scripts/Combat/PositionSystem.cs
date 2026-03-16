@@ -212,10 +212,8 @@ public class PositionSystem
         for (int k = 0; k < numDisplaced; ++k)
         {
             if (displaced[k] == null || displaced[k].SlotSize <= numDisplaced) continue;
-            bool first = true;
-            for (int j = 0; j < k; ++j)
-                if (displaced[j] == displaced[k]) { first = false; break; }
-            if (!first) continue;
+            if (!IsFirstOccurrence(displaced, k)) continue;
+
 
             int extendedSteps = steps < 0 ? -displaced[k].SlotSize : displaced[k].SlotSize;
             int extendedNewIndex = oldIndex + extendedSteps;
@@ -232,10 +230,7 @@ public class PositionSystem
         for (int k = 0; k < numDisplaced; ++k)
         {
             if (displaced[k] == null) continue;
-            bool first = true;
-            for (int j = 0; j < k; ++j)
-                if (displaced[j] == displaced[k]) { first = false; break; }
-            if (!first) continue;
+            if (!IsFirstOccurrence(displaced, k)) continue;
             for (int s = 0; s < displaced[k].SlotSize; ++s)
                 slots[displaced[k].SlotIndex + s] = null;
         }
@@ -244,10 +239,7 @@ public class PositionSystem
         for (int k = 0; k < numDisplaced; ++k)
         {
             if (displaced[k] == null) continue;
-            bool first = true;
-            for (int j = 0; j < k; ++j)
-                if (displaced[j] == displaced[k]) { first = false; break; }
-            if (!first) continue;
+            if (!IsFirstOccurrence(displaced, k)) continue;
             displaced[k].SlotIndex = targetSlots[k];
             for (int s = 0; s < displaced[k].SlotSize; ++s)
                 slots[targetSlots[k] + s] = displaced[k];
@@ -302,7 +294,12 @@ public class PositionSystem
             return targetEnemy ? m_NikkeSlots : m_EnemySlots;
     }
 
-
+    private static bool IsFirstOccurrence(CombatUnit[] arr, int k)
+    {
+        for (int j = 0; j < k; ++j)
+            if (arr[j] == arr[k]) return false;
+        return true;
+    }
 
 
 }

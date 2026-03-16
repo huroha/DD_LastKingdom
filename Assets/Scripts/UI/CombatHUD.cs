@@ -127,12 +127,7 @@ public class CombatHUD : MonoBehaviour
     {
         RefreshNikkeSlots();
 
-        for (int i = 0; i < m_NikkeTurnTickers.Length; ++i)
-            m_NikkeTurnTickers[i].gameObject.SetActive(false);
-        for (int i = 0; i < m_EnemyTurnTickers.Length; ++i)
-            m_EnemyTurnTickers[i].gameObject.SetActive(false);
-        for (int i = 0; i < m_LargeEnemyTurnTickers.Length; ++i)
-            m_LargeEnemyTurnTickers[i].gameObject.SetActive(false);
+        HideAllTickers();
 
         RefreshTurnTickers();
     }
@@ -214,13 +209,7 @@ public class CombatHUD : MonoBehaviour
 
     private void OnRoundStarted(RoundStartedEvent e)
     {
-        for(int i=0; i<m_NikkeTurnTickers.Length; ++i)
-            m_NikkeTurnTickers[i].gameObject.SetActive(false);
-        for(int i=0; i<m_EnemyTurnTickers.Length; ++i)
-            m_EnemyTurnTickers[i].gameObject.SetActive(false);
-        for (int i = 0; i < m_LargeEnemyTurnTickers.Length; ++i)
-            m_LargeEnemyTurnTickers[i].gameObject.SetActive(false);
-
+        HideAllTickers();
         RefreshTurnTickers();
 
     }
@@ -329,7 +318,6 @@ public class CombatHUD : MonoBehaviour
         // Large HP¹Ù °»½Å
         for (int i = 0; i < m_LargeEnemyHpBars.Length; ++i)
         {
-            int anchorSlot = i * 2;
             CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Enemy, i);
             if (unit != null && unit.SlotSize == 2 && unit.SlotIndex == i)
             {
@@ -396,5 +384,13 @@ public class CombatHUD : MonoBehaviour
             SetTickerVisible(order[i], true);
     }
 
-
+    private void HideAllTickers()
+    {
+        for (int i = 0; i < m_NikkeTurnTickers.Length; ++i)
+            m_NikkeTurnTickers[i].gameObject.SetActive(false);
+        for (int i = 0; i < m_EnemyTurnTickers.Length; ++i)
+            m_EnemyTurnTickers[i].gameObject.SetActive(false);
+        for (int i = 0; i < m_LargeEnemyTurnTickers.Length; ++i)
+            m_LargeEnemyTurnTickers[i].gameObject.SetActive(false);
+    }
 }

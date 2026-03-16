@@ -36,6 +36,7 @@ public class TargetSelectPanel : MonoBehaviour
     private CancelHandler m_OnCancel;
 
     private List<CombatUnit> m_ValidTargets;
+    private List<CombatUnit> m_PreviewTargets = new List<CombatUnit>();
 
     private static readonly Color HIGHLIGHT_DIM = new Color(1f, 1f, 1f, 0.35f);
     private static readonly Color HIGHLIGHT_BRIGHT = new Color(1f, 1f, 1f, 1f);
@@ -284,12 +285,12 @@ public class TargetSelectPanel : MonoBehaviour
 
     private List<CombatUnit> ResolvePreviewTargets(CombatUnit unit)
     {
-        if(m_CurrentSkill.TargetType == TargetType.EnemySingle ||
+        if (m_CurrentSkill.TargetType == TargetType.EnemySingle ||
             m_CurrentSkill.TargetType == TargetType.AllySingle)
         {
-            List<CombatUnit> single = new List<CombatUnit>();
-            single.Add(unit);
-            return single;
+            m_PreviewTargets.Clear();
+            m_PreviewTargets.Add(unit);
+            return m_PreviewTargets;
         }
         return m_ValidTargets;
     }
