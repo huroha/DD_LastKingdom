@@ -25,6 +25,9 @@ public class CombatUnit
 
     public int SlotSize     { get; }
 
+    // 행동 수
+    public int ActionsPerRound { get; }
+
     // 원본 데이터 참조
     public NikkeData        NikkeData { get; }
     public EnemyData        EnemyData { get; }
@@ -54,6 +57,8 @@ public class CombatUnit
 
     public int CorpseTimer { get; set; }
 
+    
+
     // 생성자
     public CombatUnit(NikkeData data, int slotIndex,int currentHp, int ebla,
                      List<ActiveStatusEffect> activeEffects, SkillData[] selectedSkills = null)
@@ -71,7 +76,9 @@ public class CombatUnit
         CurrentStats = data.BaseStats;
         State = currentHp > 0 ? UnitState.Alive : UnitState.DeathsDoor;
         Ebla = ebla;
+        ActionsPerRound = 1;
         ActiveEffects = activeEffects ?? new List<ActiveStatusEffect>();    // Null 병합 연산자 왼쪽이 null이면 오른쪽 사용
+
         RecalculateStats();
     }
 
@@ -89,6 +96,7 @@ public class CombatUnit
         BaseStats = data.BaseStats;
         CurrentStats = data.BaseStats;
         State = UnitState.Alive;
+        ActionsPerRound = data.ActionsPerRound;
         ActiveEffects = new List<ActiveStatusEffect>();
     }
 

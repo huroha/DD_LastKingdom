@@ -8,7 +8,7 @@ public class CombatFieldView : MonoBehaviour
     [SerializeField] private Transform[] m_EnemySlots;
     [SerializeField] private float m_MoveDuration = 0.3f;
     [SerializeField] private float m_UnitScale = 0.3f;
-    [SerializeField] private float m_LargetUnitScale = 0.1f;
+    [SerializeField] private float m_LargeUnitScale = 0.5f;
 
 
     // CombatUnit -> 해당 유닛의 SpriteRenderer 맵핑
@@ -18,6 +18,8 @@ public class CombatFieldView : MonoBehaviour
     // 시체 관리용
     private Dictionary<CombatUnit, SpriteRenderer> m_CorpseViews;
 
+    // 이동 후 패턴사용
+    public bool IsMoving => m_MoveCoroutines.Count > 0;
 
 
     private void OnEnable()
@@ -101,7 +103,7 @@ public class CombatFieldView : MonoBehaviour
     {
         GameObject go = new GameObject(unit.UnitName);
         SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
-        float scale = unit.SlotSize == 2 ? m_LargetUnitScale : m_UnitScale;
+        float scale = unit.SlotSize == 2 ? m_LargeUnitScale : m_UnitScale;
 
         if(unit.UnitType == CombatUnitType.Nikke)
         {

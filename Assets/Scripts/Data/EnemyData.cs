@@ -33,6 +33,7 @@ public class EnemyData : ScriptableObject
     [SerializeField] private EnemyType m_EnemyType;
     [SerializeField] private ElementType m_Element;
     [SerializeField] private int m_SlotSize = 1;
+    [SerializeField] private int m_ActionsPerRound = 1;
 
     [Header("Stats")]
     [SerializeField] private StatBlock m_BaseStats;
@@ -61,4 +62,5 @@ public class EnemyData : ScriptableObject
     public Sprite Sprite => m_Sprite;
     public Sprite CorpseSprite => m_CorpseSprite;
     public int SlotSize => m_SlotSize;
+    public int ActionsPerRound => m_ActionsPerRound;
 }

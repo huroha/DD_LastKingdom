@@ -16,6 +16,7 @@ MonoBehaviour:
   m_EnemyType: 1
   m_Element: 2
   m_SlotSize: 2
+  m_ActionsPerRound: 2
   m_BaseStats:
     maxHp: 300
     minDamage: 60
@@ -25,7 +26,7 @@ MonoBehaviour:
     defense: 15
     dodge: 10
     deathBlowResist: 0
-    speed: 0
+    speed: 7
     moveRange: 0
     resistance:
       stun: 0

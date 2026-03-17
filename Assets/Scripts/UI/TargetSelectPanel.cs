@@ -285,6 +285,13 @@ public class TargetSelectPanel : MonoBehaviour
 
     private List<CombatUnit> ResolvePreviewTargets(CombatUnit unit)
     {
+        if (m_CurrentSkill == null)
+        {
+            m_PreviewTargets.Clear();
+            m_PreviewTargets.Add(unit);
+            return m_PreviewTargets;
+        }
+
         if (m_CurrentSkill.TargetType == TargetType.EnemySingle ||
             m_CurrentSkill.TargetType == TargetType.AllySingle)
         {

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 
 
 public enum SurpriseType
@@ -28,6 +27,9 @@ public class CombatStateMachine : MonoBehaviour
     [SerializeField] private int m_EblaFreeRounds = 4;
     [SerializeField] private int m_EblaRoundMultiplier = 1;
 
+    [SerializeField] private CombatFieldView m_FieldView;
+    [SerializeField] private CombatHUD m_CombatHUD;
+
     // 패널티 에블라 수치
     private const int PASS_EBLA_PENALTY = 5;
     private const int ALLY_DEATH_EBLA = 20;
@@ -37,6 +39,7 @@ public class CombatStateMachine : MonoBehaviour
     private PositionSystem  m_PositionSystem;
     private SkillExecutor   m_SkillExecutor;
     private EnemyAI         m_EnemyAI;
+    
 
     // FSM 상태
     private CombatState     m_CurrentState;
@@ -56,6 +59,7 @@ public class CombatStateMachine : MonoBehaviour
     public PositionSystem PositionSystem => m_PositionSystem;
 
     public IReadOnlyList<CombatUnit> TurnOrder => m_TurnManager?.TurnOrder;
+    public int CurrentTurnIndex => m_TurnManager?.CurrentTurnIndex ?? 0;
 
     // UI 이벤트
     public delegate void StateChangeHandler(CombatState newState);
@@ -107,12 +111,15 @@ public class CombatStateMachine : MonoBehaviour
 
         // 적 순환하면서 데이터 채우기
         List<CombatUnit> enemies = new List<CombatUnit>();
+        int slotIndex = 0;
         for (int i=0; i<m_TestEnemies.Length; ++i)
         {
             EnemyData data = m_TestEnemies[i];
             if (data == null)
                 continue;
-            enemies.Add(new CombatUnit(data, i));
+            CombatUnit unit = new CombatUnit(data, slotIndex);
+            enemies.Add(unit);
+            slotIndex += unit.SlotSize;
         }
 
         // 채운 데이터를 넘겨준다.
@@ -149,16 +156,20 @@ public class CombatStateMachine : MonoBehaviour
     private IEnumerator RunBattle()
     {
         SetState(CombatState.BattleStart);
-            yield return null;
+        yield return null;
 
-        while(true)
+        while (true)
         {
             SetState(CombatState.TurnStart);
             m_ActiveUnit = m_TurnManager.StartNextTurn();
 
             if (m_ActiveUnit == null)
                 break;
+            if (m_CombatHUD != null)
+                while (m_CombatHUD.IsTickerAnimating)
+                    yield return null;
 
+            EventBus.Publish(new TurnStartedEvent(m_ActiveUnit));
 
             // 스턴 체크
             if (m_ActiveUnit.IsStunned)
@@ -170,8 +181,6 @@ public class CombatStateMachine : MonoBehaviour
                 continue;
             }
 
-  
-
             Debug.Log($"[Turn] Round {m_TurnManager.RoundNumber} — {m_ActiveUnit.UnitName} ({m_ActiveUnit.UnitType}, Slot{ m_ActiveUnit.SlotIndex}) HP: { m_ActiveUnit.CurrentHp}/{ m_ActiveUnit.MaxHp}");
 
             if (m_ActiveUnit.UnitType == CombatUnitType.Nikke)
@@ -182,6 +191,11 @@ public class CombatStateMachine : MonoBehaviour
             SetState(CombatState.TurnEnd);
             m_TurnManager.EndCurrentTurn();
             yield return null;
+
+            // 이동 애니메이션 완료 대기
+            if (m_FieldView != null)
+                while (m_FieldView.IsMoving)
+                    yield return null;
 
             SetState(CombatState.CheckBattleEnd);
             if (m_PositionSystem.GetAllUnits(CombatUnitType.Enemy).Count == 0)

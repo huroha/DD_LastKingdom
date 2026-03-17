@@ -16,6 +16,7 @@ MonoBehaviour:
   m_EnemyType: 0
   m_Element: 0
   m_SlotSize: 1
+  m_ActionsPerRound: 1
   m_BaseStats:
     maxHp: 150
     minDamage: 35

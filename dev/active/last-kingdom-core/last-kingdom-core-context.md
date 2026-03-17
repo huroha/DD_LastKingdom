@@ -421,6 +421,21 @@ BootScene → TitleScene → TownScene ↔ DungeonScene ↔ CombatScene
 - **Phase 2 테스트**: 풀 사이클 플레이스루 (마을→던전→전투→귀환)
 - **단위 테스트**: CombatUnitTest.cs로 SO → CombatUnit 인스턴스 생성 및 TakeDamage/Heal/AddEbla 검증 ✅
 
+### 32. 보스급 적 다중 행동 시스템 (2026-03-17)
+- **확정**: 적은 최대 size-2까지만 허용. size-3/4는 도입하지 않음
+- **ActionsPerRound**: `EnemyData`에 `m_ActionsPerRound = 1` 필드 추가. `CombatUnit`에 `ActionsPerRound` 프로퍼티 노출
+- **TurnOrder 구조**: `BuildTurnOrder()`를 페이즈 분리 방식으로 변경. 페이즈 1에 모든 유닛, 페이즈 2~N에 해당 액션 수 이상인 유닛만 추가 → 속도순 정렬 후 TurnOrder에 연결. 자연스럽게 분산 배치됨
+- **스턴 처리**: 행동 1회분만 스킵 (TurnOrder 항목 단위로 처리되므로 별도 수정 불필요)
+- **PositionSystem.Initialize()**: `if (SlotSize == 2)` → `for (int s = 1; s < SlotSize; ++s)` 루프로 교체 (size-N 범용 처리)
+- **TurnManager**: `CurrentTurnIndex` 프로퍼티 추가. `CombatStateMachine`에도 노출
+- **CombatHUD 티커 UI**:
+  - `Image[]` 단일 티커 → `TickerGroup { Image[] Tickers }` 구조체로 교체
+  - `SetTickerVisible()` 삭제 → `SetTickerCount(unit, count)` 로 교체
+  - `RefreshTurnTickers()`: `CurrentTurnIndex`부터 TurnOrder 순회해 유닛별 남은 등장 횟수 계산 → `SetTickerCount` 호출. `Dictionary<CombatUnit, int> m_TickerCountCache` 멤버 변수로 GC 최적화
+  - Inspector: 슬롯당 Tickers Image를 최대 행동 횟수(보스 3개, 일반/니케 2개 권장)만큼 배치 필요
+- **턴 추가 스킬 설계 확정**: 아군에게 턴을 추가하는 스킬은 `TurnManager.InsertExtraTurn(unit)`으로 구현. CSM이 `SkillResult`를 보고 호출하는 방식 (방법 A). Phase 2에서 구현 예정
+- **아군 다중 행동**: Nikke는 ActionsPerRound=1 고정. 턴 추가 스킬로만 추가 행동 부여. 미구현 상태
+
 ## Known Issues
 - 아트 에셋 미확보 — 프로토타입은 플레이스홀더 사용
 - 절차적 던전 생성은 후순위 — 수동 맵으로 시작, IDungeonMapProvider 인터페이스로 추후 교체 예정

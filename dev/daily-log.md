@@ -381,3 +381,62 @@
 
 ### Obsidian 노트
 - `Day12 - Large Enemy & 이동 시스템.md` 생성
+
+---
+
+## Day 13 — 2026-03-17
+
+### 완료 작업
+- **PositionSystem 강제이동 버그 수정**
+  - `Move()` size-1: 슬롯 수 기준 → 유닛 수 기준 cursor 방식으로 교체 (size-2 경로 통과 버그 수정)
+  - `MoveLargeUnit()`: return false → 클램프 후 가능한 만큼 이동
+  - `RemoveUnit()`: size-2 SlotIndex 이중 덮어씀 수정 (`slots[i-1] != slots[i]` 조건)
+  - `GetCorpses()`: size-2 중복 추가 수정 (`Contains` → `SlotIndex == i` 패턴)
+  - `GetAllUnits()`: size-2 중복 반환 수정 (`SlotIndex == i` 체크)
+  - `CanUseSkill()`: size-2 모든 점유 슬롯 체크 (for 루프)
+- **보스 다중 행동 시스템**
+  - `EnemyData.m_ActionsPerRound` 필드 추가
+  - `CombatUnit.ActionsPerRound` 프로퍼티 (Enemy: data 참조, Nikke: 1 고정)
+  - `TurnManager.BuildTurnOrder()` 페이즈 분리 방식으로 전면 변경
+  - `TurnManager.CurrentTurnIndex` 노출 → CombatStateMachine에 전달
+- **CombatHUD Ticker 시스템 완성**
+  - `TickerGroup { Image[] Tickers }` 구조체로 교체 (슬롯당 N개 ticker)
+  - `SetTickerCount()`: diff 체크 + 애니메이션 없이 활성화
+  - `RefreshTurnTickers()`: HideAllTickers 선행 + IsAlive 필터 + currentIndex+1 시작
+  - `HideOneTicker()`: 뒤에서부터 숨김
+  - `ShowAllTickersAnimated()` + `Ticker_Bounce.anim` pop-in 애니메이션
+  - `IsTickerAnimating` 프로퍼티 + `TickerAnimTimer` 코루틴
+- **ActiveTurnBar size-2 대응**: `m_LargeActiveTurnBar` 별도 Image 추가 + isLarge 분기
+- **CombatStateMachine 타이밍 수정**
+  - 이동 중 적 행동 버그: TurnEnd 후 `while (m_FieldView.IsMoving)` 대기
+  - Ticker pop-in 후 전투 시작: `StartNextTurn()` 후 `while (m_CombatHUD.IsTickerAnimating)` 대기
+  - `TurnStartedEvent` 발행을 TurnManager → CombatStateMachine으로 이전 (대기 후 발행)
+  - `StartTestBattle()` slotIndex 카운터 방식으로 교체
+  - `CombatHUD.OnBattleStarted()` size-2 이후 HP bar 인덱스 버그 수정
+
+### 발견/수정한 버그
+| 버그 | 원인 | 수정 |
+|------|------|------|
+| Ticker 위치 갱신 안됨 (시체 제거/이동 후) | 이전 슬롯 ticker 미hide | RefreshTurnTickers 앞 HideAllTickers() 선행 |
+| Corpse 상태 ticker 표시 | TurnOrder에 Corpse 잔류 | `!unit.IsAlive` 필터 추가 |
+| 이동 애니메이션 중 적 행동 | FieldView Lerp 완료 미대기 | IsMoving 폴링 추가 |
+| Ticker 팝인 전 행동 시작 | StartNextTurn 전에 대기 → 라운드 전환 감지 불가 | StartNextTurn 후로 대기 이동 |
+| Move hover NullReferenceException | Move 모드에서 m_CurrentSkill null | ResolvePreviewTargets null 체크 추가 |
+| OnUnitMoved HideAllTickers 중복 | RefreshTurnTickers 내부에서 이미 호출 | 제거 |
+| size-2 CorpseTimer 2회 감소 | GetCorpses 중복 반환 | SlotIndex == i 패턴 적용 |
+
+### /simplify 리뷰 수정
+- `GetCorpses()` O(n²) Contains → O(1) SlotIndex == i 패턴
+- `BuildTurnOrder()` phase 지역 변수 → `m_PhaseBuffer` 멤버 변수 (GC 절감)
+- `OnUnitMoved` 중복 `HideAllTickers()` 제거
+- `using Unity.VisualScripting` 미사용 import 제거
+- `ShowAllTickersAnimated()` IsAlive 필터 추가
+- `m_ActiveTurnUnit` → `m_CombatStateMachine.ActiveUnit` 직접 참조
+
+### 설계 확정
+- Nikke는 항상 size-1, ActionsPerRound 항상 1 고정
+- 아군 다중 행동은 InsertExtraTurn 스킬로만 (Phase 2)
+- TurnStartedEvent 발행: TurnManager → CombatStateMachine (Ticker 대기 타이밍 확보)
+
+### Obsidian 노트
+- `Day13 - size-2 완성 & 다중행동 & Ticker 시스템.md` 생성

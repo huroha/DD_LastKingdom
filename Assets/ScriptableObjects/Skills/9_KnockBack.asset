@@ -27,7 +27,7 @@ MonoBehaviour:
   m_EblaDamage: 0
   m_EblaHealAmount: 0
   m_MoveUserAmount: 0
-  m_MoveTargetAmount: 2
+  m_MoveTargetAmount: 1
   m_IsGuard: 0
   m_IsMark: 0
   m_MarkDamageBonus: 0

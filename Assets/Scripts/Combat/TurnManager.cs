@@ -9,9 +9,12 @@ public class TurnManager
     private int                 m_CurrentIndex;
     private int                 m_RoundNumber;
 
+    private List<CombatUnit> m_PhaseBuffer = new List<CombatUnit>();
+
     public CombatUnit                   CurrentUnit => m_TurnOrder[m_CurrentIndex];
     public int                          RoundNumber => m_RoundNumber;
     public IReadOnlyList<CombatUnit>    TurnOrder => m_TurnOrder;
+    public int CurrentTurnIndex => m_CurrentIndex;
 
     public void Initialize(List<CombatUnit> allUnits)
     {
@@ -35,7 +38,6 @@ public class TurnManager
                 return null;
         }
         CombatUnit current = m_TurnOrder[m_CurrentIndex];
-        EventBus.Publish(new TurnStartedEvent(current));
         return current;
     }
 
@@ -56,19 +58,28 @@ public class TurnManager
     private void BuildTurnOrder()
     {
         m_TurnOrder.Clear();
-        for(int i =0; i< m_AllUnits.Count; ++i)
-        {
+
+        for (int i = 0; i < m_AllUnits.Count; ++i)
             if (m_AllUnits[i].IsAlive)
-            {
-                m_TurnOrder.Add(m_AllUnits[i]);
-            }
-        }
-      // Sort 전에 tiebreaker 미리 할당
-      for(int i=0; i< m_TurnOrder.Count; ++i)
+                m_AllUnits[i].TurnOrderTieBreaker = Random.value;
+
+        int maxActions = 1;
+        for (int i = 0; i < m_AllUnits.Count; ++i)
+            if (m_AllUnits[i].IsAlive && m_AllUnits[i].ActionsPerRound > maxActions)
+                maxActions = m_AllUnits[i].ActionsPerRound;
+
+  
+        for (int action = 1; action <= maxActions; ++action)
         {
-            m_TurnOrder[i].TurnOrderTieBreaker = Random.value;
+            m_PhaseBuffer.Clear();
+            for (int i = 0; i < m_AllUnits.Count; ++i)
+                if (m_AllUnits[i].IsAlive && m_AllUnits[i].ActionsPerRound >= action)
+                    m_PhaseBuffer.Add(m_AllUnits[i]);
+
+            m_PhaseBuffer.Sort(CompareBySPD);
+            for (int i = 0; i < m_PhaseBuffer.Count; ++i)
+                m_TurnOrder.Add(m_PhaseBuffer[i]);
         }
-        m_TurnOrder.Sort(CompareBySPD);
     }
 
     private void AdvanceToNextAliveUnit()
