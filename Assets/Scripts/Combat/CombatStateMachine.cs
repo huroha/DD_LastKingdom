@@ -57,6 +57,8 @@ public class CombatStateMachine : MonoBehaviour
     public CombatState CurrentState => m_CurrentState;
     public CombatUnit ActiveUnit => m_ActiveUnit;
     public PositionSystem PositionSystem => m_PositionSystem;
+    public SkillData SelectedSkill => m_SelectedSkill;
+    public SkillExecutor SkillExecutor => m_SkillExecutor;
 
     public IReadOnlyList<CombatUnit> TurnOrder => m_TurnManager?.TurnOrder;
     public int CurrentTurnIndex => m_TurnManager?.CurrentTurnIndex ?? 0;
@@ -293,17 +295,23 @@ public class CombatStateMachine : MonoBehaviour
         SetState(CombatState.EnemyDecide);
         yield return new WaitForSeconds(m_EnemyActionDelay);
 
+
         EnemyAction action = m_EnemyAI.DecideAction(m_ActiveUnit);
         SetState(CombatState.ExecuteSkill);
-        if(!action.IsPass)
+        if (!action.IsPass)
         {
+            m_CombatHUD.ShowEnemyTargetHighlight(action.Target.SlotIndex);
+            m_CombatHUD.ShowEnemySkillName(action.Skill.SkillName);
             SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, action.Skill, action.Target);
             EventBus.Publish(new SkillExecutedEvent(result));
             ProcessDeadUnits(result);
         }
+        else
+            m_CombatHUD.ShowEnemySkillName("턴 넘김");
 
         yield return new WaitForSeconds(m_EnemyActionDelay);
-
+        m_CombatHUD.HideEnemyTargetHighlights();
+        m_CombatHUD.HideEnemySkillName();
     }
 
     // 헬퍼

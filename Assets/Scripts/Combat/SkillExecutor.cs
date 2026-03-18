@@ -1,7 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-
+public struct AttackPreview
+{
+    public float HitChance;
+    public float CritChance;
+    public int MinDamage;
+    public int MaxDamage;
+}
 public class SkillExecutor
 {
     private PositionSystem m_PositionSystem;
@@ -333,6 +339,36 @@ public class SkillExecutor
                     EventBus.Publish(new UnitMovedEvent(target, target));
             }
         }
+    }
+
+    //  Enemy Info 용도
+    public AttackPreview PreviewAttack(CombatUnit attacker, SkillData skill, CombatUnit target)
+    {
+        AttackPreview preview = new AttackPreview();
+        if (attacker == null)
+            return preview;
+        float dodge = target.CurrentStats.dodge;
+        float defence = target.CurrentStats.defense;
+
+        if (target.State == UnitState.Corpse)
+        {
+            dodge = 0f;
+            defence = 0f;
+        }
+
+        float hitChance = attacker.CurrentStats.accuracyMod + skill.AccuracyMod - dodge;
+        float critChance = attacker.CurrentStats.critChance + skill.CritMod;
+        int rawMin = (int)(attacker.CurrentStats.minDamage * skill.DamageMultiplier);
+        int rawMax = (int)(attacker.CurrentStats.maxDamage * skill.DamageMultiplier);
+        int minDamage = (int)(rawMin * (1f - defence / 100f));
+        int maxDamage = (int)(rawMax * (1f - defence / 100f));
+
+        preview.HitChance = hitChance;
+        preview.CritChance = critChance;
+        preview.MinDamage = minDamage;
+        preview.MaxDamage = maxDamage;
+
+        return preview;
     }
 
 }

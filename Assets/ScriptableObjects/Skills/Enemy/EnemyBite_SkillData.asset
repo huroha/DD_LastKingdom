@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf8234ddd9a51424a99679d27d50c99b, type: 3}
   m_Name: EnemyBite_SkillData
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  m_SkillName: "\uBB3C\uC5B4\uB72F\uAE30"
+  m_SkillName: Attack_bite
   m_Description: "\uC801\uC774 \uC0AC\uC6A9\uD558\uB294 \uC2A4\uD0AC"
   m_SkillIcon: {fileID: 0}
   m_SkillType: 0

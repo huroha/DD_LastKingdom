@@ -3,12 +3,19 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json.Bson;
+using UnityEngine.InputSystem.XR.Haptics;
+using Unity.VisualScripting;
 
 
 
 
 public class CombatHUD : MonoBehaviour
 {
+    [Header("Round")]
+    [SerializeField] private TextMeshProUGUI m_RoundText;
+    [SerializeField] private GameObject m_RoundBg;
+    [SerializeField] private int m_PendingRound;
 
     [Header("Nikke Slots")]
     [SerializeField] private Slider[] m_NikkeHpBars;    // 4개
@@ -31,12 +38,16 @@ public class CombatHUD : MonoBehaviour
     [Header("Enemy Slots")]
     [SerializeField] private Slider[] m_EnemyHpBars;  // 4개
     [SerializeField] private TextMeshProUGUI[] m_EnemyNames;   // 4개
+    [SerializeField] private GameObject m_EnemySkillPanel;
+    [SerializeField] private TextMeshProUGUI m_EnemySkillNameText;
+
 
     [Header("Large Enemy Slots")]
     [SerializeField] private Slider[] m_LargeEnemyHpBars;
     [SerializeField] private RectTransform[] m_LargeEnemyBarAnchors;
 
-
+    [Header("Enemy Info Panel")]
+    [SerializeField] private EnemyInfoPanel m_EnemyInfoPanel;
 
     [System.Serializable]
     private struct TickerGroup
@@ -55,6 +66,7 @@ public class CombatHUD : MonoBehaviour
     [SerializeField] private Image m_LargeActiveTurnBar;
     [SerializeField] private RectTransform[] m_NikkeBarAnchor;
     [SerializeField] private RectTransform[] m_EnemyBarAnchor;
+    [SerializeField] private Image[] m_NTargetHighlights;  // 4개
 
 
     [Header("Turn Order")]
@@ -63,6 +75,7 @@ public class CombatHUD : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private CombatStateMachine m_CombatStateMachine;
+    private CombatUnit m_HoveredUnit;
 
     private System.Text.StringBuilder m_TurnOrderBuilder = new System.Text.StringBuilder(128);
 
@@ -92,6 +105,8 @@ public class CombatHUD : MonoBehaviour
         EventBus.Subscribe<TurnEndedEvent>(OnTurnEnded);
         EventBus.Subscribe<RoundStartedEvent>(OnRoundStarted);
         EventBus.Subscribe<TurnStartedEvent>(OnTurnStarted);
+        if(m_CombatStateMachine !=null)
+            m_CombatStateMachine.OnStateChanged += OnCombatStateChanged;
 
     }
     private void OnDisable()
@@ -103,6 +118,8 @@ public class CombatHUD : MonoBehaviour
         EventBus.Unsubscribe<TurnEndedEvent>(OnTurnEnded);
         EventBus.Unsubscribe<RoundStartedEvent>(OnRoundStarted);
         EventBus.Unsubscribe<TurnStartedEvent>(OnTurnStarted);
+        if (m_CombatStateMachine != null)
+            m_CombatStateMachine.OnStateChanged -= OnCombatStateChanged;
     }
 
     // 이벤트 함수
@@ -110,6 +127,8 @@ public class CombatHUD : MonoBehaviour
     {
 
         RefreshTurnTickers();
+        if (e.Unit == m_HoveredUnit)
+            HideEnemyInfo();
         if (e.Unit.State == UnitState.Dead)
         {
             if (e.Unit.UnitType == CombatUnitType.Nikke)
@@ -152,7 +171,8 @@ public class CombatHUD : MonoBehaviour
     {
         // 전체 숨기기
         HideAllTickers();
-
+        HideEnemyTargetHighlights();
+        HideEnemySkillName();
         for (int i = 0; i < m_NikkeHpBars.Length; ++i)
         {
             m_NikkeHpBars[i].gameObject.SetActive(false);
@@ -227,10 +247,18 @@ public class CombatHUD : MonoBehaviour
 
     private void OnRoundStarted(RoundStartedEvent e)
     {
+        m_PendingRound = e.Round;
         HideAllTickers();
         ShowAllTickersAnimated();
     }
 
+    private void OnCombatStateChanged(CombatState newState)
+    {
+        if (newState != CombatState.PlayerSelectTarget)
+            m_EnemyInfoPanel.HidePreviewSection();
+    }
+
+    // 헬퍼들
     private void SnapTurnBar(CombatUnit unit)
     {
         if (unit == null)
@@ -469,6 +497,8 @@ public class CombatHUD : MonoBehaviour
         }
         foreach (KeyValuePair<CombatUnit, int> pair in m_TickerCountCache)
             ShowTickersAnimated(pair.Key, pair.Value);
+        m_RoundBg.SetActive(false);
+        m_RoundBg.SetActive(true);
         StartCoroutine(TickerAnimTimer());
 
     }
@@ -504,5 +534,65 @@ public class CombatHUD : MonoBehaviour
         else
             return m_EnemyTurnTickerGroups[unit.SlotIndex];
     }
+
+    public void ShowEnemyInfo(CombatUnit unit)
+    {
+        m_HoveredUnit = unit;
+        m_EnemyInfoPanel.gameObject.SetActive(true);
+        m_EnemyInfoPanel.Populate(unit);
+        if (m_CombatStateMachine.CurrentState == CombatState.PlayerSelectTarget
+             && m_CombatStateMachine.SelectedSkill != null)
+        {
+            AttackPreview preview = m_CombatStateMachine.SkillExecutor
+                  .PreviewAttack(m_CombatStateMachine.ActiveUnit,
+                                 m_CombatStateMachine.SelectedSkill,
+                                 unit);
+            m_EnemyInfoPanel.PopulatePreview(preview);
+            m_EnemyInfoPanel.ShowPreviewSection();
+        }
+        else
+            m_EnemyInfoPanel.HidePreviewSection();
+    }
+
+    public void HideEnemyInfo()
+    {
+        m_HoveredUnit = null;
+        m_EnemyInfoPanel.Hide();
+    }
+
+
+    public void ShowEnemyTargetHighlight(int slotIndex)
+    {
+        HideEnemyTargetHighlights();
+        m_NTargetHighlights[slotIndex].gameObject.SetActive(true);
+    }
+
+    public void HideEnemyTargetHighlights()
+    {
+        for (int i = 0; i < m_NTargetHighlights.Length; ++i)
+        {
+            m_NTargetHighlights[i].gameObject.SetActive(false);
+        }
+    }
+
+    public void ShowEnemySkillName(string skillName)
+    {
+        m_EnemySkillNameText.text = skillName;
+        m_EnemySkillPanel.SetActive(false);
+        m_EnemySkillPanel.SetActive(true);
+    }
+    public void HideEnemySkillName()
+    {
+        m_EnemySkillPanel.SetActive(false);
+    }
+
+
+
+    // Round 표기
+    public void ApplyRoundText()
+    {
+        m_RoundText.text = m_PendingRound.ToString();
+    }
+
 
 }

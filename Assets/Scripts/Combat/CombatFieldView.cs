@@ -10,6 +10,7 @@ public class CombatFieldView : MonoBehaviour
     [SerializeField] private float m_UnitScale = 0.3f;
     [SerializeField] private float m_LargeUnitScale = 0.5f;
 
+    [SerializeField] private CombatHUD m_CombatHUD;
 
     // CombatUnit -> «ÿ¥Á ¿Ø¥÷¿« SpriteRenderer ∏ «Œ
     private Dictionary<CombatUnit, SpriteRenderer> m_UnitViews;
@@ -118,8 +119,13 @@ public class CombatFieldView : MonoBehaviour
             sr.sprite = unit.EnemyData.Sprite;
             go.AddComponent<BoxCollider2D>();
             UnitClickHandler handler = go.AddComponent<UnitClickHandler>();
+            UnitHoverHandler hoverHandler = go.AddComponent<UnitHoverHandler>();
             CombatUnit captured = unit;
             handler.Initialize(() => LogEnemyInfo(captured));
+            hoverHandler.Initialize(
+                () => m_CombatHUD.ShowEnemyInfo(captured),
+                () => m_CombatHUD.HideEnemyInfo()
+            );
         }
         go.transform.position = pos;
         go.transform.localScale = Vector3.one * scale;

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf8234ddd9a51424a99679d27d50c99b, type: 3}
   m_Name: 6_StressAttack
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  m_SkillName: "\uC2A4\uD2B8\uB808\uC2A4"
+  m_SkillName: Attack_Ebla
   m_Description: "\uC5D0\uBE14\uB77C\uCD94\uAC00"
   m_SkillIcon: {fileID: 0}
   m_SkillType: 0
