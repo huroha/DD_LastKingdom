@@ -32,7 +32,7 @@ public class EnemyInfoPanel : MonoBehaviour
         m_ElementText.text = unit.EnemyData.Element.ToString();
         m_SpeedText.text = unit.CurrentStats.speed.ToString();
         m_DodgeText.text = unit.CurrentStats.dodge.ToString();
-        ResistanceBlock res = unit.EnemyData.BaseStats.resistance;
+        ResistanceBlock res = unit.CurrentStats.resistance;
         m_Sb.AppendLine($"{res.stun:F0}%");
         m_Sb.AppendLine($"{res.move:F0}%");
         m_Sb.AppendLine($"{res.poison:F0}%");

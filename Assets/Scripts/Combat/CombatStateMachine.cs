@@ -58,7 +58,6 @@ public class CombatStateMachine : MonoBehaviour
     public CombatUnit ActiveUnit => m_ActiveUnit;
     public PositionSystem PositionSystem => m_PositionSystem;
     public SkillData SelectedSkill => m_SelectedSkill;
-    public SkillExecutor SkillExecutor => m_SkillExecutor;
 
     public IReadOnlyList<CombatUnit> TurnOrder => m_TurnManager?.TurnOrder;
     public int CurrentTurnIndex => m_TurnManager?.CurrentTurnIndex ?? 0;
@@ -329,6 +328,11 @@ public class CombatStateMachine : MonoBehaviour
                 EventBus.Publish(new UnitDiedEvent(corpses[i]));
             }
         }
+    }
+
+    public AttackPreview PreviewAttack(CombatUnit target)
+    {
+        return m_SkillExecutor.PreviewAttack(m_ActiveUnit, m_SelectedSkill, target);
     }
 
     // 스턴제거

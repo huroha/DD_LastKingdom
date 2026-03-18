@@ -347,19 +347,22 @@ public class SkillExecutor
         AttackPreview preview = new AttackPreview();
         if (attacker == null)
             return preview;
-        float dodge = target.CurrentStats.dodge;
-        float defence = target.CurrentStats.defense;
 
+        StatBlock attackerStats = attacker.CurrentStats;
+        StatBlock targetStats = target.CurrentStats;
+        float dodge = targetStats.dodge;
+        float defence = targetStats.defense;
+        
         if (target.State == UnitState.Corpse)
         {
             dodge = 0f;
             defence = 0f;
         }
 
-        float hitChance = attacker.CurrentStats.accuracyMod + skill.AccuracyMod - dodge;
-        float critChance = attacker.CurrentStats.critChance + skill.CritMod;
-        int rawMin = (int)(attacker.CurrentStats.minDamage * skill.DamageMultiplier);
-        int rawMax = (int)(attacker.CurrentStats.maxDamage * skill.DamageMultiplier);
+        float hitChance = attackerStats.accuracyMod + skill.AccuracyMod - dodge;
+        float critChance = attackerStats.critChance + skill.CritMod;
+        int rawMin = (int)(attackerStats.minDamage * skill.DamageMultiplier);
+        int rawMax = (int)(attackerStats.maxDamage * skill.DamageMultiplier);
         int minDamage = (int)(rawMin * (1f - defence / 100f));
         int maxDamage = (int)(rawMax * (1f - defence / 100f));
 

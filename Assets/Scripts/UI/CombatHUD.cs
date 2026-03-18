@@ -3,9 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json.Bson;
-using UnityEngine.InputSystem.XR.Haptics;
-using Unity.VisualScripting;
+
 
 
 
@@ -543,10 +541,7 @@ public class CombatHUD : MonoBehaviour
         if (m_CombatStateMachine.CurrentState == CombatState.PlayerSelectTarget
              && m_CombatStateMachine.SelectedSkill != null)
         {
-            AttackPreview preview = m_CombatStateMachine.SkillExecutor
-                  .PreviewAttack(m_CombatStateMachine.ActiveUnit,
-                                 m_CombatStateMachine.SelectedSkill,
-                                 unit);
+            AttackPreview preview = m_CombatStateMachine.PreviewAttack(unit);
             m_EnemyInfoPanel.PopulatePreview(preview);
             m_EnemyInfoPanel.ShowPreviewSection();
         }
