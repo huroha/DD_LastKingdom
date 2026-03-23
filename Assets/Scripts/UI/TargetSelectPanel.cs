@@ -2,12 +2,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
 
 
 public class TargetSelectPanel : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private CombatStateMachine m_CombatStateMachine;
+    [SerializeField] private CombatHUD m_CombatHUD;
 
     [Header("Target Buttons")]
     [SerializeField] private Button[]       m_EnemyButtons;   // 4개
@@ -27,6 +29,10 @@ public class TargetSelectPanel : MonoBehaviour
     [Header("Cancel Button")]
     [SerializeField] private Button m_CancelButton;
 
+    [SerializeField] private SkillSelectPanel m_SkillSelectPanel;
+    private readonly Key[] m_SkillKeys = { Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4 };
+
+    private CombatUnit m_HoveredUnit = null;
 
     public delegate void TargetSelectedHandler(CombatUnit target);
     public delegate void CancelHandler();
@@ -137,6 +143,20 @@ public class TargetSelectPanel : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    private void Update()
+    {
+        for (int i = 0; i < m_SkillKeys.Length; ++i)
+        {
+            if (Keyboard.current[m_SkillKeys[i]].wasPressedThisFrame)
+            {
+                m_SkillSelectPanel.SetPendingSkill(i);
+                OnCancelButtonClicked();
+                return;
+            }
+        }
+        if (Keyboard.current[Key.Escape].wasPressedThisFrame)
+            OnCancelButtonClicked();
+    }
     private void OnDestroy()
     {
         EventBus.Unsubscribe<BattleStartedEvent>(OnBattleStarted);
@@ -152,7 +172,10 @@ public class TargetSelectPanel : MonoBehaviour
         m_OnCancel = onCancel;
         RefreshButtons();
         RefreshHighlights();
+        if (m_HoveredUnit != null && m_ValidTargets.Contains(m_HoveredUnit))
+            OnButtonHoverEnter(m_HoveredUnit.UnitType, m_HoveredUnit.SlotIndex);
         gameObject.SetActive(true);
+        m_CombatHUD.RefreshHoveredPreview();
 
     }
     public void Hide() 
@@ -261,11 +284,13 @@ public class TargetSelectPanel : MonoBehaviour
 
     private void OnButtonHoverEnter(CombatUnitType type, int index)
     {
+        
         if (m_ValidTargets == null)
             return;
         CombatUnit hovered = m_CombatStateMachine.PositionSystem.GetUnit(type, index);
         if (hovered == null || !m_ValidTargets.Contains(hovered))
             return;
+        m_HoveredUnit = hovered;
 
         List<CombatUnit> brightTargets = ResolvePreviewTargets(hovered);
 
@@ -278,6 +303,7 @@ public class TargetSelectPanel : MonoBehaviour
 
     private void OnButtonHoverExit()
     {
+        m_HoveredUnit = null;
         if (m_ValidTargets == null)
             return;
         RefreshHighlights();
@@ -340,6 +366,7 @@ public class TargetSelectPanel : MonoBehaviour
         for (int i = 0; i < m_LargeEnemyHighlights.Length; ++i)
             m_LargeEnemyHighlights[i].gameObject.SetActive(false);
     }
+
 
 }
 

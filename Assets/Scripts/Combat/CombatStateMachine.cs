@@ -68,6 +68,7 @@ public class CombatStateMachine : MonoBehaviour
 
     private void Start()
     {
+        Application.targetFrameRate = 60;
         if(null != m_TestNikkes && m_TestNikkes.Length > 0)
         {
             StartTestBattle();
@@ -182,7 +183,7 @@ public class CombatStateMachine : MonoBehaviour
                 continue;
             }
 
-            Debug.Log($"[Turn] Round {m_TurnManager.RoundNumber} — {m_ActiveUnit.UnitName} ({m_ActiveUnit.UnitType}, Slot{ m_ActiveUnit.SlotIndex}) HP: { m_ActiveUnit.CurrentHp}/{ m_ActiveUnit.MaxHp}");
+            //Debug.Log($"[Turn] Round {m_TurnManager.RoundNumber} — {m_ActiveUnit.UnitName} ({m_ActiveUnit.UnitType}, Slot{ m_ActiveUnit.SlotIndex}) HP: { m_ActiveUnit.CurrentHp}/{ m_ActiveUnit.MaxHp}");
 
             if (m_ActiveUnit.UnitType == CombatUnitType.Nikke)
                 yield return StartCoroutine(HandlePlayerTurn());
@@ -385,7 +386,7 @@ public class CombatStateMachine : MonoBehaviour
         if (OnStateChanged != null)
             OnStateChanged(newState);
         // OnstateChanged?.Invoke(newState)와 동일함.
-        Debug.Log($"[FSM] {newState}");
+        //Debug.Log($"[FSM] {newState}");
 
     }
 
@@ -468,9 +469,14 @@ public class CombatStateMachine : MonoBehaviour
                 targets.Add(backward);
         }
         return targets;
-
     }
-
+    public bool IsValidTarget(CombatUnit target)
+    {
+        if (m_ActiveUnit == null || m_SelectedSkill == null)
+            return false;
+        List<CombatUnit> validTargets = m_PositionSystem.GetValidTargets(m_ActiveUnit, m_SelectedSkill);
+        return validTargets.Contains(target);
+    }
 
 
 }

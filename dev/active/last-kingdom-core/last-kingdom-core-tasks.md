@@ -175,7 +175,7 @@
   - Details: 유닛별 에블라 수치(0~200). 0~100: 정상 구간. 100 도달: Affliction(기본)/Virtue(canVirtue 영웅) 발동 → 디버프 or 버프+일러스트 변경+특수 스킬. 100~200: 위험 구간(Affliction 디버프 유지). 200 도달: **영구 사망 발동**
   - Acceptance: 에블라 100 → Affliction 스탯 디버프 적용 / Virtue 영웅은 일러스트 변경 + 특수 스킬. 에블라 200 → 해당 영웅 즉시 사망 + 세이브에서 영구 제거
   - Size: L
-  - Dependencies: CombatUnit, HeroData, SaveSystem(사망 처리)
+  - Dependencies: CombatUnit, NikkeData, SaveSystem(사망 처리)
 
 - [✅] StatusEffectData SO 정의 (Phase 1.3에서 선행 완료)
   - File: `Assets/Scripts/Data/StatusEffectData.cs`

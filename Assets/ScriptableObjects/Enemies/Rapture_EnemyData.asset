@@ -16,6 +16,7 @@ MonoBehaviour:
   m_EnemyType: 0
   m_Element: 0
   m_SlotSize: 1
+  m_ActionsPerRound: 1
   m_BaseStats:
     maxHp: 150
     minDamage: 35
@@ -28,12 +29,12 @@ MonoBehaviour:
     speed: 6
     moveRange: 0
     resistance:
-      stun: 0
-      move: 0
-      poison: 0
+      stun: 20
+      move: 10
+      poison: 15
       disease: 0
-      bleed: 0
-      debuff: 0
+      bleed: 20
+      debuff: 40
       trap: 0
   m_Skills:
   - {fileID: 11400000, guid: aa0bba7d332e50e46b083318c321aeb2, type: 2}

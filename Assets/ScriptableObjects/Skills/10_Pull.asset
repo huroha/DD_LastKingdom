@@ -20,7 +20,7 @@ MonoBehaviour:
   m_UsablePositions: 00000101
   m_TargetPositions: 00000101
   m_TargetType: 0
-  m_DamageMultiplier: 0.8
+  m_DamageMultiplier: 0.5
   m_AccuracyMod: 0
   m_CritMod: 0
   m_HealAmount: 0

@@ -156,12 +156,12 @@ public class SkillExecutor
         if(skill.TargetType == TargetType.EnemyAll)
         {
             CombatUnitType enemyType = (user.UnitType == CombatUnitType.Nikke) ? CombatUnitType.Enemy : CombatUnitType.Nikke;
-            targets = m_PositionSystem.GetAllUnits(enemyType);
+            targets = m_PositionSystem.GetAllTargetable(enemyType);
         }
         // TargetType이 AllyAll이면: 살아있는 모든 아군 반환 (TargetPositions 무시)
         else if(skill.TargetType == TargetType.AllyAll)
         {
-             targets = m_PositionSystem.GetAllUnits(user.UnitType);
+             targets = m_PositionSystem.GetAllTargetable(user.UnitType);
         }
         else if (skill.TargetType == TargetType.EnemySingle || skill.TargetType == TargetType.AllySingle)
             targets.Add(selectedTarget);
@@ -175,36 +175,49 @@ public class SkillExecutor
         return targets;
     }
 
+    private float CalcHitChance(CombatUnit attacker, CombatUnit target, SkillData skill)
+    {
+        float dodge = (target.State == UnitState.Corpse) ? 0f : target.CurrentStats.dodge;
+        float result = (attacker.CurrentStats.accuracyMod + skill.AccuracyMod) - dodge;
+        return result;
+    }
+
     // 명중 판정: roll < (user.CurrentStats.accuracyMod + skill.AccuracyMod) - target.CurrentStats.dodge
     private bool RollHit(CombatUnit user, CombatUnit target, SkillData skill) 
     {
-
-        float dodge = (target.State == UnitState.Corpse) ? 0f : target.CurrentStats.dodge;
-        float hitChance = (user.CurrentStats.accuracyMod + skill.AccuracyMod) - dodge;
+        float hitChance = CalcHitChance(user,target,skill);
         float roll = Random.Range(0f, 100f);
-        Debug.Log($"[HitRoll] ACC:{user.CurrentStats.accuracyMod} + SkillMod:{skill.AccuracyMod} -DODGE:{dodge} = {hitChance} | Roll:{roll:F1}");
         return roll < hitChance;
     }
 
+
+    private (int min, int max) CalcDamageRange(CombatUnit attacker, CombatUnit target, SkillData skill)
+    {
+        float defence = (target.State == UnitState.Corpse) ? 0f : target.CurrentStats.defense;
+        int rawMin = (int)(attacker.CurrentStats.minDamage * skill.DamageMultiplier);
+        int rawMax = (int)(attacker.CurrentStats.maxDamage * skill.DamageMultiplier);
+        int min = Mathf.Max((int)(rawMin * (1f - defence / 100f)), 0);
+        int max = Mathf.Max((int)(rawMax * (1f - defence / 100f)), 0);
+
+        return (min, max);
+    }
     // 데미지 계산: BaseDamage → RawDamage → FinalDamage (defense % 감소)
     private int CalcDamage(CombatUnit user, CombatUnit target, SkillData skill)
     {
-        float defence = (target.State == UnitState.Corpse) ? 0f : target.CurrentStats.defense;
-        int BaseDamage = Random.Range(user.CurrentStats.minDamage, user.CurrentStats.maxDamage + 1);
-        int RawDamage = (int)(BaseDamage * skill.DamageMultiplier);
-        int FinalDamage = (int)(RawDamage * (1f - defence / 100f));
-
-        FinalDamage = Mathf.Max(FinalDamage, 0);
-        Debug.Log($"[Damage] Base:{BaseDamage} × Multi:{skill.DamageMultiplier} = Raw:{RawDamage} → Final:{FinalDamage}(DEF:{ target.CurrentStats.defense}%)");
-
+        (int min, int max) range = CalcDamageRange(user, target, skill);
+        int FinalDamage = Random.Range(range.min, range.max + 1);
 
         return FinalDamage;
     }
-
+    private float CalcCritChance(CombatUnit attacker,SkillData skill)
+    {
+        float critchance = attacker.CurrentStats.critChance + skill.CritMod;
+        return critchance;
+    }
     // 크리티컬 판정: roll < user.CurrentStats.critChance + skill.CritMod
     private bool RollCrit(CombatUnit user, SkillData skill) 
     {
-        float critchance = user.CurrentStats.critChance + skill.CritMod;
+        float critchance = CalcCritChance(user, skill);
         return Random.Range(0f, 100f) < critchance;
     }
 
@@ -255,8 +268,8 @@ public class SkillExecutor
                     target.ActiveEffects.Add(new ActiveStatusEffect(effect));
                 }
 
+                applied.Add(effect);
             }
-            applied.Add(effect);
         }
     }
 
@@ -348,28 +361,14 @@ public class SkillExecutor
         if (attacker == null)
             return preview;
 
-        StatBlock attackerStats = attacker.CurrentStats;
-        StatBlock targetStats = target.CurrentStats;
-        float dodge = targetStats.dodge;
-        float defence = targetStats.defense;
-        
-        if (target.State == UnitState.Corpse)
-        {
-            dodge = 0f;
-            defence = 0f;
-        }
 
-        float hitChance = attackerStats.accuracyMod + skill.AccuracyMod - dodge;
-        float critChance = attackerStats.critChance + skill.CritMod;
-        int rawMin = (int)(attackerStats.minDamage * skill.DamageMultiplier);
-        int rawMax = (int)(attackerStats.maxDamage * skill.DamageMultiplier);
-        int minDamage = (int)(rawMin * (1f - defence / 100f));
-        int maxDamage = (int)(rawMax * (1f - defence / 100f));
-
+        float hitChance = CalcHitChance(attacker, target, skill);
+        float critChance = CalcCritChance(attacker, skill);
+        (int min, int max) range = CalcDamageRange(attacker, target, skill);
         preview.HitChance = hitChance;
         preview.CritChance = critChance;
-        preview.MinDamage = minDamage;
-        preview.MaxDamage = maxDamage;
+        preview.MinDamage = range.min;
+        preview.MaxDamage = range.max;
 
         return preview;
     }

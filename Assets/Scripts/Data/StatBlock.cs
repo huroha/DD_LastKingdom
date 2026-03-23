@@ -1,14 +1,19 @@
 using UnityEngine;
 
+
+
+
+
+
 [System.Serializable]
 public struct ResistanceBlock
 {
-    [Range(0f, 100f)] public float stun;        // 기절 저항
-    [Range(0f, 100f)] public float move;        // 이동 저항
-    [Range(0f, 100f)] public float poison;      // 중독 저항
-    [Range(0f, 100f)] public float disease;     // 질병 저항
-    [Range(0f, 100f)] public float bleed;       // 출혈 저항
-    [Range(0f, 100f)] public float debuff;      // 디버프 저항
+    [Range(0f, 500f)] public float stun;        // 기절 저항
+    [Range(0f, 500f)] public float move;        // 이동 저항
+    [Range(0f, 500f)] public float poison;      // 중독 저항
+    [Range(0f, 500f)] public float disease;     // 질병 저항
+    [Range(0f, 500f)] public float bleed;       // 출혈 저항
+    [Range(0f, 500f)] public float debuff;      // 디버프 저항
     [Range(0f, 100f)] public float trap;        // 함정 해제율
 }
 
@@ -38,4 +43,31 @@ public struct StatBlock
     [Header("저항력")]
     public ResistanceBlock resistance;
 
+
+    public StatBlock Apply(StatBlock modifier)
+    {
+        StatBlock result;
+        result.maxHp        = maxHp + modifier.maxHp;
+        result.minDamage    = minDamage + modifier.minDamage;
+        result.maxDamage    = maxDamage + modifier.maxDamage;
+        result.accuracyMod  = accuracyMod + modifier.accuracyMod;
+        result.critChance   = critChance + modifier.critChance;
+        result.defense      = defense + modifier.defense;
+        result.dodge        = dodge + modifier.dodge;
+        result.deathBlowResist = deathBlowResist + modifier.deathBlowResist;
+        result.speed        = speed + modifier.speed;
+        result.moveRange    = moveRange + modifier.moveRange;
+
+        result.resistance.stun      = resistance.stun + modifier.resistance.stun;
+        result.resistance.move      = resistance.move + modifier.resistance.move;
+        result.resistance.poison    = resistance.poison + modifier.resistance.poison;
+        result.resistance.disease   = resistance.disease + modifier.resistance.disease;
+        result.resistance.bleed     = resistance.bleed + modifier.resistance.bleed;
+        result.resistance.debuff    = resistance.debuff + modifier.resistance.debuff;
+        result.resistance.trap      = resistance.trap + modifier.resistance.trap;
+
+        return result;
+    }
+
 }
+

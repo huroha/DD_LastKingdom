@@ -1,10 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.InputSystem;
+
 
 
 public class SkillSelectPanel : MonoBehaviour
 {
+    private readonly Key[] m_SkillKeys = { Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4 };
+    private int m_PendingSkillIndex = -1;
+
     [Header("Skill Buttons")]
     [SerializeField] private Button[] m_SkillButtons;   //4개
     [SerializeField] private TextMeshProUGUI[] m_SkillNames; //4개
@@ -14,6 +19,10 @@ public class SkillSelectPanel : MonoBehaviour
 
     [Header("Move Button")]
     [SerializeField] private Button m_MoveButton;
+
+    [Header("Skill Select Icon")]
+    [SerializeField] private GameObject m_SkillSelectIcon;
+    [SerializeField] private RectTransform[] m_SkillIconTransforms; // select 참조용
 
     [Header("References")]
     [SerializeField] private CombatStateMachine m_CombatStateMachine;
@@ -38,6 +47,21 @@ public class SkillSelectPanel : MonoBehaviour
         m_PassButton.onClick.AddListener(OnPassButtonClicked);
         m_MoveButton.onClick.AddListener(OnMoveButtonClicked);
     }
+    private void Update()
+    {
+
+        for (int i = 0; i < m_SkillKeys.Length; ++i)
+        {
+            if (Keyboard.current[m_SkillKeys[i]].wasPressedThisFrame)
+            {
+                if (i < m_SkillButtons.Length && m_SkillButtons[i].interactable)
+                    OnSkillButtonClicked(i);
+            }
+        }
+        if (Keyboard.current[Key.Digit5].wasPressedThisFrame)
+            if (m_MoveButton.interactable)
+                OnMoveButtonClicked();
+    }
 
     public void Show(CombatUnit unit, SkillSelectedHandler onSkillSelected, PassHandler onPass, MoveHandler onMove)
     {
@@ -46,7 +70,17 @@ public class SkillSelectPanel : MonoBehaviour
         m_OnPass = onPass;
         m_OnMove = onMove;
         RefreshButtons();
+        m_SkillSelectIcon.SetActive(false);
         gameObject.SetActive(true);
+
+        if(m_PendingSkillIndex >= 0)
+        {
+            int pending = m_PendingSkillIndex;
+            m_PendingSkillIndex = -1;
+            if(pending < m_SkillButtons.Length && m_SkillButtons[pending].interactable)
+                OnSkillButtonClicked(pending);
+        }
+        
     }
     public void Hide() 
     { 
@@ -55,9 +89,6 @@ public class SkillSelectPanel : MonoBehaviour
 
     private void RefreshButtons()
     {
-      
-
-
         for (int i = 0; i < m_SkillButtons.Length; ++i)
         {
             SkillData skill = (i < m_CurrentUnit.Skills.Count) ? m_CurrentUnit.Skills[i] : null;
@@ -76,6 +107,8 @@ public class SkillSelectPanel : MonoBehaviour
     {
         SkillData skill = m_CurrentUnit.Skills[index];
         m_OnSkillSelected(skill);
+        m_SkillSelectIcon.transform.position = m_SkillIconTransforms[index].position;
+        m_SkillSelectIcon.SetActive(true);
         Hide();
     }
     private void OnPassButtonClicked()
@@ -88,5 +121,11 @@ public class SkillSelectPanel : MonoBehaviour
         m_OnMove();
         Hide();
     }
+    public void SetPendingSkill(int index)
+    {
+        m_PendingSkillIndex = index;
+    }
+
+
 
 }

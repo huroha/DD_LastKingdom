@@ -51,6 +51,39 @@ public class PositionSystem
         return units;
     }
 
+    public List<CombatUnit> GetAllTargetable(CombatUnitType team)
+    {
+        List<CombatUnit> units = new List<CombatUnit>();
+        CombatUnit[] slots = GetTeamSlots(team);
+        for (int i = 0; i < slots.Length; ++i)
+        {
+            if (slots[i] != null && slots[i].State != UnitState.Dead && slots[i].SlotIndex == i)
+                units.Add(slots[i]);
+        }
+        return units;
+    }
+    private CombatUnit[] GetTeamSlots(CombatUnitType team)
+    {
+        if (team == CombatUnitType.Nikke)
+            return m_NikkeSlots;
+        else
+            return m_EnemySlots;
+    }
+
+    private CombatUnit[] GetTargetSlots(CombatUnit user, TargetType targetType)
+    {
+        // 사용자의 기술타입이 Enemy가 들어있으면 true 버프기면 false가 된다
+        bool targetEnemy = targetType == TargetType.EnemySingle || targetType == TargetType.EnemyAll
+                         || targetType == TargetType.EnemyMulti;
+
+        // targetEnemy는 무조건 true 혹은 false니 그게 어떤 타입이 사용했는지만 알면됨
+        if (user.UnitType == CombatUnitType.Nikke)
+            return targetEnemy ? m_EnemySlots : m_NikkeSlots;
+        else
+            return targetEnemy ? m_NikkeSlots : m_EnemySlots;
+    }
+
+
     public List<CombatUnit> GetCorpses(CombatUnitType team)
     {
         List<CombatUnit> corpses = new List<CombatUnit>();
@@ -61,22 +94,6 @@ public class PositionSystem
                 corpses.Add(slots[i]);
         }
         return corpses;
-    }
-
-    // 스킬 판정
-    public bool CanUseSkill(CombatUnit user, SkillData skill)
-    {
-        int index = user.SlotIndex;
-        if (index >= skill.UsablePositions.Count)
-            return false;
-        for (int i =0; i <user.SlotSize; ++i)
-        {
-            if (index + i >= skill.UsablePositions.Count)
-                return false;
-            if (!skill.UsablePositions[index + i])
-                return false;
-        }
-        return true;
     }
 
     public List<CombatUnit> GetValidTargets(CombatUnit user, SkillData skill)
@@ -93,10 +110,10 @@ public class PositionSystem
         if(skill.TargetType == TargetType.EnemyAll)
         {
             CombatUnitType enemyType = (user.UnitType == CombatUnitType.Nikke) ? CombatUnitType.Enemy : CombatUnitType.Nikke;
-            return GetAllUnits(enemyType);
+            return GetAllTargetable(enemyType);
         }
         if (skill.TargetType == TargetType.AllyAll)
-            return GetAllUnits(user.UnitType);
+            return GetAllTargetable(user.UnitType);
 
         CombatUnit[] targetSlots = GetTargetSlots(user, skill.TargetType);
 
@@ -110,6 +127,16 @@ public class PositionSystem
                 result.Add(target);
         }
         return result;
+    }
+
+    // 스킬 판정
+    public bool CanUseSkill(CombatUnit user, SkillData skill)
+    {
+        int index = user.SlotIndex;
+        if (index >= skill.UsablePositions.Count)
+            return false;
+
+        return skill.UsablePositions[index];
     }
 
     public bool Swap(CombatUnit a, CombatUnit b)
@@ -309,26 +336,6 @@ public class PositionSystem
             slots[i] = null;
     }
 
-    private CombatUnit[] GetTeamSlots(CombatUnitType team)
-    {
-        if (team == CombatUnitType.Nikke)
-            return m_NikkeSlots;
-        else
-            return m_EnemySlots;
-    }
-
-    private CombatUnit[] GetTargetSlots(CombatUnit user, TargetType targetType)
-    {
-        // 사용자의 기술타입이 Enemy가 들어있으면 true 버프기면 false가 된다
-        bool targetEnemy = targetType == TargetType.EnemySingle || targetType == TargetType.EnemyAll 
-                         || targetType == TargetType.EnemyMulti;
-
-        // targetEnemy는 무조건 true 혹은 false니 그게 어떤 타입이 사용했는지만 알면됨
-        if (user.UnitType == CombatUnitType.Nikke)
-            return targetEnemy ? m_EnemySlots : m_NikkeSlots;  
-        else
-            return targetEnemy ? m_NikkeSlots : m_EnemySlots;
-    }
 
     private static bool IsFirstOccurrence(CombatUnit[] arr, int k)
     {

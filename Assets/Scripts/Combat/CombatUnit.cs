@@ -15,6 +15,12 @@ public enum UnitState
     Dead
 }
 
+public enum EblaState
+{
+    Normal,
+    Afflicted,
+    // 추후 Virtuous 추가예정
+}
 public class CombatUnit
 {
     private const int DEATHS_DOOR_EBLA = 18;
@@ -49,6 +55,11 @@ public class CombatUnit
 
     // 에블라 
     public int Ebla { get; private set; }
+    public EblaState EblaState { get; private set; }
+    public void SetEblaState(EblaState state)
+    {
+        EblaState = state;
+    }
 
     // 적용중인 상태이상
     public List<ActiveStatusEffect> ActiveEffects { get; }
@@ -196,7 +207,12 @@ public class CombatUnit
     // Phase2 StatusEffectManager 연동 시 버프/디버프 합산 후 호출
     public void RecalculateStats()
     {
-        CurrentStats = BaseStats;
+        StatBlock stats = BaseStats;
+        for (int i=0; i< ActiveEffects.Count; ++i)
+        {
+            stats = stats.Apply(ActiveEffects[i].Data.StatModifier);
+        }
+        CurrentStats = stats;
     }
 
     private static IReadOnlyList<SkillData> BuildSkillList(NikkeData data, SkillData[] selectedSkills)

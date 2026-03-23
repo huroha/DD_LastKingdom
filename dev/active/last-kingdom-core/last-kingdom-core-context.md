@@ -1,9 +1,9 @@
 # Last Kingdom Core - Context & Decisions
 
 ## Status
-- Phase: Phase 1.6 진행 중 (CombatScene 통합 테스트)
+- Phase: Phase 2.1 진행 중 (에블라 & 상태이상)
 - Progress: 22 / 65 tasks complete (34%)
-- Last Updated: 2026-03-07
+- Last Updated: 2026-03-23
 
 ## Key Files
 
@@ -210,6 +210,7 @@ GameObject "CombatManager"
       ├── TurnManager        (Pure C# 멤버) — 행동 순서 정렬/실행
       ├── PositionSystem     (Pure C# 멤버) — 4슬롯 x 2팀 관리
       ├── SkillExecutor      (Pure C# 멤버) — 스킬 실행 파이프라인
+      ├── EblaSystem         (Pure C# 멤버) — 에블라 임계값 판정 (100=Affliction, 200=영구사망)
       └── StatusEffectManager(Pure C# 멤버) — DOT/Debuff 틱 처리
 ```
 
@@ -436,7 +437,29 @@ BootScene → TitleScene → TownScene ↔ DungeonScene ↔ CombatScene
 - **턴 추가 스킬 설계 확정**: 아군에게 턴을 추가하는 스킬은 `TurnManager.InsertExtraTurn(unit)`으로 구현. CSM이 `SkillResult`를 보고 호출하는 방식 (방법 A). Phase 2에서 구현 예정
 - **아군 다중 행동**: Nikke는 ActionsPerRound=1 고정. 턴 추가 스킬로만 추가 행동 부여. 미구현 상태
 
+### 33. EblaSystem 설계 확정 (2026-03-23)
+- **확정**: EblaSystem은 Pure C# 클래스, CombatStateMachine이 소유
+- **구조**: `EblaSystem(StatusEffectData afflictionDebuff)` — CSM이 Inspector에서 할당한 SO 주입
+- **핵심 메서드**: `ModifyEbla(CombatUnit unit, int amount)` — 수치 변경 + 임계값 판정 중앙 관리
+- **100 도달**: Affliction 발동 — 단일 StatusEffectData SO("Affliction_Debuff")를 ActiveEffects에 추가, Duration -1(영구), EblaSystem이 직접 관리
+- **100 미만 복귀**: Affliction 해제 — ActiveEffects에서 제거, RecalculateStats()
+- **200 도달**: 즉시 사망(unit.Kill()) + PermanentDeathEvent 발행 (일반 UnitDiedEvent와 구분)
+- **EblaState enum**: Normal / Afflicted (추후 Virtuous 확장)
+- **Affliction 디버프**: 모든 니케 동일한 단일 SO (ACC -10, DODGE -5, SPD -1). 니케별/클래스별 차이는 Phase 3
+- **RecalculateStats() 확장**: ActiveEffects의 StatModifier를 BaseStats에 합산. StatusEffectManager 없이도 동작
+- **기존 AddEbla() 호출 전환**: CSM/SkillExecutor의 모든 AddEbla() → EblaSystem.ModifyEbla() 경유
+- **DeathsDoor 에블라**: CombatUnit.TakeDamage() 내 AddEbla 제거 → 호출자(SE/CSM)에서 State 비교로 감지 후 EblaSystem 경유
+- **이벤트**: AfflictionTriggeredEvent, PermanentDeathEvent 신규 추가 (CombatEvent.cs)
+- **Rationale**: CombatUnit은 데이터 홀더로 유지. 판정 로직 집중화로 100/200 체크 누락 방지
+
+### 34. Virtue는 최종 전투 전용 (2026-03-23)
+- **확정**: 일반 전투에서 Virtue는 발생하지 않음. Affliction만 존재
+- **Virtue 대상**: 최종 엔딩 전투에 참전하는 전용 니케들만 (m_CanVirtue = true)
+- **기획 의도**: 플레이어가 육성한 니케가 아닌, 스토리 전용 니케들로 최종 전투 진행. 이 특수 전투에서만 Virtue 발동
+- **구현 시점**: Phase 3 최종 전투 시스템과 함께 구현
+- **EblaState**: Phase 2는 Normal/Afflicted만. Virtuous는 Phase 3에서 추가
+
 ## Known Issues
 - 아트 에셋 미확보 — 프로토타입은 플레이스홀더 사용
 - 절차적 던전 생성은 후순위 — 수동 맵으로 시작, IDungeonMapProvider 인터페이스로 추후 교체 예정
-- RecalculateStats()는 현재 placeholder — Phase 2 StatusEffectManager 구현 시 ActiveEffects 합산 로직 추가 필요
+- RecalculateStats()는 현재 placeholder — EblaSystem 구현 시 ActiveEffects 합산 로직 추가 예정

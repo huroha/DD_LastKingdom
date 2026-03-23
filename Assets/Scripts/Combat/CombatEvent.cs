@@ -84,3 +84,15 @@ public struct UnitMovedEvent
     public UnitMovedEvent(CombatUnit a, CombatUnit b) { UnitA = a; UnitB = b; }
 
 }
+
+public struct AfflictionTriggeredEvent
+{
+    public CombatUnit Unit;
+    public AfflictionTriggeredEvent(CombatUnit unit) { Unit = unit; }
+}
+
+public struct PermanentDeathEvent
+{
+    public CombatUnit Unit;
+    public PermanentDeathEvent(CombatUnit unit) { Unit = unit; }
+}

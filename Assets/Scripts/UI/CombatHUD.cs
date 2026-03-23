@@ -539,7 +539,8 @@ public class CombatHUD : MonoBehaviour
         m_EnemyInfoPanel.gameObject.SetActive(true);
         m_EnemyInfoPanel.Populate(unit);
         if (m_CombatStateMachine.CurrentState == CombatState.PlayerSelectTarget
-             && m_CombatStateMachine.SelectedSkill != null)
+             && m_CombatStateMachine.SelectedSkill != null
+             && m_CombatStateMachine.IsValidTarget(unit))
         {
             AttackPreview preview = m_CombatStateMachine.PreviewAttack(unit);
             m_EnemyInfoPanel.PopulatePreview(preview);
@@ -580,14 +581,15 @@ public class CombatHUD : MonoBehaviour
     {
         m_EnemySkillPanel.SetActive(false);
     }
-
-
-
     // Round Ç¥±â
     public void ApplyRoundText()
     {
         m_RoundText.text = m_PendingRound.ToString();
     }
-
+    public void RefreshHoveredPreview()
+    {
+        if (m_HoveredUnit != null)
+            ShowEnemyInfo(m_HoveredUnit);
+    }
 
 }

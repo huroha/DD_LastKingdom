@@ -30,6 +30,7 @@ public class NikkeInfoPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_DmgText;
     [SerializeField] private TextMeshProUGUI m_DodgeText;
     [SerializeField] private TextMeshProUGUI m_ProtText;
+    [SerializeField] private TextMeshProUGUI m_SpeedText;
 
 
 
@@ -69,6 +70,7 @@ public class NikkeInfoPanel : MonoBehaviour
         m_DmgText.text = $"{stats.minDamage} - {stats.maxDamage}";
         m_DodgeText.text = stats.dodge.ToString();
         m_ProtText.text = $"{stats.defense:F0}%";
+        m_SpeedText.text = stats.speed.ToString();
 
 
     }
