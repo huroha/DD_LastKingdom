@@ -14,11 +14,17 @@ public class EblaSystem
         if (unit.UnitType != CombatUnitType.Nikke || !unit.IsAlive)
             return false;
         int previousEbla = unit.Ebla;
+        if (amount > 0)
+        {
+            amount = (int)(amount * (1f + unit.CurrentStats.eblaMultiplier / 100f));
+            if (previousEbla < 100 && previousEbla + amount > 100)
+                amount = 100 - previousEbla;
+        }
         unit.AddEbla(amount);
         if(unit.Ebla >= 200)
         {
             unit.Kill();
-            EventBus.Publish<PermanentDeathEvent>(new PermanentDeathEvent(unit));
+            EventBus.Publish(new PermanentDeathEvent(unit));
             return true;
         }
         if(previousEbla < 100 && unit.Ebla >= 100)
@@ -34,7 +40,7 @@ public class EblaSystem
         unit.SetEblaState(EblaState.Afflicted);
         unit.ActiveEffects.Add(new ActiveStatusEffect(m_AfflictionDebuff));
         unit.RecalculateStats();
-        EventBus.Publish<AfflictionTriggeredEvent>(new AfflictionTriggeredEvent(unit));
+        EventBus.Publish(new AfflictionTriggeredEvent(unit));
     }
 
     private void RemoveAffliction(CombatUnit unit)

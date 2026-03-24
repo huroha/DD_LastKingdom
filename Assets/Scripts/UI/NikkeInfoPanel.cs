@@ -4,7 +4,6 @@ using TMPro;
 
 
 
-
 public class NikkeInfoPanel : MonoBehaviour
 {
     private CombatUnit m_CurrentUnit;
@@ -31,6 +30,11 @@ public class NikkeInfoPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_DodgeText;
     [SerializeField] private TextMeshProUGUI m_ProtText;
     [SerializeField] private TextMeshProUGUI m_SpeedText;
+
+    private static readonly Color COLOR_NORMAL = new Color(0.8f, 0.8f, 0.8f, 1f);
+    private static readonly Color COLOR_BUFF = new Color(0.8f, 0.76f, 0.56f, 1f);
+    private static readonly Color COLOR_DEBUFF = new Color(0.75f, 0.1f, 0.1f, 1f);
+
 
 
 
@@ -65,12 +69,28 @@ public class NikkeInfoPanel : MonoBehaviour
         m_EblaText.text = $"{unit.Ebla} / 200";
 
         //Stats
+        StatBlock baseStats = unit.BaseStats;
+
         m_AccText.text = stats.accuracyMod.ToString();
+        m_AccText.color = GetStatColor(stats.accuracyMod, baseStats.accuracyMod);
+
         m_CritText.text = $"{stats.critChance:F1}%";
-        m_DmgText.text = $"{stats.minDamage} - {stats.maxDamage}";
+        m_CritText.color = GetStatColor(stats.critChance, baseStats.critChance);
+
+        float dmgMul = 1f + stats.damageMultiplier / 100f;
+        int displayMin = Mathf.Max((int)(stats.minDamage * dmgMul), 0);
+        int displayMax = Mathf.Max((int)(stats.maxDamage * dmgMul), 0);
+        m_DmgText.text = $"{displayMin} - {displayMax}";
+        m_DmgText.color = GetStatColor(displayMin + displayMax, baseStats.minDamage + baseStats.maxDamage);
+
         m_DodgeText.text = stats.dodge.ToString();
+        m_DodgeText.color = GetStatColor(stats.dodge, baseStats.dodge);
+
         m_ProtText.text = $"{stats.defense:F0}%";
+        m_ProtText.color = GetStatColor(stats.defense, baseStats.defense);
+
         m_SpeedText.text = stats.speed.ToString();
+        m_SpeedText.color = GetStatColor(stats.speed, baseStats.speed);
 
 
     }
@@ -124,5 +144,13 @@ public class NikkeInfoPanel : MonoBehaviour
         }
     }
 
+    private static Color GetStatColor(float current, float baseValue)
+    {
+        if (current > baseValue)
+            return COLOR_BUFF;
+        if (current < baseValue)
+            return COLOR_DEBUFF;
+        return COLOR_NORMAL;
+    }
 
 }

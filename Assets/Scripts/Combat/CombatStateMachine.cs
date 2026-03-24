@@ -30,6 +30,15 @@ public class CombatStateMachine : MonoBehaviour
     [SerializeField] private CombatFieldView m_FieldView;
     [SerializeField] private CombatHUD m_CombatHUD;
 
+    [Header("Ebla System")]
+    [SerializeField] private StatusEffectData m_AfflictionDebuff;
+    [SerializeField] private StatusEffectData m_DeathsDoorDebuff;
+    [SerializeField] private StatusEffectData m_DeathsDoorRecovery;
+
+    [Header("Status Effects")]
+    [SerializeField] private StatusEffectData m_StunResistBuff;
+
+
     // 패널티 에블라 수치
     private const int PASS_EBLA_PENALTY = 5;
     private const int ALLY_DEATH_EBLA = 20;
@@ -39,7 +48,8 @@ public class CombatStateMachine : MonoBehaviour
     private PositionSystem  m_PositionSystem;
     private SkillExecutor   m_SkillExecutor;
     private EnemyAI         m_EnemyAI;
-    
+    private EblaSystem      m_EblaSystem;
+    private StatusEffectManager m_StatusEffectManager;
 
     // FSM 상태
     private CombatState     m_CurrentState;
@@ -107,8 +117,8 @@ public class CombatStateMachine : MonoBehaviour
         {
             NikkeData data = m_TestNikkes[i];
             if (data == null)
-                continue;
-            nikkes.Add(new CombatUnit(data, i, data.BaseStats.maxHp, 0, null));
+                continue;//data.BaseStats.maxHp
+            nikkes.Add(new CombatUnit(data, i, 10, 90, null));
         }
 
         // 적 순환하면서 데이터 채우기
@@ -132,8 +142,10 @@ public class CombatStateMachine : MonoBehaviour
         // 시스템 인스턴스 생성
         m_PositionSystem = new PositionSystem();
         m_TurnManager = new TurnManager();
-        m_SkillExecutor = new SkillExecutor(m_PositionSystem);
+        m_EblaSystem = new EblaSystem(m_AfflictionDebuff);
+        m_SkillExecutor = new SkillExecutor(m_PositionSystem,m_EblaSystem, m_DeathsDoorDebuff, m_DeathsDoorRecovery);
         m_EnemyAI = new EnemyAI(m_PositionSystem, m_SkillExecutor);
+        m_StatusEffectManager = new StatusEffectManager(m_StunResistBuff);
 
         m_PositionSystem.Initialize(nikkes, enemies);
 
@@ -171,13 +183,27 @@ public class CombatStateMachine : MonoBehaviour
                 while (m_CombatHUD.IsTickerAnimating)
                     yield return null;
 
+            // Dot 틱
+            List<DotTickResult> dotResults = m_StatusEffectManager.ProcessTurnStart(m_ActiveUnit);
+            ProcessDotResults(dotResults);
+
             EventBus.Publish(new TurnStartedEvent(m_ActiveUnit));
+            // Dot 사망으로 사망 시 턴 스킵
+            if(!m_ActiveUnit.IsAlive)
+            {
+                SetState(CombatState.TurnEnd);
+                m_StatusEffectManager.ProcessTurnEnd(m_ActiveUnit);
+                m_TurnManager.EndCurrentTurn();
+                yield return null;
+                continue;
+            }
 
             // 스턴 체크
             if (m_ActiveUnit.IsStunned)
             {
-                RemoveStun(m_ActiveUnit);
+                m_StatusEffectManager.RemoveStun(m_ActiveUnit);
                 SetState(CombatState.TurnEnd);
+                m_StatusEffectManager.ProcessTurnEnd(m_ActiveUnit);
                 m_TurnManager.EndCurrentTurn();
                 yield return null;
                 continue;
@@ -190,6 +216,7 @@ public class CombatStateMachine : MonoBehaviour
             else
                 yield return StartCoroutine(HandleEnemyTurn());
 
+            m_StatusEffectManager.ProcessTurnEnd(m_ActiveUnit);
             SetState(CombatState.TurnEnd);
             m_TurnManager.EndCurrentTurn();
             yield return null;
@@ -258,7 +285,11 @@ public class CombatStateMachine : MonoBehaviour
             // 패스 선택 시
             if (m_SelectedSkill == null)
             {
-                m_ActiveUnit.AddEbla(PASS_EBLA_PENALTY);
+                if(m_EblaSystem.ModifyEbla(m_ActiveUnit, PASS_EBLA_PENALTY))
+                {
+                    m_PositionSystem.RemoveUnit(m_ActiveUnit);
+                    EventBus.Publish(new UnitDiedEvent(m_ActiveUnit));
+                }
                 turnHandled = true;
                 continue;
             }
@@ -336,20 +367,6 @@ public class CombatStateMachine : MonoBehaviour
         return m_SkillExecutor.PreviewAttack(m_ActiveUnit, m_SelectedSkill, target);
     }
 
-    // 스턴제거
-    private void RemoveStun(CombatUnit unit)
-    {
-        for (int i = unit.ActiveEffects.Count - 1; i >= 0; --i)
-        {
-            if (unit.ActiveEffects[i].Data.EffectType == StatusEffectType.Stun)
-            {
-                unit.ActiveEffects.RemoveAt(i);
-                break;
-            }
-        }
-    }
-
-
     // 죽은 유닛 이벤트 발생
     private void ProcessDeadUnits(SkillResult result)
     {
@@ -375,8 +392,37 @@ public class CombatStateMachine : MonoBehaviour
     private void ApplyAllyDeathEbla()
     {
         List<CombatUnit> nikkes = m_PositionSystem.GetAllUnits(CombatUnitType.Nikke);
-        for(int i=0; i<nikkes.Count; ++i)
-            nikkes[i].AddEbla(ALLY_DEATH_EBLA);
+        for(int i= nikkes.Count -1; i>=0; --i)                            //RemoveUnit 호출 시 리스트가 변경되므로 뒤에서부터 순회해야 안전
+        {
+            if (m_EblaSystem.ModifyEbla(nikkes[i], ALLY_DEATH_EBLA))
+            {
+                m_PositionSystem.RemoveUnit(nikkes[i]);                
+                EventBus.Publish(new UnitDiedEvent(nikkes[i]));
+            }
+        }
+    }
+    // 전투 후반부 에블라 패널티
+    private void ApplyPostBattleEbla()
+    {
+        int roundCheck = m_TurnManager.RoundNumber;
+        if (m_EblaFreeRounds > roundCheck)
+            return;
+        int total = 0;
+        for (int i = m_EblaFreeRounds + 1; i <= roundCheck; ++i)
+        {
+            total += i * m_EblaRoundMultiplier;
+        }
+
+        List<CombatUnit> nikkes = m_PositionSystem.GetAllUnits(CombatUnitType.Nikke);
+        for(int i= nikkes.Count-1; i>=0; --i)
+        {
+            if (m_EblaSystem.ModifyEbla(nikkes[i], total))
+            {
+                m_PositionSystem.RemoveUnit(nikkes[i]);
+                EventBus.Publish(new UnitDiedEvent(nikkes[i]));
+            }
+        }
+
     }
 
     // State 설정
@@ -389,27 +435,6 @@ public class CombatStateMachine : MonoBehaviour
         //Debug.Log($"[FSM] {newState}");
 
     }
-
-    // 전투 후반부 에블라 패널티
-    private void ApplyPostBattleEbla()
-    {
-        int roundCheck = m_TurnManager.RoundNumber;
-        if (m_EblaFreeRounds > roundCheck)
-            return;
-        int total = 0;
-        for(int i=m_EblaFreeRounds +1; i<=roundCheck; ++i)
-        {
-            total += i * m_EblaRoundMultiplier;
-        }
-
-        List<CombatUnit> nikkes = m_PositionSystem.GetAllUnits(CombatUnitType.Nikke);
-        for(int i=0; i<nikkes.Count; ++i)
-        {
-            nikkes[i].AddEbla(total);
-        }
-
-    }
-
     private void OnSkillSelected(SkillData skill) 
     {
         m_SelectedSkill = skill;
@@ -436,7 +461,6 @@ public class CombatStateMachine : MonoBehaviour
         m_SelectedTarget = null;
         m_MoveConfirmed = true;
     }
-
     private void OnMoveRequested()
     {
         m_MoveRequested = true;
@@ -477,6 +501,27 @@ public class CombatStateMachine : MonoBehaviour
         List<CombatUnit> validTargets = m_PositionSystem.GetValidTargets(m_ActiveUnit, m_SelectedSkill);
         return validTargets.Contains(target);
     }
-
+    private void ProcessDotResults(List<DotTickResult> results)
+    {
+        for(int i=0; i<results.Count; ++i)
+        {
+            CombatUnit unit = results[i].Unit;
+    
+            if (results[i].PreviousState == UnitState.Alive
+                          && results[i].ResultState == UnitState.DeathsDoor)
+            {
+                m_EblaSystem.ModifyEbla(unit, CombatUnit.DEATHS_DOOR_EBLA);
+                unit.ActiveEffects.Add(new ActiveStatusEffect(m_DeathsDoorDebuff));
+                unit.RecalculateStats();
+            }
+            if (results[i].ResultState == UnitState.Dead)
+            {
+                m_PositionSystem.RemoveUnit(m_ActiveUnit);
+                EventBus.Publish(new UnitDiedEvent(m_ActiveUnit));
+                if (m_ActiveUnit.UnitType == CombatUnitType.Nikke)
+                    ApplyAllyDeathEbla();
+            }
+        }
+    }
 
 }

@@ -43,6 +43,9 @@ public struct StatBlock
     [Header("저항력")]
     public ResistanceBlock resistance;
 
+    [Header("배율 보정")]
+    public float damageMultiplier;              // 피해 배율 보정
+    public float eblaMultiplier;                
 
     public StatBlock Apply(StatBlock modifier)
     {
@@ -65,6 +68,8 @@ public struct StatBlock
         result.resistance.bleed     = resistance.bleed + modifier.resistance.bleed;
         result.resistance.debuff    = resistance.debuff + modifier.resistance.debuff;
         result.resistance.trap      = resistance.trap + modifier.resistance.trap;
+        result.damageMultiplier     = damageMultiplier + modifier.damageMultiplier;
+        result.eblaMultiplier       = eblaMultiplier + modifier.eblaMultiplier;
 
         return result;
     }

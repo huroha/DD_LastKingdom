@@ -11,4 +11,10 @@ public class ActiveStatusEffect
         RemainingTurns = data.Duration;
         CurrentStacks = 1;
     }
+    public ActiveStatusEffect(StatusEffectData data, int durationOverride)
+    {
+        Data = data;
+        RemainingTurns = durationOverride;
+        CurrentStacks = 1;
+    }
 }

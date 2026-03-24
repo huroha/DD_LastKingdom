@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c585489809c0344097809140fb04d25, type: 3}
-  m_Name: Bleed_test
+  m_Name: StunResist_buff
   m_EditorClassIdentifier: Assembly-CSharp::StatusEffectData
-  m_EffectName: "\uCD9C\uD608"
-  m_Icon: {fileID: 8592474136457853735, guid: aaa834e80c30c814b8d68ee38e33ec84, type: 3}
-  m_EffectType: 0
-  m_Duration: 3
-  m_TickDamage: 3
+  m_EffectName: StunResist_Buff
+  m_Icon: {fileID: 21300000, guid: ccf986bfecef7b0459fa76cee2beeb0b, type: 3}
+  m_EffectType: 4
+  m_Duration: 1
+  m_TickDamage: 0
   m_StatModifier:
     maxHp: 0
     minDamage: 0
@@ -29,7 +29,7 @@ MonoBehaviour:
     speed: 0
     moveRange: 0
     resistance:
-      stun: 0
+      stun: 50
       move: 0
       poison: 0
       disease: 0
@@ -39,4 +39,4 @@ MonoBehaviour:
     damageMultiplier: 0
     eblaMultiplier: 0
   m_IsStackable: 1
-  m_MaxStack: 2
+  m_MaxStack: 10

@@ -23,7 +23,7 @@ public enum EblaState
 }
 public class CombatUnit
 {
-    private const int DEATHS_DOOR_EBLA = 18;
+    public const int DEATHS_DOOR_EBLA = 18;
     // À¯´Ö ½Äº°
     public CombatUnitType   UnitType { get; }
     public string           UnitName { get; }
@@ -126,7 +126,6 @@ public class CombatUnit
                 {
                     CurrentHp = 0;
                     State = UnitState.DeathsDoor;
-                    AddEbla(DEATHS_DOOR_EBLA);
                 }
             }
             else if (State == UnitState.DeathsDoor)

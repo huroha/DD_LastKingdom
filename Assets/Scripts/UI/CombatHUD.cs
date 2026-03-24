@@ -8,12 +8,23 @@ using System.Collections.Generic;
 
 
 
+
 public class CombatHUD : MonoBehaviour
 {
+    [Header("Tooltip")]
+    [SerializeField] private CombatTooltip m_CombatTooltip;
+
     [Header("Round")]
     [SerializeField] private TextMeshProUGUI m_RoundText;
     [SerializeField] private GameObject m_RoundBg;
     [SerializeField] private int m_PendingRound;
+
+    [Header("Status Effect Icons")]
+    [SerializeField] private StatusEffectIconDisplay[] m_NikkeStatusIcons;          // 4개   
+    [SerializeField] private StatusEffectIconDisplay[] m_EnemyStatusIcons;          // 4
+    [SerializeField] private StatusEffectIconDisplay[] m_LargeEnemyStatusIcons;     // 3
+
+
 
     [Header("Nikke Slots")]
     [SerializeField] private Slider[] m_NikkeHpBars;    // 4개
@@ -171,6 +182,14 @@ public class CombatHUD : MonoBehaviour
         HideAllTickers();
         HideEnemyTargetHighlights();
         HideEnemySkillName();
+
+        for (int i = 0; i < m_NikkeStatusIcons.Length; ++i)
+            m_NikkeStatusIcons[i].SetTooltip(m_CombatTooltip);
+        for (int i = 0; i < m_EnemyStatusIcons.Length; ++i)
+            m_EnemyStatusIcons[i].SetTooltip(m_CombatTooltip);
+        for (int i = 0; i < m_LargeEnemyStatusIcons.Length; ++i)
+            m_LargeEnemyStatusIcons[i].SetTooltip(m_CombatTooltip);
+
         for (int i = 0; i < m_NikkeHpBars.Length; ++i)
         {
             m_NikkeHpBars[i].gameObject.SetActive(false);
@@ -197,6 +216,19 @@ public class CombatHUD : MonoBehaviour
             m_NikkeEblaBars[i].Root.SetActive(true);
             m_NikkeNames[i].text = e.Nikkes[i].UnitName;
             RefreshHpBar(e.Nikkes[i]);
+            int nikkeIndex = i;
+            SetupTooltipTrigger(m_NikkeHpBars[i].gameObject, () =>
+            {
+                CombatUnit u = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Nikke, nikkeIndex);
+                if (u == null) return null;
+                return "HP: " + u.CurrentHp + " / " + u.MaxHp;
+            });
+            SetupTooltipTrigger(m_NikkeEblaBars[i].Root, () =>
+            {
+                CombatUnit u = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Nikke, nikkeIndex);
+                if (u == null) return null;
+                return "에블라 :" + u.Ebla + " /200";
+            });
         }
 
         for (int i = 0; i < e.Enemies.Count; ++i)
@@ -215,6 +247,25 @@ public class CombatHUD : MonoBehaviour
             }
 
             RefreshHpBar(enemy);
+            int enemyIndex = enemy.SlotIndex;
+            GameObject barObj = enemy.SlotSize == 2
+                ? m_LargeEnemyHpBars[enemyIndex].gameObject
+                : m_EnemyHpBars[enemyIndex].gameObject;
+            SetupTooltipTrigger(barObj, () =>
+            {
+                // 남은 행동 수 계산 TurnOrder에서 해당 유닛이 몇 번 남았는지
+                IReadOnlyList<CombatUnit> order = m_CombatStateMachine.TurnOrder;
+                if (order == null) return null;
+                int count = 0;
+                int currentIdx = m_CombatStateMachine.CurrentTurnIndex;
+                for (int t = currentIdx + 1; t < order.Count; ++t)
+                {
+                    if (order[t] == m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Enemy, enemyIndex))
+                        ++count;
+                }
+                if (count == 0) return null;
+                return "남은 행동 :" + count;
+            });
         }
         RefreshTurnOrder();
         ShowAllTickersAnimated();
@@ -257,6 +308,13 @@ public class CombatHUD : MonoBehaviour
     }
 
     // 헬퍼들
+    private void SetupTooltipTrigger(GameObject target, System.Func<string> contentGetter)
+    {
+        TooltipTrigger trigger = target.GetComponent<TooltipTrigger>();
+        if (trigger == null)
+            trigger = target.AddComponent<TooltipTrigger>();
+        trigger.Initialize(m_CombatTooltip, contentGetter);
+    }
     private void SnapTurnBar(CombatUnit unit)
     {
         if (unit == null)
@@ -300,6 +358,7 @@ public class CombatHUD : MonoBehaviour
             else
                 bar.value = (float)unit.CurrentHp / unit.MaxHp;
         }
+        RefreshStatusIcons(unit);
     }
     private void RefreshTurnOrder()
     {
@@ -325,6 +384,7 @@ public class CombatHUD : MonoBehaviour
                 m_NikkeNames[i].gameObject.SetActive(false);
                 m_NikkeHpBars[i].gameObject.SetActive(false);
                 m_NikkeEblaBars[i].Root.SetActive(false);
+                m_NikkeStatusIcons[i].Clear();
                 UpdateEblaBar(i, 0);
             }
             else
@@ -345,6 +405,7 @@ public class CombatHUD : MonoBehaviour
             {
                 m_EnemyHpBars[i].gameObject.SetActive(false);
                 m_EnemyNames[i].gameObject.SetActive(false);
+                m_EnemyStatusIcons[i].Clear();
             }
             else if (unit.SlotSize == 2)
             {
@@ -369,7 +430,10 @@ public class CombatHUD : MonoBehaviour
                 RefreshHpBar(unit);
             }
             else
+            {
                 m_LargeEnemyHpBars[i].gameObject.SetActive(false);
+                m_LargeEnemyStatusIcons[i].Clear();
+            }
         }
 
     }
@@ -592,4 +656,13 @@ public class CombatHUD : MonoBehaviour
             ShowEnemyInfo(m_HoveredUnit);
     }
 
+    private void RefreshStatusIcons(CombatUnit unit)
+    {
+        if (unit.UnitType == CombatUnitType.Nikke)
+            m_NikkeStatusIcons[unit.SlotIndex].Refresh(unit.ActiveEffects);
+        else if(unit.UnitType==CombatUnitType.Enemy && unit.SlotSize == 2)
+            m_LargeEnemyStatusIcons[unit.SlotIndex].Refresh(unit.ActiveEffects);
+        else
+            m_EnemyStatusIcons[unit.SlotIndex].Refresh(unit.ActiveEffects);
+    }
 }
