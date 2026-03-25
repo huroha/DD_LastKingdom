@@ -217,18 +217,14 @@ public class CombatHUD : MonoBehaviour
             m_NikkeNames[i].text = e.Nikkes[i].UnitName;
             RefreshHpBar(e.Nikkes[i]);
             int nikkeIndex = i;
-            SetupTooltipTrigger(m_NikkeHpBars[i].gameObject, () =>
+            SetupTooltipTrigger(m_NikkeHpBars[i].gameObject, (sb) =>
             {
                 CombatUnit u = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Nikke, nikkeIndex);
-                if (u == null) return null;
-                return "HP: " + u.CurrentHp + " / " + u.MaxHp;
-            });
-            SetupTooltipTrigger(m_NikkeEblaBars[i].Root, () =>
-            {
-                CombatUnit u = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Nikke, nikkeIndex);
-                if (u == null) return null;
-                return "에블라 :" + u.Ebla + " /200";
-            });
+                if (u == null) return;
+                sb.Append("체력: ").Append(u.CurrentHp).Append(" / ").Append(u.MaxHp)
+                  .Append('\n')
+                  .Append("에블라: ").Append(u.Ebla).Append(" / 200");
+            },new Vector2(0, 40));
         }
 
         for (int i = 0; i < e.Enemies.Count; ++i)
@@ -251,11 +247,10 @@ public class CombatHUD : MonoBehaviour
             GameObject barObj = enemy.SlotSize == 2
                 ? m_LargeEnemyHpBars[enemyIndex].gameObject
                 : m_EnemyHpBars[enemyIndex].gameObject;
-            SetupTooltipTrigger(barObj, () =>
+            SetupTooltipTrigger(barObj, (sb) =>
             {
-                // 남은 행동 수 계산 TurnOrder에서 해당 유닛이 몇 번 남았는지
                 IReadOnlyList<CombatUnit> order = m_CombatStateMachine.TurnOrder;
-                if (order == null) return null;
+                if (order == null) return;
                 int count = 0;
                 int currentIdx = m_CombatStateMachine.CurrentTurnIndex;
                 for (int t = currentIdx + 1; t < order.Count; ++t)
@@ -263,9 +258,9 @@ public class CombatHUD : MonoBehaviour
                     if (order[t] == m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Enemy, enemyIndex))
                         ++count;
                 }
-                if (count == 0) return null;
-                return "남은 행동 :" + count;
-            });
+                if (count == 0) return;
+                sb.Append("남은 행동:").Append(count);
+            },new Vector2(0, 50));
         }
         RefreshTurnOrder();
         ShowAllTickersAnimated();
@@ -308,12 +303,12 @@ public class CombatHUD : MonoBehaviour
     }
 
     // 헬퍼들
-    private void SetupTooltipTrigger(GameObject target, System.Func<string> contentGetter)
+    private void SetupTooltipTrigger(GameObject target, TooltipTrigger.ContentBuilderHandler contentBuilder, Vector2 offset)
     {
         TooltipTrigger trigger = target.GetComponent<TooltipTrigger>();
         if (trigger == null)
             trigger = target.AddComponent<TooltipTrigger>();
-        trigger.Initialize(m_CombatTooltip, contentGetter);
+        trigger.Initialize(m_CombatTooltip, contentBuilder, offset);
     }
     private void SnapTurnBar(CombatUnit unit)
     {

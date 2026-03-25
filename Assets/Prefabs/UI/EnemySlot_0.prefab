@@ -284,7 +284,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: 2
+  m_Spacing: 0
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
@@ -498,6 +498,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2160939666263866544}
   - component: {fileID: 4673792297968946451}
+  - component: {fileID: 4357241906626555754}
   m_Layer: 5
   m_Name: Hp Bar
   m_TagString: Untagged
@@ -577,6 +578,14 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!222 &4357241906626555754
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6255007763486569438}
+  m_CullTransparentMesh: 1
 --- !u!1 &6550915265934967372
 GameObject:
   m_ObjectHideFlags: 0
@@ -752,7 +761,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:

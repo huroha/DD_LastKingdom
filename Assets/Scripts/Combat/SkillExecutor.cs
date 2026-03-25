@@ -106,7 +106,7 @@ public class SkillExecutor
                     UnitState preHealState = targets[i].State;
                     targets[i].Heal(result[i].HealAmount);
                     if (preHealState == UnitState.DeathsDoor && targets[i].State == UnitState.Alive)
-                        RemoveDeathsDoorDebuff(targets[i]);
+                        ApplyDeathsDoorRecovery(targets[i]);
                 }
                 // 아니면: target.TakeDamage(damage)
                 else
@@ -402,40 +402,45 @@ public class SkillExecutor
 
     private void ApplyDeathsDoorDebuff(CombatUnit unit)
     {
-        if (m_DeathsDoorDebuff == null)
-            return;
+        if (m_DeathsDoorDebuff == null) return;
+
+        // recovery 제거 (있다면)
+        RemoveEffect(unit, m_DeathsDoorRecovery);
+
+        // debuff 부여
         unit.ActiveEffects.Add(new ActiveStatusEffect(m_DeathsDoorDebuff));
         unit.RecalculateStats();
     }
-    private void RemoveDeathsDoorDebuff(CombatUnit unit)
+    private void ApplyDeathsDoorRecovery(CombatUnit unit)
     {
-        if (m_DeathsDoorDebuff == null)
-            return;
-        for (int i = unit.ActiveEffects.Count - 1; i >= 0; --i)
-        {
-            if (unit.ActiveEffects[i].Data == m_DeathsDoorDebuff)
-            {
-                unit.ActiveEffects.RemoveAt(i);
-                break;
-            }
-        }
-        if (m_DeathsDoorDebuff != null)
-        {
-            bool hasRecovery = false;
-            for (int i = 0; i < unit.ActiveEffects.Count; ++i)
-            {
-                if (unit.ActiveEffects[i].Data == m_DeathsDoorRecovery)
-                {
-                    hasRecovery = true;
-                    break;
-                }
-            }
-        }
+        if (m_DeathsDoorDebuff == null) return;
+
+        // debuff 제거
+        RemoveEffect(unit, m_DeathsDoorDebuff);
+
+        // recovery 부여
+        if (m_DeathsDoorRecovery != null)
+            unit.ActiveEffects.Add(new ActiveStatusEffect(m_DeathsDoorRecovery));
+
         unit.RecalculateStats();
     }
 
     private bool IsDotEffect(StatusEffectType type)
     {
         return type == StatusEffectType.Bleed || type == StatusEffectType.Poison;
+    }
+
+    private void RemoveEffect(CombatUnit unit, StatusEffectData effectData)
+    {
+        if (effectData == null)
+            return;
+        for (int i = unit.ActiveEffects.Count - 1; i >= 0; --i)
+        {
+            if (unit.ActiveEffects[i].Data == effectData)
+            {
+                unit.ActiveEffects.RemoveAt(i);
+                return;
+            }
+        }
     }
 }

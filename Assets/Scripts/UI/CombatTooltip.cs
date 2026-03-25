@@ -1,12 +1,14 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Text;
 
 public class CombatTooltip : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI m_TooltipText;
     [SerializeField] private RectTransform m_RectTransform;
-    [SerializeField] private Vector2 m_Offset; // 마우스 기준 오프셋
+
+    [SerializeField] private Vector2 m_Padding;
 
     private Vector3[] m_Corners = new Vector3[4];
 
@@ -20,16 +22,20 @@ public class CombatTooltip : MonoBehaviour
         m_UICamera = null;
     }
 
-    public void Show(string text, Vector2 screenPosition)
+    public void Show(StringBuilder sb, Vector2 screenPosition, Vector2 offset)
     {
-        m_TooltipText.text = text;
+        m_TooltipText.SetText(sb);
         gameObject.SetActive(true);
-        LayoutRebuilder.ForceRebuildLayoutImmediate(m_RectTransform); // ContentSizeFitter 즉시 반영
+        // 텍스트 preferred 크기로 RectTransform 직접 설정
+        m_RectTransform.sizeDelta = new Vector2(
+            m_TooltipText.preferredWidth + m_Padding.x,
+            m_TooltipText.preferredHeight + m_Padding.y
+        );
         RectTransform parentRect = m_RectTransform.parent as RectTransform;
         Vector2 localPoint;
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, screenPosition,m_UICamera,out localPoint);
-        m_RectTransform.anchoredPosition = localPoint + m_Offset;
+        m_RectTransform.anchoredPosition = localPoint + offset;
         ClampToScreen();
     }
 
