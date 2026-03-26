@@ -30,7 +30,6 @@ public class TargetSelectPanel : MonoBehaviour
     [SerializeField] private Button m_CancelButton;
 
     [SerializeField] private SkillSelectPanel m_SkillSelectPanel;
-    private readonly Key[] m_SkillKeys = { Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4 };
 
     private CombatUnit m_HoveredUnit = null;
 
@@ -145,9 +144,9 @@ public class TargetSelectPanel : MonoBehaviour
 
     private void Update()
     {
-        for (int i = 0; i < m_SkillKeys.Length; ++i)
+        for (int i = 0; i < SkillSelectPanel.SkillKeys.Length; ++i)
         {
-            if (Keyboard.current[m_SkillKeys[i]].wasPressedThisFrame)
+            if (Keyboard.current[SkillSelectPanel.SkillKeys[i]].wasPressedThisFrame)
             {
                 m_SkillSelectPanel.SetPendingSkill(i);
                 OnCancelButtonClicked();
@@ -176,6 +175,7 @@ public class TargetSelectPanel : MonoBehaviour
             OnButtonHoverEnter(m_HoveredUnit.UnitType, m_HoveredUnit.SlotIndex);
         gameObject.SetActive(true);
         m_CombatHUD.RefreshHoveredPreview();
+        m_SkillSelectPanel.ShowSkillsOnly();
 
     }
     public void Hide() 
@@ -190,6 +190,11 @@ public class TargetSelectPanel : MonoBehaviour
             m_LargeEnemyButtons[i].interactable = false;
 
         gameObject.SetActive(false);
+        m_SkillSelectPanel.Hide();
+    }
+    public void TriggerCancel()
+    {
+        OnCancelButtonClicked();
     }
 
     private void RefreshButtons()
@@ -367,6 +372,7 @@ public class TargetSelectPanel : MonoBehaviour
             m_LargeEnemyHighlights[i].gameObject.SetActive(false);
     }
 
+    
 
 }
 

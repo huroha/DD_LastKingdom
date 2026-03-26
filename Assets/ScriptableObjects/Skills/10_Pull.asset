@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: 10_Pull
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   m_SkillName: "\uB2F9\uAE30\uAE30"
-  m_Description: "\uC774\uB3D9 \uD14C\uC2A4\uD2B8"
+  m_Description: "\uC774\uB3D9 \uD14C\uC2A4\uD2B8\uB791 \uC2A4\uD0AC \uD234\uD301\uB3C4
+    \uC624\uC9C0\uAC8C \uD14C\uC2A4\uD2B8"
   m_SkillIcon: {fileID: 7129151858602926477, guid: 1d4d519fee7900b48933182195d5928b, type: 3}
   m_SkillType: 1
   m_RequiredState: 0

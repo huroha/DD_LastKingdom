@@ -20,6 +20,10 @@ public class StatusEffectData : ScriptableObject
     [SerializeField] private Sprite m_Icon;
     [SerializeField] private StatusEffectType m_EffectType;
 
+    [Header("Tooltip")]
+    [SerializeField] private string m_Description;
+    [SerializeField] private bool m_ShowName = false;
+
     [Header("Duration")]
     [SerializeField] private int m_Duration;    // 지속 턴 수
 
@@ -37,6 +41,8 @@ public class StatusEffectData : ScriptableObject
     public string EffectName => m_EffectName;
     public Sprite Icon => m_Icon;
     public StatusEffectType EffectType => m_EffectType;
+    public string Description => m_Description;
+    public bool ShowName => m_ShowName;
     public int Duration => m_Duration;
     public int TickDamage => m_TickDamage;
     public StatBlock StatModifier => m_StatModifier;

@@ -2,12 +2,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 
 
 public class SkillSelectPanel : MonoBehaviour
 {
-    private readonly Key[] m_SkillKeys = { Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4 };
+    public static readonly Key[] SkillKeys = { Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4 };
+
     private int m_PendingSkillIndex = -1;
 
     [Header("Skill Buttons")]
@@ -26,6 +28,11 @@ public class SkillSelectPanel : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private CombatStateMachine m_CombatStateMachine;
+    [SerializeField] private TargetSelectPanel m_TargetSelectPanel;
+    [SerializeField] private SkillTooltip m_SkillTooltip;
+
+    [Header("Tooltip Offset")]
+    [SerializeField] private Vector2 m_TooltipOffset;
 
     public delegate void SkillSelectedHandler(SkillData skill);
     public delegate void PassHandler();
@@ -43,16 +50,30 @@ public class SkillSelectPanel : MonoBehaviour
         {
             int index = i; // 루프 변수를 별도 변수에 캡처
             m_SkillButtons[i].onClick.AddListener(() => OnSkillButtonClicked(index));
+
+            EventTrigger trigger = m_SkillButtons[i].gameObject.AddComponent<EventTrigger>();
+
+            EventTrigger.Entry enter = new EventTrigger.Entry();
+            enter.eventID = EventTriggerType.PointerEnter;
+            enter.callback.AddListener(_ => OnSkillHoverEnter(index));
+            trigger.triggers.Add(enter);
+
+            EventTrigger.Entry exit = new EventTrigger.Entry();
+            exit.eventID = EventTriggerType.PointerExit;
+            exit.callback.AddListener(_ => OnSkillHoverExit());
+            trigger.triggers.Add(exit);
+
         }
         m_PassButton.onClick.AddListener(OnPassButtonClicked);
         m_MoveButton.onClick.AddListener(OnMoveButtonClicked);
     }
     private void Update()
     {
-
-        for (int i = 0; i < m_SkillKeys.Length; ++i)
+        if (m_TargetSelectPanel != null && m_TargetSelectPanel.gameObject.activeSelf)
+            return;
+        for (int i = 0; i < SkillKeys.Length; ++i)
         {
-            if (Keyboard.current[m_SkillKeys[i]].wasPressedThisFrame)
+            if (Keyboard.current[SkillKeys[i]].wasPressedThisFrame)
             {
                 if (i < m_SkillButtons.Length && m_SkillButtons[i].interactable)
                     OnSkillButtonClicked(i);
@@ -87,6 +108,12 @@ public class SkillSelectPanel : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    public void ShowSkillsOnly()
+    {
+        m_PassButton.gameObject.SetActive(false);
+        m_MoveButton.gameObject.SetActive(false);
+        gameObject.SetActive(true);
+    }
     private void RefreshButtons()
     {
         for (int i = 0; i < m_SkillButtons.Length; ++i)
@@ -105,6 +132,12 @@ public class SkillSelectPanel : MonoBehaviour
     }
     private void OnSkillButtonClicked(int index)
     {
+        if(m_TargetSelectPanel !=null && m_TargetSelectPanel.gameObject.activeSelf)
+        {
+            SetPendingSkill(index);
+            m_TargetSelectPanel.TriggerCancel();
+            return;
+        }
         SkillData skill = m_CurrentUnit.Skills[index];
         m_OnSkillSelected(skill);
         m_SkillSelectIcon.transform.position = m_SkillIconTransforms[index].position;
@@ -126,6 +159,21 @@ public class SkillSelectPanel : MonoBehaviour
         m_PendingSkillIndex = index;
     }
 
+    // 헨들러
+    private void OnSkillHoverEnter(int index)
+    {
+        if (m_CurrentUnit == null)
+            return;
+        if (index >= m_CurrentUnit.Skills.Count || m_CurrentUnit.Skills[index] == null)
+            return;
 
+        Vector2 screenPos = m_SkillButtons[index].transform.position;
+        m_SkillTooltip.Show(m_CurrentUnit.Skills[index], screenPos, m_TooltipOffset);
+    }
+
+    private void OnSkillHoverExit()
+    {
+        m_SkillTooltip.Hide();
+    }
 
 }

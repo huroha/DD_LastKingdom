@@ -1,6 +1,5 @@
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
 using System.Text;
 
 public class CombatTooltip : MonoBehaviour
@@ -10,16 +9,19 @@ public class CombatTooltip : MonoBehaviour
 
     [SerializeField] private Vector2 m_Padding;
 
+    // 폰트 설정
+    [SerializeField] private Color m_TextColor = Color.white;
+    [SerializeField] private float m_FontSize = 22f;
+
     private Vector3[] m_Corners = new Vector3[4];
 
-    //private Canvas m_ParentCanvas;  추후 사용할지도 모름
     private Camera m_UICamera;
-
 
     private void Awake()
     {
-        //m_ParentCanvas = GetComponentInParent<Canvas>();
         m_UICamera = null;
+        m_TooltipText.color = m_TextColor;
+        m_TooltipText.fontSize = m_FontSize;
     }
 
     public void Show(StringBuilder sb, Vector2 screenPosition, Vector2 offset)

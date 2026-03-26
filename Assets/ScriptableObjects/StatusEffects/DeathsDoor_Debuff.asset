@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c585489809c0344097809140fb04d25, type: 3}
   m_Name: DeathsDoor_Debuff
   m_EditorClassIdentifier: Assembly-CSharp::StatusEffectData
-  m_EffectName: "\uC8FD\uBB38\uB514\uBC84\uD504"
+  m_EffectName: "\uC8FD\uC74C\uC758 \uBB38\uD131"
   m_Icon: {fileID: 21300000, guid: f4eb0dc2cd1d5ad44b65b50ccc00c055, type: 3}
   m_EffectType: 5
+  m_Description: "\uB2E4\uC74C \uACF5\uACA9\uC744 \uB9DE\uACE0 \uC644\uC804\uD788
+    \uC8FD\uC744 \uC218\uB3C4 \uC788\uC2B5\uB2C8\uB2E4!"
+  m_ShowName: 1
   m_Duration: -1
   m_TickDamage: 0
   m_StatModifier:

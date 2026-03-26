@@ -63,22 +63,28 @@ public class StatusEffectIconDisplay : MonoBehaviour
     {
         int turns = effect.RemainingTurns;
 
+        if(effect.Data.ShowName)
+            sb.Append("<color=#BF1313>").Append(effect.Data.EffectName).Append("</color>\n");
+
+        if (!string.IsNullOrEmpty(effect.Data.Description))
+            sb.Append("<color=#DBDBD0>").Append(effect.Data.Description).Append("</color>");
+
         // µµÆ® ÇÇÇØ
         if (effect.Data.TickDamage > 0)
         {
-            sb.Append("\n¸Å Â÷·Ê¸¶´Ù ");
+            sb.Append("<color=#BF1313>¸Å Â÷·Ê¸¶´Ù\n");
             sb.Append(effect.Data.TickDamage);
-            sb.Append("ÇÇÇØ (");
+            sb.Append(" ÇÇÇØ (");
             sb.Append(turns);
-            sb.Append("Â÷·Ê)");
+            sb.Append("Â÷·Ê)</color>");
         }
 
         // ½ºÅÈ º¯È­
         StatBlock mod = effect.Data.StatModifier;
         if (mod.damageMultiplier != 0f)
-            AppendStatPercent(sb,"ÇÇÇØ", (int)mod.damageMultiplier, turns);
+            AppendStatPercent(sb, "ÇÇÇØ", (int)mod.damageMultiplier, turns);
         if (mod.accuracyMod != 0)
-            AppendStat(sb,"¸íÁß", mod.accuracyMod, turns);
+            AppendStat(sb, "¸íÁß", mod.accuracyMod, turns);
         if (mod.critChance != 0f)
             AppendStat(sb, "Ä¡¸íÅ¸", (int)mod.critChance, turns);
         if (mod.defense != 0f)
@@ -98,9 +104,12 @@ public class StatusEffectIconDisplay : MonoBehaviour
         if (value > 0)
             sb.Append('+');
         sb.Append(value);
-        sb.Append('(');
-        sb.Append(turns);
-        sb.Append("Â÷·Ê)");
+        if(turns > 0)
+        {
+            sb.Append('(');
+            sb.Append(turns);
+            sb.Append("Â÷·Ê)");
+        }
     }
 
     private void AppendStatPercent(StringBuilder sb, string statName, int value, int turns)
@@ -111,8 +120,12 @@ public class StatusEffectIconDisplay : MonoBehaviour
         if (value > 0)
             sb.Append('+');
         sb.Append(value);
-        sb.Append("%(");
-        sb.Append(turns);
-        sb.Append("Â÷·Ê)");
+        if(turns >0)
+        {
+            sb.Append("%(");
+            sb.Append(turns);
+            sb.Append("Â÷·Ê)");
+        }
+
     }
 }

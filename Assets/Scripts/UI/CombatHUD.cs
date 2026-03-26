@@ -221,9 +221,9 @@ public class CombatHUD : MonoBehaviour
             {
                 CombatUnit u = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Nikke, nikkeIndex);
                 if (u == null) return;
-                sb.Append("체력: ").Append(u.CurrentHp).Append(" / ").Append(u.MaxHp)
+                sb.Append("<color=#BF1313>체력: ").Append(u.CurrentHp).Append(" / </color>").Append(u.MaxHp)
                   .Append('\n')
-                  .Append("에블라: ").Append(u.Ebla).Append(" / 200");
+                  .Append("<color=white>에블라: ").Append(u.Ebla).Append(" / 200</color>");
             },new Vector2(0, 40));
         }
 
@@ -260,7 +260,7 @@ public class CombatHUD : MonoBehaviour
                 }
                 if (count == 0) return;
                 sb.Append("남은 행동:").Append(count);
-            },new Vector2(0, 50));
+            },new Vector2(0, -25));
         }
         RefreshTurnOrder();
         ShowAllTickersAnimated();
