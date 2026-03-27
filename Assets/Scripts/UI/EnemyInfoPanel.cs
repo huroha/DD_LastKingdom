@@ -28,30 +28,30 @@ public class EnemyInfoPanel : MonoBehaviour
     {
         m_Sb.Clear();
         m_NameText.text = unit.UnitName;
-        m_HpText.text = $"{unit.CurrentHp} / {unit.MaxHp}";
+        m_HpText.SetText("{0} / {1}", unit.CurrentHp, unit.MaxHp);
         m_TypeText.text = unit.EnemyData.EnemyType.ToString();
         m_ElementText.text = unit.EnemyData.Element.ToString();
-        m_ProtText.text = $"{unit.CurrentStats.defense:F0}%";
-        m_SpeedText.text = unit.CurrentStats.speed.ToString();
-        m_DodgeText.text = unit.CurrentStats.dodge.ToString();
+        m_ProtText.SetText("{0:F0}%", unit.CurrentStats.defense);
+        m_SpeedText.SetText("{0}", unit.CurrentStats.speed);
+        m_DodgeText.SetText("{0}", unit.CurrentStats.dodge);
         ResistanceBlock res = unit.CurrentStats.resistance;
-        m_Sb.AppendLine($"{res.stun:F0}%");
-        m_Sb.AppendLine($"{res.poison:F0}%");
-        m_Sb.AppendLine($"{res.bleed:F0}%");
-        m_Sb.AppendLine($"{res.debuff:F0}%");
-        m_Sb.Append($"{res.move:F0}%");
-        m_ResistanceText.text = m_Sb.ToString();
+        m_Sb.Append(Mathf.RoundToInt(res.stun)).Append('%').AppendLine();
+        m_Sb.Append(Mathf.RoundToInt(res.poison)).Append('%').AppendLine();
+        m_Sb.Append(Mathf.RoundToInt(res.bleed)).Append('%').AppendLine();
+        m_Sb.Append(Mathf.RoundToInt(res.debuff)).Append('%').AppendLine();
+        m_Sb.Append(Mathf.RoundToInt(res.move)).Append('%');
+        m_ResistanceText.SetText(m_Sb);
         m_Sb.Clear();
         for (int i = 0; i < unit.EnemyData.Skills.Count; ++i)
             m_Sb.AppendLine(unit.EnemyData.Skills[i].SkillName);
-        m_SkillListText.text = m_Sb.ToString();
+        m_SkillListText.SetText(m_Sb);
     }
 
     public void PopulatePreview(AttackPreview preview)
     {
-        m_HitChanceText.text = $"{preview.HitChance:F0}%";
-        m_CritChanceText.text = $"{preview.CritChance:F0}%";
-        m_DamageRangeText.text = $"{preview.MinDamage} - {preview.MaxDamage}";
+        m_HitChanceText.SetText("{0:F0}%", preview.HitChance);
+        m_CritChanceText.SetText("{0:F0}%", preview.CritChance);
+        m_DamageRangeText.SetText("{0} - {1}", preview.MinDamage, preview.MaxDamage);
     }
 
     public void ShowPreviewSection()

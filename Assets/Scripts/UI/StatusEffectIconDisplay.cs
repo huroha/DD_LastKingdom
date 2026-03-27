@@ -11,7 +11,13 @@ public class StatusEffectIconDisplay : MonoBehaviour
     private CombatTooltip m_Tooltip;
 
     private List<Image> m_IconPool;     // 오브젝트 풀링용
+    private List<TooltipTrigger> m_TriggerPool;
 
+    private void Awake()
+    {
+        m_IconPool = new List<Image>();
+        m_TriggerPool = new List<TooltipTrigger>();
+    }
 
     public void SetTooltip(CombatTooltip tooltip)
     {
@@ -19,10 +25,8 @@ public class StatusEffectIconDisplay : MonoBehaviour
     }
 
 
-    public void Refresh(List<ActiveStatusEffect> activeEffect)
+    public void Refresh(IReadOnlyList<ActiveStatusEffect> activeEffect)
     {
-        if(m_IconPool == null)
-            m_IconPool = new List<Image>();
         for(int i=0; i<m_IconPool.Count; ++i)
             m_IconPool[i].gameObject.SetActive(false);
 
@@ -41,13 +45,13 @@ public class StatusEffectIconDisplay : MonoBehaviour
                 GameObject obj = Instantiate(m_IconPrefab, m_IconContainer);
                 image = obj.GetComponent<Image>();
                 m_IconPool.Add(image);
+                TooltipTrigger newTrigger = obj.AddComponent<TooltipTrigger>();
+                m_TriggerPool.Add(newTrigger);
             }
             if (activeEffect[i].Data == null || activeEffect[i].Data.Icon == null)
                 continue;
             // TooltipTrigger 초기화
-            TooltipTrigger trigger = image.GetComponent<TooltipTrigger>();
-            if (trigger == null)
-                trigger = image.gameObject.AddComponent<TooltipTrigger>();
+            TooltipTrigger trigger = m_TriggerPool[i];
             ActiveStatusEffect effect = activeEffect[i];  // 클로저용 로컬 변수
             trigger.Initialize(m_Tooltip, (sb) => BuildEffectTooltip(sb, effect), new Vector2(0, -50));
             image.sprite = activeEffect[i].Data.Icon;
@@ -64,68 +68,37 @@ public class StatusEffectIconDisplay : MonoBehaviour
         int turns = effect.RemainingTurns;
 
         if(effect.Data.ShowName)
-            sb.Append("<color=#BF1313>").Append(effect.Data.EffectName).Append("</color>\n");
+            sb.Append(TooltipHelper.TAG_DEBUFF_OPEN).Append(effect.Data.EffectName).Append(TooltipHelper.TAG_COLOR_CLOSE).Append('\n');
 
         if (!string.IsNullOrEmpty(effect.Data.Description))
-            sb.Append("<color=#DBDBD0>").Append(effect.Data.Description).Append("</color>");
+            sb.Append(TooltipHelper.TAG_NORMAL_OPEN).Append(effect.Data.Description).Append(TooltipHelper.TAG_COLOR_CLOSE);
 
         // 도트 피해
         if (effect.Data.TickDamage > 0)
         {
-            sb.Append("<color=#BF1313>매 차례마다\n");
+            sb.Append(TooltipHelper.TAG_DEBUFF_OPEN);
             sb.Append(effect.Data.TickDamage);
             sb.Append(" 피해 (");
             sb.Append(turns);
-            sb.Append("차례)</color>");
+            sb.Append("차례)");
+            sb.Append(TooltipHelper.TAG_COLOR_CLOSE);
+
         }
 
         // 스탯 변화
         StatBlock mod = effect.Data.StatModifier;
         if (mod.damageMultiplier != 0f)
-            AppendStatPercent(sb, "피해", (int)mod.damageMultiplier, turns);
+            TooltipHelper.AppendStatPercent(sb, TooltipHelper.STAT_DAMAGE, (int)mod.damageMultiplier, turns);
         if (mod.accuracyMod != 0)
-            AppendStat(sb, "명중", mod.accuracyMod, turns);
+            TooltipHelper.AppendStat(sb, TooltipHelper.STAT_ACCURACY, mod.accuracyMod, turns);
         if (mod.critChance != 0f)
-            AppendStat(sb, "치명타", (int)mod.critChance, turns);
+            TooltipHelper.AppendStat(sb, TooltipHelper.STAT_CRIT, (int)mod.critChance, turns);
         if (mod.defense != 0f)
-            AppendStatPercent(sb, "방어력", (int)mod.defense, turns);
+            TooltipHelper.AppendStatPercent(sb, TooltipHelper.STAT_DEFENCE, (int)mod.defense, turns);
         if (mod.dodge != 0)
-            AppendStat(sb, "회피", mod.dodge, turns);
+            TooltipHelper.AppendStat(sb, TooltipHelper.STAT_DODGE, mod.dodge, turns);
         if (mod.speed != 0)
-            AppendStat(sb, "속도", mod.speed, turns);
-
+            TooltipHelper.AppendStat(sb, TooltipHelper.STAT_SPEED, mod.speed, turns);
     }
 
-    private void AppendStat(StringBuilder sb,string statName ,int value, int turns)
-    {
-        sb.Append('\n');
-        sb.Append(statName);
-        sb.Append(' ');
-        if (value > 0)
-            sb.Append('+');
-        sb.Append(value);
-        if(turns > 0)
-        {
-            sb.Append('(');
-            sb.Append(turns);
-            sb.Append("차례)");
-        }
-    }
-
-    private void AppendStatPercent(StringBuilder sb, string statName, int value, int turns)
-    {
-        sb.Append('\n');
-        sb.Append(statName);
-        sb.Append(' ');
-        if (value > 0)
-            sb.Append('+');
-        sb.Append(value);
-        if(turns >0)
-        {
-            sb.Append("%(");
-            sb.Append(turns);
-            sb.Append("차례)");
-        }
-
-    }
 }

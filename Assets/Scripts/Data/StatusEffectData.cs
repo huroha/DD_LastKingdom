@@ -50,3 +50,10 @@ public class StatusEffectData : ScriptableObject
     public int MaxStack => m_MaxStack;
 
 }
+public static class StatusEffectTypeExtensions
+{
+    public static bool IsDot(this StatusEffectType type)
+    { 
+        return type == StatusEffectType.Bleed || type == StatusEffectType.Poison;
+    }
+}

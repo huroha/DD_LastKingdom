@@ -15,9 +15,7 @@ public class StatusEffectManager
 {
     private StatusEffectData m_StunResistBuff;
     
-
-
-
+    private List<DotTickResult> m_DotResultsBuffer = new List<DotTickResult>();
 
 
     public StatusEffectManager(StatusEffectData stunResistBuff)
@@ -27,14 +25,13 @@ public class StatusEffectManager
 
     public List<DotTickResult> ProcessTurnStart(CombatUnit unit) 
     {
-        List<DotTickResult> results = new List<DotTickResult>();
-        
-        if(!unit.IsAlive)
-            return results;
+        m_DotResultsBuffer.Clear();
+        if (!unit.IsAlive)
+            return m_DotResultsBuffer;
         for(int i=0; i<unit.ActiveEffects.Count; ++i)
         {
             ActiveStatusEffect effect = unit.ActiveEffects[i];
-            if(!IsDotEffect(effect.Data.EffectType))
+            if(!(effect.Data.EffectType.IsDot()))
                 continue;
             int damage = effect.Data.TickDamage;
             UnitState previousState = unit.State;
@@ -46,7 +43,7 @@ public class StatusEffectManager
             result.Damage = damage;
             result.PreviousState = previousState;
             result.ResultState = resultState;
-            results.Add(result);
+            m_DotResultsBuffer.Add(result);
 
             if (unit.State == UnitState.Dead)
                 break;
@@ -56,14 +53,14 @@ public class StatusEffectManager
         for(int i= unit.ActiveEffects.Count-1; i>=0; --i)
         {
             ActiveStatusEffect effect = unit.ActiveEffects[i];
-            if (!IsDotEffect(effect.Data.EffectType))
+            if (!(effect.Data.EffectType.IsDot()))
                 continue;
             effect.RemainingTurns--;
             if(effect.RemainingTurns <= 0)
-                unit.ActiveEffects.RemoveAt(i);
+                unit.RemoveEffectAt(i);
         }
         unit.RecalculateStats();
-        return results;
+        return m_DotResultsBuffer;
     }
 
     public void ProcessTurnEnd(CombatUnit unit)
@@ -71,7 +68,7 @@ public class StatusEffectManager
         for(int i= unit.ActiveEffects.Count-1; i>=0; --i)
         {
             ActiveStatusEffect effect = unit.ActiveEffects[i];
-            if (IsDotEffect(effect.Data.EffectType))
+            if ((effect.Data.EffectType.IsDot()))
                 continue;
             if (effect.Data.EffectType == StatusEffectType.Stun)
                 continue;
@@ -79,7 +76,7 @@ public class StatusEffectManager
                 continue;
             effect.RemainingTurns--;
             if (effect.RemainingTurns <= 0)
-                unit.ActiveEffects.RemoveAt(i);
+                unit.RemoveEffectAt(i);
         }
         unit.RecalculateStats();
     }
@@ -90,7 +87,7 @@ public class StatusEffectManager
         {
             if(unit.ActiveEffects[i].Data.EffectType == StatusEffectType.Stun)
             {
-                unit.ActiveEffects.RemoveAt(i);
+                unit.RemoveEffectAt(i);
                 break;
             }
         }
@@ -99,17 +96,9 @@ public class StatusEffectManager
         RemoveEffectByType(unit, StatusEffectType.Guard);
 
         // 스턴 저항 버프 부여
-        ActiveStatusEffect existing = null;
-        for(int i=0; i< unit.ActiveEffects.Count; ++i)
-        {
-            if (unit.ActiveEffects[i].Data == m_StunResistBuff)
-            {
-                existing = unit.ActiveEffects[i];
-                break;
-            }
-        }
+        ActiveStatusEffect existing = unit.FindEffect(m_StunResistBuff);
         if (existing == null)
-            unit.ActiveEffects.Add(new ActiveStatusEffect(m_StunResistBuff));
+            unit.AddEffect(new ActiveStatusEffect(m_StunResistBuff));
         unit.RecalculateStats();
 
     }
@@ -119,14 +108,10 @@ public class StatusEffectManager
         {
             ActiveStatusEffect effect = unit.ActiveEffects[i];
             if (effect.Data.EffectType == type)
-                unit.ActiveEffects.RemoveAt(i);
+                unit.RemoveEffectAt(i);
         }
 
         unit.RecalculateStats();
-    }
-    private bool IsDotEffect(StatusEffectType type)
-    {
-        return type == StatusEffectType.Poison || type == StatusEffectType.Bleed;
     }
     private bool IsPermanent(ActiveStatusEffect effect)
     {

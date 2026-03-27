@@ -62,6 +62,7 @@ public class CombatHUD : MonoBehaviour
     private struct TickerGroup
     {
         public Image[] Tickers;     // ½½·Ô´ç ÃÖ´ë ActionsPerRound  °¹¼ö
+        [System.NonSerialized] public Animator[] Animators;
     }
     [Header("Turn Tickers")]
     [SerializeField] private TickerGroup[] m_NikkeTurnTickerGroups;     // 4°³
@@ -94,6 +95,7 @@ public class CombatHUD : MonoBehaviour
 
     private void Awake()
     {
+        CacheTickerAnimators();
         Initialize(m_CombatStateMachine);
     }
     public void Initialize(CombatStateMachine stateMachine)
@@ -364,7 +366,7 @@ public class CombatHUD : MonoBehaviour
             m_TurnOrderBuilder.Append(m_CombatStateMachine.TurnOrder[i].UnitName);
             m_TurnOrderBuilder.Append(" -> ");
         }
-        m_TurnOrderText.text = m_TurnOrderBuilder.ToString();
+        m_TurnOrderText.SetText(m_TurnOrderBuilder);
     }
 
 
@@ -436,8 +438,8 @@ public class CombatHUD : MonoBehaviour
     private void UpdateEblaBar(int index, int ebla)
     {
         Image[] cells = m_NikkeEblaBars[index].Cells;
-        int phase1Count = Mathf.CeilToInt(Mathf.Min(ebla, 100) / 10f);
-        int phase2Count = ebla > 100 ? Mathf.CeilToInt((ebla - 100) / 10f) : 0;
+        int phase1Count = Mathf.CeilToInt(Mathf.Min(ebla, CombatUnit.EblaPhaseThreshold) / (float)CombatUnit.EblaCellValue);
+        int phase2Count = ebla > CombatUnit.EblaPhaseThreshold ? Mathf.CeilToInt((ebla - CombatUnit.EblaPhaseThreshold) / (float)CombatUnit.EblaCellValue) : 0;
 
         for (int i = 0; i < cells.Length; ++i)
         {
@@ -450,6 +452,28 @@ public class CombatHUD : MonoBehaviour
         }
     }
 
+    // ticker
+    private void CacheTickerAnimators()
+    {
+        for (int i = 0; i < m_NikkeTurnTickerGroups.Length; ++i)
+        {
+            m_NikkeTurnTickerGroups[i].Animators = new Animator[m_NikkeTurnTickerGroups[i].Tickers.Length];
+            for (int j = 0; j < m_NikkeTurnTickerGroups[i].Tickers.Length; ++j)
+                m_NikkeTurnTickerGroups[i].Animators[j] = m_NikkeTurnTickerGroups[i].Tickers[j].GetComponent<Animator>();
+        }
+        for (int i = 0; i < m_EnemyTurnTickerGroups.Length; ++i)
+        {
+            m_EnemyTurnTickerGroups[i].Animators = new Animator[m_EnemyTurnTickerGroups[i].Tickers.Length];
+            for (int j = 0; j < m_EnemyTurnTickerGroups[i].Tickers.Length; ++j)
+                m_EnemyTurnTickerGroups[i].Animators[j] = m_EnemyTurnTickerGroups[i].Tickers[j].GetComponent<Animator>();
+        }
+        for (int i = 0; i < m_LargeEnemyTickerGroups.Length; ++i)
+        {
+            m_LargeEnemyTickerGroups[i].Animators = new Animator[m_LargeEnemyTickerGroups[i].Tickers.Length];
+            for (int j = 0; j < m_LargeEnemyTickerGroups[i].Tickers.Length; ++j)
+                m_LargeEnemyTickerGroups[i].Animators[j] = m_LargeEnemyTickerGroups[i].Tickers[j].GetComponent<Animator>();
+        }
+    }
 
     private void SetTickerCount(CombatUnit unit, int count)
     {
@@ -467,7 +491,7 @@ public class CombatHUD : MonoBehaviour
                     if (unit == m_CombatStateMachine.ActiveUnit)
                         continue;
                     group.Tickers[i].gameObject.SetActive(true);
-                    Animator anim = group.Tickers[i].GetComponent<Animator>();
+                    Animator anim = group.Animators[i];
                     if (anim != null)
                         anim.enabled = false;
                 }
@@ -574,7 +598,7 @@ public class CombatHUD : MonoBehaviour
             if (i < count)
             {
                 group.Tickers[i].gameObject.SetActive(true);
-                Animator anim = group.Tickers[i].GetComponent<Animator>();
+                Animator anim = group.Animators[i];
                 if (anim != null)
                     anim.enabled = true;
             }
@@ -643,7 +667,7 @@ public class CombatHUD : MonoBehaviour
     // Round Ç¥±â
     public void ApplyRoundText()
     {
-        m_RoundText.text = m_PendingRound.ToString();
+        m_RoundText.SetText("{0}", m_PendingRound);
     }
     public void RefreshHoveredPreview()
     {
@@ -660,4 +684,6 @@ public class CombatHUD : MonoBehaviour
         else
             m_EnemyStatusIcons[unit.SlotIndex].Refresh(unit.ActiveEffects);
     }
+
+
 }

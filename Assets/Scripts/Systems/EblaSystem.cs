@@ -38,21 +38,14 @@ public class EblaSystem
     private void TriggerAffliction(CombatUnit unit)
     {
         unit.SetEblaState(EblaState.Afflicted);
-        unit.ActiveEffects.Add(new ActiveStatusEffect(m_AfflictionDebuff));
+        unit.AddEffect(new ActiveStatusEffect(m_AfflictionDebuff));
         unit.RecalculateStats();
         EventBus.Publish(new AfflictionTriggeredEvent(unit));
     }
 
     private void RemoveAffliction(CombatUnit unit)
     {
-        for (int i = unit.ActiveEffects.Count - 1; i >= 0; --i)
-        {
-            if (unit.ActiveEffects[i].Data == m_AfflictionDebuff)
-            {
-                unit.ActiveEffects.RemoveAt(i);
-                break;
-            }
-        }
+        unit.RemoveEffect(m_AfflictionDebuff);
         unit.SetEblaState(EblaState.Normal);
         unit.RecalculateStats();
     }

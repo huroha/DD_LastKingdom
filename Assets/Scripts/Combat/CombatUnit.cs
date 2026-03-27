@@ -24,10 +24,14 @@ public enum EblaState
 public class CombatUnit
 {
     public const int DEATHS_DOOR_EBLA = 18;
+    public const int MaxEbla = 200;
+    public const int EblaPhaseThreshold = 100;  //  Affliction/Virtue 임계값
+    public const int EblaCellValue = 10;        // 셀 하나당 ebla 값
+
     // 유닛 식별
     public CombatUnitType   UnitType { get; }
     public string           UnitName { get; }
-    public int              SlotIndex { get; set; }
+    public int              SlotIndex { get; private set; }
 
     public int SlotSize     { get; }
 
@@ -62,13 +66,25 @@ public class CombatUnit
     }
 
     // 적용중인 상태이상
-    public List<ActiveStatusEffect> ActiveEffects { get; }
+    private List<ActiveStatusEffect> m_ActiveEffects;
+    public IReadOnlyList<ActiveStatusEffect> ActiveEffects => m_ActiveEffects;
 
-    public float TurnOrderTieBreaker { get; set; }
+    public void AddEffect(ActiveStatusEffect effect) { m_ActiveEffects.Add(effect); }
+    public void RemoveEffectAt(int index) { m_ActiveEffects.RemoveAt(index); }
 
-    public int CorpseTimer { get; set; }
+    public float TurnOrderTieBreaker { get; private set; }
 
-    
+    public int CorpseTimer { get; private set; }
+
+    public void SetSlotIndex(int index)
+    {
+        SlotIndex = index;
+    }
+    public void SetTurnOrderTieBreaker(float v)
+    {
+        TurnOrderTieBreaker = v;
+    }
+    public void TickCorpseTimer() { CorpseTimer--; }
 
     // 생성자
     public CombatUnit(NikkeData data, int slotIndex,int currentHp, int ebla,
@@ -88,7 +104,7 @@ public class CombatUnit
         State = currentHp > 0 ? UnitState.Alive : UnitState.DeathsDoor;
         Ebla = ebla;
         ActionsPerRound = 1;
-        ActiveEffects = activeEffects ?? new List<ActiveStatusEffect>();    // Null 병합 연산자 왼쪽이 null이면 오른쪽 사용
+        m_ActiveEffects = activeEffects ?? new List<ActiveStatusEffect>();    // Null 병합 연산자 왼쪽이 null이면 오른쪽 사용
 
         RecalculateStats();
     }
@@ -108,7 +124,7 @@ public class CombatUnit
         CurrentStats = data.BaseStats;
         State = UnitState.Alive;
         ActionsPerRound = data.ActionsPerRound;
-        ActiveEffects = new List<ActiveStatusEffect>();
+        m_ActiveEffects = new List<ActiveStatusEffect>();
     }
 
     // 데미지
@@ -132,7 +148,7 @@ public class CombatUnit
             {
                 // hp 0 고정, deathblow 판정만 수행
                 float roll = Random.Range(0f, 100f);
-                if (roll >= CurrentStats.deathBlowResist)
+                if (roll > CurrentStats.deathBlowResist)
                     State = UnitState.Dead;
             }
         }
@@ -199,7 +215,7 @@ public class CombatUnit
     {
         if (UnitType != CombatUnitType.Nikke)
             return;
-        Ebla = Mathf.Clamp(Ebla + amount, 0, 200);
+        Ebla = Mathf.Clamp(Ebla + amount, 0, MaxEbla);
     }
 
     // 스탯 재계산
@@ -264,6 +280,29 @@ public class CombatUnit
                     return true;
             }
             return false;
+        }
+    }
+
+    public ActiveStatusEffect FindEffect(StatusEffectData data)
+    {
+        for (int i = 0; i < m_ActiveEffects.Count; ++i)
+        {
+            if (m_ActiveEffects[i].Data == data)
+                return m_ActiveEffects[i];
+        }
+        return null;
+    }
+    public void RemoveEffect(StatusEffectData data)
+    {
+        if (data == null)
+            return;
+        for (int i = m_ActiveEffects.Count - 1; i >= 0; --i)
+        {
+            if (m_ActiveEffects[i].Data == data)
+            {
+                RemoveEffectAt(i);
+                return;
+            }
         }
     }
 }

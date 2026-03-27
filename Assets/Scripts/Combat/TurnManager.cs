@@ -11,7 +11,7 @@ public class TurnManager
 
     private List<CombatUnit> m_PhaseBuffer = new List<CombatUnit>();
 
-    public CombatUnit                   CurrentUnit => m_TurnOrder[m_CurrentIndex];
+    public CombatUnit CurrentUnit =>(m_TurnOrder != null && m_CurrentIndex < m_TurnOrder.Count) ? m_TurnOrder[m_CurrentIndex]: null;
     public int                          RoundNumber => m_RoundNumber;
     public IReadOnlyList<CombatUnit>    TurnOrder => m_TurnOrder;
     public int CurrentTurnIndex => m_CurrentIndex;
@@ -61,8 +61,7 @@ public class TurnManager
 
         for (int i = 0; i < m_AllUnits.Count; ++i)
             if (m_AllUnits[i].IsAlive)
-                m_AllUnits[i].TurnOrderTieBreaker = Random.value;
-
+                m_AllUnits[i].SetTurnOrderTieBreaker(Random.value);
         int maxActions = 1;
         for (int i = 0; i < m_AllUnits.Count; ++i)
             if (m_AllUnits[i].IsAlive && m_AllUnits[i].ActionsPerRound > maxActions)

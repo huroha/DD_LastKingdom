@@ -12,12 +12,12 @@ public enum EnemyType
 public struct DropTable
 {
     [Header("Gold")]
-    public int minGold;
-    public int maxGold;
+    public int MinGold;
+    public int MaxGold;
 
     [Header("Gems")]
-    public int minGems;
-    public int maxGems;
+    public int MinGems;
+    public int MaxGems;
 
     // 추후 추가 예정
     // public TrinketDrop[]     trinkets;
@@ -39,7 +39,7 @@ public class EnemyData : ScriptableObject
     [SerializeField] private StatBlock m_BaseStats;
 
     [Header("Skills")]
-    [SerializeField] private SkillData[] m_Skills;
+    [SerializeField] private SkillData[] m_Skills = new SkillData[0];
 
     [Header("Drop")]
     [SerializeField] private DropTable m_DropTable;

@@ -6,16 +6,18 @@ public class EnemyAI
     private PositionSystem m_PositionSystem;
     private SkillExecutor m_SkillExecutor;
 
+    private List<SkillData> m_ValidSkillsBuffer = new List<SkillData>();
+    private List<CombatUnit> m_TargetsBuffer = new List<CombatUnit>();
+
     public EnemyAI(PositionSystem positionSystem, SkillExecutor skillExecutor)
     {
         m_PositionSystem = positionSystem;
         m_SkillExecutor = skillExecutor;
     }
-
     public EnemyAction DecideAction(CombatUnit enemy)
     {
-        List<SkillData> validSkills = new List<SkillData>();
-
+        m_ValidSkillsBuffer.Clear();
+        List<SkillData> validSkills = m_ValidSkillsBuffer;
         //  1. enemy.Skills를 순회하며 ValidateSkill이 true인 것만 validSkills 리스트에 수집
         for (int i=0; i<enemy.Skills.Count; ++i)
         {
@@ -40,11 +42,11 @@ public class EnemyAI
 
             if (skill.TargetType == TargetType.EnemySingle || skill.TargetType == TargetType.AllySingle)
             {
-                List<CombatUnit> targets = m_PositionSystem.GetValidTargets(enemy, skill);
-                if (targets.Count == 0)
+                m_PositionSystem.GetValidTargets(enemy, skill,m_TargetsBuffer);
+                if (m_TargetsBuffer.Count == 0)
                     continue;
 
-                CombatUnit target = targets[Random.Range(0, targets.Count)];
+                CombatUnit target = m_TargetsBuffer[Random.Range(0, m_TargetsBuffer.Count)];
                 return new EnemyAction(skill, target);
             }
             else

@@ -87,61 +87,33 @@ public class TargetSelectPanel : MonoBehaviour
         for (int i=0; i<m_EnemyButtons.Length; ++i)
         {
             int index = i;
-            UnityEngine.EventSystems.EventTrigger trigger = m_EnemyButtons[i].gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
-
-            UnityEngine.EventSystems.EventTrigger.Entry enter = new UnityEngine.EventSystems.EventTrigger.Entry();
-            enter.eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter;
-            enter.callback.AddListener(_ => OnButtonHoverEnter(CombatUnitType.Enemy, index));
-            trigger.triggers.Add(enter);
-
-            UnityEngine.EventSystems.EventTrigger.Entry exit = new UnityEngine.EventSystems.EventTrigger.Entry();
-            exit.eventID = UnityEngine.EventSystems.EventTriggerType.PointerExit;
-            exit.callback.AddListener(_ => OnButtonHoverExit());
-            trigger.triggers.Add(exit);
-
+            AddHoverTrigger(m_EnemyButtons[i].gameObject, CombatUnitType.Enemy, i);
         }
 
         for (int i = 0; i < m_NikkeButtons.Length; ++i)
         {
             int index = i;
-            UnityEngine.EventSystems.EventTrigger trigger =
-                m_NikkeButtons[i].gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
-
-            UnityEngine.EventSystems.EventTrigger.Entry enter = new UnityEngine.EventSystems.EventTrigger.Entry();
-            enter.eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter;
-            enter.callback.AddListener(_ => OnButtonHoverEnter(CombatUnitType.Nikke, index));
-            trigger.triggers.Add(enter);
-
-            UnityEngine.EventSystems.EventTrigger.Entry exit = new UnityEngine.EventSystems.EventTrigger.Entry();
-            exit.eventID = UnityEngine.EventSystems.EventTriggerType.PointerExit;
-            exit.callback.AddListener(_ => OnButtonHoverExit());
-            trigger.triggers.Add(exit);
+            AddHoverTrigger(m_NikkeButtons[i].gameObject, CombatUnitType.Nikke, i);
         }
 
         for (int i = 0; i < m_LargeEnemyButtons.Length; ++i)
         {
             int index = i;
-            UnityEngine.EventSystems.EventTrigger trigger =
-                m_LargeEnemyButtons[i].gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
-
-            UnityEngine.EventSystems.EventTrigger.Entry enter = new UnityEngine.EventSystems.EventTrigger.Entry();
-            enter.eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter;
-            enter.callback.AddListener(_ => OnButtonHoverEnter(CombatUnitType.Enemy, index));
-            trigger.triggers.Add(enter);
-
-            UnityEngine.EventSystems.EventTrigger.Entry exit = new UnityEngine.EventSystems.EventTrigger.Entry();
-            exit.eventID = UnityEngine.EventSystems.EventTriggerType.PointerExit;
-            exit.callback.AddListener(_ => OnButtonHoverExit());
-            trigger.triggers.Add(exit);
+            AddHoverTrigger(m_LargeEnemyButtons[i].gameObject, CombatUnitType.Enemy, i);
         }
-
-
-
-        EventBus.Subscribe<BattleStartedEvent>(OnBattleStarted);
-        EventBus.Subscribe<UnitMovedEvent>(OnUnitMoved);
         gameObject.SetActive(false);
     }
 
+    private void OnEnable()
+    {
+        EventBus.Subscribe<BattleStartedEvent>(OnBattleStarted);
+        EventBus.Subscribe<UnitMovedEvent>(OnUnitMoved);
+    }
+    private void OnDisable()
+    {
+        EventBus.Unsubscribe<BattleStartedEvent>(OnBattleStarted);
+        EventBus.Unsubscribe<UnitMovedEvent>(OnUnitMoved);
+    }
     private void Update()
     {
         for (int i = 0; i < SkillSelectPanel.SkillKeys.Length; ++i)
@@ -156,12 +128,6 @@ public class TargetSelectPanel : MonoBehaviour
         if (Keyboard.current[Key.Escape].wasPressedThisFrame)
             OnCancelButtonClicked();
     }
-    private void OnDestroy()
-    {
-        EventBus.Unsubscribe<BattleStartedEvent>(OnBattleStarted);
-        EventBus.Unsubscribe<UnitMovedEvent>(OnUnitMoved);
-    }
-
     public void Show(List<CombatUnit> validTargets, SkillData skill,
                      TargetSelectedHandler onTargetSelected, CancelHandler onCancel)
     { 
@@ -372,7 +338,20 @@ public class TargetSelectPanel : MonoBehaviour
             m_LargeEnemyHighlights[i].gameObject.SetActive(false);
     }
 
-    
+    private void AddHoverTrigger(GameObject target, CombatUnitType unitType, int index)
+    {
+        UnityEngine.EventSystems.EventTrigger trigger = target.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+
+        UnityEngine.EventSystems.EventTrigger.Entry enter = new UnityEngine.EventSystems.EventTrigger.Entry();
+        enter.eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter;
+        enter.callback.AddListener(_ => OnButtonHoverEnter(unitType, index));
+        trigger.triggers.Add(enter);
+
+        UnityEngine.EventSystems.EventTrigger.Entry exit = new UnityEngine.EventSystems.EventTrigger.Entry();
+        exit.eventID = UnityEngine.EventSystems.EventTriggerType.PointerExit;
+        exit.callback.AddListener(_ => OnButtonHoverExit());
+        trigger.triggers.Add(exit);
+    }
 
 }
 

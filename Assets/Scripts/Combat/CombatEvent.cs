@@ -33,10 +33,10 @@ public struct UnitDiedEvent
 
 public struct BattleStartedEvent
 {
-    public List<CombatUnit> Nikkes;
-    public List<CombatUnit> Enemies;
+    public IReadOnlyList<CombatUnit> Nikkes;
+    public IReadOnlyList<CombatUnit> Enemies;
 
-    public BattleStartedEvent(List<CombatUnit> nikkes, List<CombatUnit> enemies)
+    public BattleStartedEvent(IReadOnlyList<CombatUnit> nikkes, IReadOnlyList<CombatUnit> enemies)
     {
         Nikkes = nikkes;
         Enemies = enemies;

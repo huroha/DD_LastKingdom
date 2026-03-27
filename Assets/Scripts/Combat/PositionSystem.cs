@@ -6,7 +6,9 @@ public class PositionSystem
     private CombatUnit[] m_NikkeSlots;
     private CombatUnit[] m_EnemySlots;
 
-
+    // 버퍼
+    private CombatUnit[] m_DisplacedBuffer = new CombatUnit[4];
+    private int[] m_TargetSlotsBuffer = new int[4];
 
     // 초기화
     public void Initialize(List<CombatUnit> nikkes, List<CombatUnit> enemies)
@@ -39,28 +41,28 @@ public class PositionSystem
         return slots[slotIndex];
     }
 
-    public List<CombatUnit> GetAllUnits(CombatUnitType team)
+    public void GetAllUnits(CombatUnitType team, List<CombatUnit> result)
     {
-        List<CombatUnit> units = new List<CombatUnit>();
+        result.Clear();
         CombatUnit[] slots = GetTeamSlots(team);
         for (int i=0; i< slots.Length; ++i)
         {
             if (slots[i] != null && slots[i].IsAlive && slots[i].SlotIndex == i)
-                units.Add(slots[i]);
+                result.Add(slots[i]);
         }
-        return units;
+        return;
     }
 
-    public List<CombatUnit> GetAllTargetable(CombatUnitType team)
+    public void GetAllTargetable(CombatUnitType team, List<CombatUnit> result)
     {
-        List<CombatUnit> units = new List<CombatUnit>();
+        result.Clear();
         CombatUnit[] slots = GetTeamSlots(team);
         for (int i = 0; i < slots.Length; ++i)
         {
             if (slots[i] != null && slots[i].State != UnitState.Dead && slots[i].SlotIndex == i)
-                units.Add(slots[i]);
+                result.Add(slots[i]);
         }
-        return units;
+        return;
     }
     private CombatUnit[] GetTeamSlots(CombatUnitType team)
     {
@@ -84,36 +86,35 @@ public class PositionSystem
     }
 
 
-    public List<CombatUnit> GetCorpses(CombatUnitType team)
+    public void GetCorpses(CombatUnitType team, List<CombatUnit> result)
     {
-        List<CombatUnit> corpses = new List<CombatUnit>();
+        result.Clear();
         CombatUnit[] slots = GetTeamSlots(team);
         for (int i = 0; i < slots.Length; ++i)
         {
             if (slots[i] != null && slots[i].State == UnitState.Corpse && slots[i].SlotIndex == i)
-                corpses.Add(slots[i]);
+                result.Add(slots[i]);
         }
-        return corpses;
+        return;
     }
 
-    public List<CombatUnit> GetValidTargets(CombatUnit user, SkillData skill)
+    public void GetValidTargets(CombatUnit user, SkillData skill, List<CombatUnit> result)
     {
-        List<CombatUnit> result = new List<CombatUnit>();
-
+        result.Clear();
         if(skill.TargetType == TargetType.Self)
         {
             result.Add(user);
-            return result;
+            return;
         }
 
         // All 타입 : TargetPosition 무시하고 해당 진영 전체 반환
         if(skill.TargetType == TargetType.EnemyAll)
         {
             CombatUnitType enemyType = (user.UnitType == CombatUnitType.Nikke) ? CombatUnitType.Enemy : CombatUnitType.Nikke;
-            return GetAllTargetable(enemyType);
+            GetAllTargetable(enemyType, result);
         }
         if (skill.TargetType == TargetType.AllyAll)
-            return GetAllTargetable(user.UnitType);
+            GetAllTargetable(user.UnitType,result);
 
         CombatUnit[] targetSlots = GetTargetSlots(user, skill.TargetType);
 
@@ -126,7 +127,7 @@ public class PositionSystem
             if(target != null && target.State != UnitState.Dead && !result.Contains(target))
                 result.Add(target);
         }
-        return result;
+        return;
     }
 
     // 스킬 판정
@@ -157,8 +158,8 @@ public class PositionSystem
         slots[indexB] = a;
 
         int temp = a.SlotIndex;
-        a.SlotIndex = b.SlotIndex;
-        b.SlotIndex = temp;
+        a.SetSlotIndex(b.SlotIndex); 
+        b.SetSlotIndex(temp);
 
         return true;
     }
@@ -222,7 +223,7 @@ public class PositionSystem
                 {
                     slots[i] = slots[i + 1];
                     if (slots[i] != null && (i == 0 || slots[i - 1] != slots[i]))
-                        slots[i].SlotIndex = i;
+                        slots[i].SetSlotIndex(i);
                 }
             }
             else
@@ -231,12 +232,12 @@ public class PositionSystem
                 {
                     slots[i] = slots[i - 1];
                     if (slots[i] != null)
-                        slots[i].SlotIndex = i;
+                        slots[i].SetSlotIndex(i);
                 }
             }
 
             slots[newIndex] = unit;
-            unit.SlotIndex = newIndex;
+            unit.SetSlotIndex(newIndex);
             return true;
         }
         else
@@ -262,8 +263,13 @@ public class PositionSystem
 
         int actualSteps = newIndex - oldIndex;
         int numDisplaced = Mathf.Abs(actualSteps);
-        CombatUnit[] displaced = new CombatUnit[numDisplaced];
-        int[] targetSlots = new int[numDisplaced];
+        CombatUnit[] displaced = m_DisplacedBuffer;
+        int[] targetSlots = m_TargetSlotsBuffer;
+        for (int k = 0; k < numDisplaced; ++k)
+        {
+            m_DisplacedBuffer[k] = null;
+            m_TargetSlotsBuffer[k] = 0;
+        }
 
         for (int k = 0; k < numDisplaced; ++k)
         {
@@ -304,7 +310,7 @@ public class PositionSystem
         {
             if (displaced[k] == null) continue;
             if (!IsFirstOccurrence(displaced, k)) continue;
-            displaced[k].SlotIndex = targetSlots[k];
+            displaced[k].SetSlotIndex(targetSlots[k]);
             for (int s = 0; s < displaced[k].SlotSize; ++s)
                 slots[targetSlots[k] + s] = displaced[k];
         }
@@ -312,7 +318,7 @@ public class PositionSystem
         // unit 새 슬롯에 배치
         for (int i = newIndex; i < newIndex + size; ++i)
             slots[i] = unit;
-        unit.SlotIndex = newIndex;
+        unit.SetSlotIndex(newIndex);
 
         return true;
     }
@@ -329,7 +335,7 @@ public class PositionSystem
         {
             slots[i] = slots[i + size];
             if (slots[i] != null && (i == index || slots[i-1] != slots[i]))
-                slots[i].SlotIndex = i;
+                slots[i].SetSlotIndex(i);
         }
         
         for (int i= slots.Length - size; i<slots.Length; ++i)

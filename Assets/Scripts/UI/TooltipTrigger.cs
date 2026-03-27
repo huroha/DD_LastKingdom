@@ -35,6 +35,8 @@ public class TooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (m_Tooltip == null)
+            return;
         m_Tooltip.Hide();
     }
 

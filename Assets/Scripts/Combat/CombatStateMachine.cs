@@ -44,24 +44,32 @@ public class CombatStateMachine : MonoBehaviour
     private const int ALLY_DEATH_EBLA = 20;
 
     // 전투 시스템
-    private TurnManager     m_TurnManager;
-    private PositionSystem  m_PositionSystem;
-    private SkillExecutor   m_SkillExecutor;
-    private EnemyAI         m_EnemyAI;
-    private EblaSystem      m_EblaSystem;
+    private TurnManager m_TurnManager;
+    private PositionSystem m_PositionSystem;
+    private SkillExecutor m_SkillExecutor;
+    private EnemyAI m_EnemyAI;
+    private EblaSystem m_EblaSystem;
     private StatusEffectManager m_StatusEffectManager;
 
     // FSM 상태
-    private CombatState     m_CurrentState;
-    private CombatUnit      m_ActiveUnit;
-    private SkillData       m_SelectedSkill;
-    private CombatUnit      m_SelectedTarget;
+    private CombatState m_CurrentState;
+    private CombatUnit m_ActiveUnit;
+    private SkillData m_SelectedSkill;
+    private CombatUnit m_SelectedTarget;
 
     // 플레이어 입력 플래그
     private bool m_SkillConfirmed;
     private bool m_TargetConfirmed;
     private bool m_MoveRequested;
     private bool m_MoveConfirmed;
+
+    // 리스트 버퍼들
+    private List<CombatUnit> m_UnitBuffer = new List<CombatUnit>();
+    private List<CombatUnit> m_CorpseBuffer = new List<CombatUnit>();
+    private List<CombatUnit> m_ValidTargetBuffer = new List<CombatUnit>();
+    private List<CombatUnit> m_MoveTargetBuffer = new List<CombatUnit>();
+    private List<CombatUnit> m_IsValidTargetBuffer = new List<CombatUnit>();
+
 
     // 외부 읽기용 프로퍼티
     public CombatState CurrentState => m_CurrentState;
@@ -79,7 +87,7 @@ public class CombatStateMachine : MonoBehaviour
     private void Start()
     {
         Application.targetFrameRate = 60;
-        if(null != m_TestNikkes && m_TestNikkes.Length > 0)
+        if (null != m_TestNikkes && m_TestNikkes.Length > 0)
         {
             StartTestBattle();
         }
@@ -113,7 +121,7 @@ public class CombatStateMachine : MonoBehaviour
         List<CombatUnit> nikkes = new List<CombatUnit>();
 
         // 니케 순환하면서 데이터 채우기
-        for(int i=0; i<m_TestNikkes.Length; ++i)
+        for (int i = 0; i < m_TestNikkes.Length; ++i)
         {
             NikkeData data = m_TestNikkes[i];
             if (data == null)
@@ -124,7 +132,7 @@ public class CombatStateMachine : MonoBehaviour
         // 적 순환하면서 데이터 채우기
         List<CombatUnit> enemies = new List<CombatUnit>();
         int slotIndex = 0;
-        for (int i=0; i<m_TestEnemies.Length; ++i)
+        for (int i = 0; i < m_TestEnemies.Length; ++i)
         {
             EnemyData data = m_TestEnemies[i];
             if (data == null)
@@ -143,7 +151,7 @@ public class CombatStateMachine : MonoBehaviour
         m_PositionSystem = new PositionSystem();
         m_TurnManager = new TurnManager();
         m_EblaSystem = new EblaSystem(m_AfflictionDebuff);
-        m_SkillExecutor = new SkillExecutor(m_PositionSystem,m_EblaSystem, m_DeathsDoorDebuff, m_DeathsDoorRecovery);
+        m_SkillExecutor = new SkillExecutor(m_PositionSystem, m_EblaSystem, m_DeathsDoorDebuff, m_DeathsDoorRecovery);
         m_EnemyAI = new EnemyAI(m_PositionSystem, m_SkillExecutor);
         m_StatusEffectManager = new StatusEffectManager(m_StunResistBuff);
 
@@ -189,7 +197,7 @@ public class CombatStateMachine : MonoBehaviour
 
             EventBus.Publish(new TurnStartedEvent(m_ActiveUnit));
             // Dot 사망으로 사망 시 턴 스킵
-            if(!m_ActiveUnit.IsAlive)
+            if (!m_ActiveUnit.IsAlive)
             {
                 SetState(CombatState.TurnEnd);
                 m_StatusEffectManager.ProcessTurnEnd(m_ActiveUnit);
@@ -227,14 +235,16 @@ public class CombatStateMachine : MonoBehaviour
                     yield return null;
 
             SetState(CombatState.CheckBattleEnd);
-            if (m_PositionSystem.GetAllUnits(CombatUnitType.Enemy).Count == 0)
+            m_PositionSystem.GetAllUnits(CombatUnitType.Enemy, m_UnitBuffer);
+            if (m_UnitBuffer.Count == 0)
             {
                 ApplyPostBattleEbla();
                 SetState(CombatState.Victory);
                 EventBus.Publish(new BattleEndedEvent(true));
                 yield break;
             }
-            if (m_PositionSystem.GetAllUnits(CombatUnitType.Nikke).Count == 0)
+            m_PositionSystem.GetAllUnits(CombatUnitType.Nikke, m_UnitBuffer);
+            if (m_UnitBuffer.Count == 0)
             {
                 SetState(CombatState.Defeat);
                 EventBus.Publish(new BattleEndedEvent(false));
@@ -264,14 +274,14 @@ public class CombatStateMachine : MonoBehaviour
             if (m_MoveRequested)
             {
                 m_MoveRequested = false;
-                List<CombatUnit> moveTargets = GetValidMoveTargets();
-                if (moveTargets.Count == 0)
+                GetValidMoveTargets(m_MoveTargetBuffer);
+                if (m_MoveTargetBuffer.Count == 0)
                     continue; // 이동 가능 슬롯 없으면 다시 스킬 선택
 
                 SetState(CombatState.PlayerSelectMoveTarget);
                 m_MoveConfirmed = false;
                 m_SelectedTarget = null;
-                m_TargetSelectPanel.Show(moveTargets,m_SelectedSkill ,OnMoveTargetSelected, OnMoveCancel);
+                m_TargetSelectPanel.Show(m_MoveTargetBuffer, m_SelectedSkill, OnMoveTargetSelected, OnMoveCancel);
 
                 while (!m_MoveConfirmed)
                     yield return null;
@@ -285,7 +295,7 @@ public class CombatStateMachine : MonoBehaviour
             // 패스 선택 시
             if (m_SelectedSkill == null)
             {
-                if(m_EblaSystem.ModifyEbla(m_ActiveUnit, PASS_EBLA_PENALTY))
+                if (m_EblaSystem.ModifyEbla(m_ActiveUnit, PASS_EBLA_PENALTY))
                 {
                     m_PositionSystem.RemoveUnit(m_ActiveUnit);
                     EventBus.Publish(new UnitDiedEvent(m_ActiveUnit));
@@ -294,14 +304,14 @@ public class CombatStateMachine : MonoBehaviour
                 continue;
             }
 
-            
+
 
             // 타겟 선택
             SetState(CombatState.PlayerSelectTarget);
             m_TargetConfirmed = false;
             m_SelectedTarget = null;
-            List<CombatUnit> validTargets = m_PositionSystem.GetValidTargets(m_ActiveUnit, m_SelectedSkill);
-            m_TargetSelectPanel.Show(validTargets,m_SelectedSkill, OnTargetSelected, OnTargetCancel);
+            m_PositionSystem.GetValidTargets(m_ActiveUnit, m_SelectedSkill, m_ValidTargetBuffer);
+            m_TargetSelectPanel.Show(m_ValidTargetBuffer, m_SelectedSkill, OnTargetSelected, OnTargetCancel);
 
             while (!m_TargetConfirmed)
                 yield return null;
@@ -329,35 +339,42 @@ public class CombatStateMachine : MonoBehaviour
 
         EnemyAction action = m_EnemyAI.DecideAction(m_ActiveUnit);
         SetState(CombatState.ExecuteSkill);
-        if (!action.IsPass)
+        if (m_CombatHUD != null)
         {
-            m_CombatHUD.ShowEnemyTargetHighlight(action.Target.SlotIndex);
-            m_CombatHUD.ShowEnemySkillName(action.Skill.SkillName);
-            SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, action.Skill, action.Target);
-            EventBus.Publish(new SkillExecutedEvent(result));
-            ProcessDeadUnits(result);
+            if (!action.IsPass)
+            {
+                if (action.Target != null)
+                    m_CombatHUD.ShowEnemyTargetHighlight(action.Target.SlotIndex);
+                m_CombatHUD.ShowEnemySkillName(action.Skill.SkillName);
+                SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, action.Skill, action.Target);
+                EventBus.Publish(new SkillExecutedEvent(result));
+                ProcessDeadUnits(result);
+            }
+            else
+                m_CombatHUD.ShowEnemySkillName("턴 넘김");
         }
-        else
-            m_CombatHUD.ShowEnemySkillName("턴 넘김");
 
         yield return new WaitForSeconds(m_EnemyActionDelay);
-        m_CombatHUD.HideEnemyTargetHighlights();
-        m_CombatHUD.HideEnemySkillName();
+        if (m_CombatHUD != null)
+        {
+            m_CombatHUD.HideEnemyTargetHighlights();
+            m_CombatHUD.HideEnemySkillName();
+        }
     }
 
     // 헬퍼
 
     private void TickCorpseTimers()
     {
-        List<CombatUnit> corpses = m_PositionSystem.GetCorpses(CombatUnitType.Enemy);
-        for (int i=0; i<corpses.Count; ++i)
+        m_PositionSystem.GetCorpses(CombatUnitType.Enemy, m_CorpseBuffer);
+        for (int i = 0; i < m_CorpseBuffer.Count; ++i)
         {
-            corpses[i].CorpseTimer--;
-            if (corpses[i].CorpseTimer <=0)
+            m_CorpseBuffer[i].TickCorpseTimer();
+            if (m_CorpseBuffer[i].CorpseTimer <= 0)
             {
-                corpses[i].Kill();
-                m_PositionSystem.RemoveUnit(corpses[i]);
-                EventBus.Publish(new UnitDiedEvent(corpses[i]));
+                m_CorpseBuffer[i].Kill();
+                m_PositionSystem.RemoveUnit(m_CorpseBuffer[i]);
+                EventBus.Publish(new UnitDiedEvent(m_CorpseBuffer[i]));
             }
         }
     }
@@ -372,10 +389,10 @@ public class CombatStateMachine : MonoBehaviour
     {
         if (result.TargetResults == null)
             return;
-        for (int i =0; i<result.TargetResults.Length; ++i)
+        for (int i = 0; i < result.TargetResults.Length; ++i)
         {
             CombatUnit target = result.TargetResults[i].Target;
-            if(target != null)
+            if (target != null)
             {
                 if (target.State == UnitState.Dead)
                 {
@@ -391,13 +408,17 @@ public class CombatStateMachine : MonoBehaviour
     }
     private void ApplyAllyDeathEbla()
     {
-        List<CombatUnit> nikkes = m_PositionSystem.GetAllUnits(CombatUnitType.Nikke);
-        for(int i= nikkes.Count -1; i>=0; --i)                            //RemoveUnit 호출 시 리스트가 변경되므로 뒤에서부터 순회해야 안전
+        ApplyEblaToAllNikkes(ALLY_DEATH_EBLA);
+    }
+    private void ApplyEblaToAllNikkes(int amount)
+    {
+        m_PositionSystem.GetAllUnits(CombatUnitType.Nikke, m_UnitBuffer);
+        for (int i = m_UnitBuffer.Count - 1; i >= 0; --i)                            //RemoveUnit 호출 시 리스트가 변경되므로 뒤에서부터 순회해야 안전
         {
-            if (m_EblaSystem.ModifyEbla(nikkes[i], ALLY_DEATH_EBLA))
+            if (m_EblaSystem.ModifyEbla(m_UnitBuffer[i], ALLY_DEATH_EBLA))
             {
-                m_PositionSystem.RemoveUnit(nikkes[i]);                
-                EventBus.Publish(new UnitDiedEvent(nikkes[i]));
+                m_PositionSystem.RemoveUnit(m_UnitBuffer[i]);
+                EventBus.Publish(new UnitDiedEvent(m_UnitBuffer[i]));
             }
         }
     }
@@ -412,22 +433,12 @@ public class CombatStateMachine : MonoBehaviour
         {
             total += i * m_EblaRoundMultiplier;
         }
-
-        List<CombatUnit> nikkes = m_PositionSystem.GetAllUnits(CombatUnitType.Nikke);
-        for(int i= nikkes.Count-1; i>=0; --i)
-        {
-            if (m_EblaSystem.ModifyEbla(nikkes[i], total))
-            {
-                m_PositionSystem.RemoveUnit(nikkes[i]);
-                EventBus.Publish(new UnitDiedEvent(nikkes[i]));
-            }
-        }
-
+        ApplyEblaToAllNikkes(total);
     }
 
     // State 설정
     private void SetState(CombatState newState)
-    { 
+    {
         m_CurrentState = newState;
         if (OnStateChanged != null)
             OnStateChanged(newState);
@@ -435,12 +446,12 @@ public class CombatStateMachine : MonoBehaviour
         //Debug.Log($"[FSM] {newState}");
 
     }
-    private void OnSkillSelected(SkillData skill) 
+    private void OnSkillSelected(SkillData skill)
     {
         m_SelectedSkill = skill;
         m_SkillConfirmed = true;
     }
-    private void OnSkillPass() 
+    private void OnSkillPass()
     {
         m_SelectedSkill = null;
         m_SkillConfirmed = true;
@@ -450,7 +461,7 @@ public class CombatStateMachine : MonoBehaviour
         m_SelectedTarget = target;
         m_TargetConfirmed = true;
     }
-    private void OnTargetCancel() 
+    private void OnTargetCancel()
     {
         m_SelectedTarget = null;
         m_TargetConfirmed = true;
@@ -476,42 +487,41 @@ public class CombatStateMachine : MonoBehaviour
         m_MoveConfirmed = true;
     }
 
-    private List<CombatUnit> GetValidMoveTargets()
+    private void GetValidMoveTargets(List<CombatUnit> result)
     {
-        List<CombatUnit> targets = new List<CombatUnit>();
+        result.Clear();
         int currentSlot = m_ActiveUnit.SlotIndex;
         int range = m_ActiveUnit.CurrentStats.moveRange;
 
-        for(int i=1; i<=range; ++i)
+        for (int i = 1; i <= range; ++i)
         {
             CombatUnit forward = m_PositionSystem.GetUnit(CombatUnitType.Nikke, currentSlot - i);
             CombatUnit backward = m_PositionSystem.GetUnit(CombatUnitType.Nikke, currentSlot + i);
 
             if (forward != null)
-                targets.Add(forward);
+                result.Add(forward);
             if (backward != null)
-                targets.Add(backward);
+                result.Add(backward);
         }
-        return targets;
     }
     public bool IsValidTarget(CombatUnit target)
     {
         if (m_ActiveUnit == null || m_SelectedSkill == null)
             return false;
-        List<CombatUnit> validTargets = m_PositionSystem.GetValidTargets(m_ActiveUnit, m_SelectedSkill);
-        return validTargets.Contains(target);
+        m_PositionSystem.GetValidTargets(m_ActiveUnit, m_SelectedSkill, m_IsValidTargetBuffer);
+        return m_IsValidTargetBuffer.Contains(target);
     }
     private void ProcessDotResults(List<DotTickResult> results)
     {
-        for(int i=0; i<results.Count; ++i)
+        for (int i = 0; i < results.Count; ++i)
         {
             CombatUnit unit = results[i].Unit;
-    
+
             if (results[i].PreviousState == UnitState.Alive
                           && results[i].ResultState == UnitState.DeathsDoor)
             {
                 m_EblaSystem.ModifyEbla(unit, CombatUnit.DEATHS_DOOR_EBLA);
-                unit.ActiveEffects.Add(new ActiveStatusEffect(m_DeathsDoorDebuff));
+                unit.AddEffect(new ActiveStatusEffect(m_DeathsDoorDebuff));
                 unit.RecalculateStats();
             }
             if (results[i].ResultState == UnitState.Dead)
@@ -523,5 +533,6 @@ public class CombatStateMachine : MonoBehaviour
             }
         }
     }
+
 
 }

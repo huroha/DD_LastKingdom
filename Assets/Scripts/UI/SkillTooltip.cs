@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Text;
+using UnityEngine.UI;
 
 public class SkillTooltip : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class SkillTooltip : MonoBehaviour
 
     private RectTransform m_PositionDisplayRect;
     private StringBuilder m_SB = new StringBuilder(256);
-    private Vector3[] m_Corners = new Vector3[4];
+
     private Camera m_UICamera;
 
     private SkillData m_CurrentSkill;
@@ -54,7 +55,7 @@ public class SkillTooltip : MonoBehaviour
 
         m_RectTransform.sizeDelta = Vector2.zero;
         gameObject.SetActive(true);
-        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(m_RectTransform);
 
         m_PositionDisplay.Refresh(skill);
 
@@ -69,7 +70,7 @@ public class SkillTooltip : MonoBehaviour
         Vector2 localPoint;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, screenPosition, m_UICamera, out localPoint);
         m_RectTransform.anchoredPosition = localPoint + offset;
-        ClampToScreen();
+        TooltipHelper.ClampToScreen(m_RectTransform);
 
     }
 
@@ -79,31 +80,10 @@ public class SkillTooltip : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private void ClampToScreen() 
-    {
-
-        m_RectTransform.GetWorldCorners(m_Corners);
-
-        float offsetX = 0f;
-        float offsetY = 0f;
-
-        // 오른쪽 빠져나감
-        if (m_Corners[2].x > Screen.width)
-            offsetX = Screen.width - m_Corners[2].x;
-        if (m_Corners[0].x < 0f)
-            offsetX = -m_Corners[0].x;
-        if (m_Corners[1].y > Screen.height)
-            offsetY = Screen.height - m_Corners[1].y;
-        if (m_Corners[0].y < 0f)
-            offsetY = -m_Corners[0].y;
-
-        m_RectTransform.anchoredPosition += new Vector2(offsetX, offsetY);
-    }
-
     private void BuildEffectText(StringBuilder sb, StatusEffectData effect)
     {
         // 효과명 (기본 100%)
-        sb.Append("<color=#FF4444>").Append(effect.EffectName).Append("</color>")
+        sb.Append(TooltipHelper.TAG_BUFF_OPEN).Append(effect.EffectName).Append(TooltipHelper.TAG_COLOR_CLOSE)
           .Append(" (기본 100%)\n");
 
         // Description이 있으면 표시
@@ -113,20 +93,22 @@ public class SkillTooltip : MonoBehaviour
         // 스탯 변화가 있으면 약화: 항목 표시
         StatBlock mod = effect.StatModifier;
         bool hasStatMod = mod.damageMultiplier != 0 || mod.accuracyMod != 0
-                       || mod.defense != 0 || mod.dodge != 0 || mod.speed != 0;
+                       || mod.critChance != 0 || mod.defense != 0 || mod.dodge != 0 || mod.speed != 0;
         if (hasStatMod)
         {
             sb.Append("<b>약화:</b>\n");
             if (mod.damageMultiplier != 0)
-                sb.Append("피해").Append(mod.damageMultiplier > 0 ? "+":"").Append((int)mod.damageMultiplier).Append("%\n");
+                TooltipHelper.AppendStatPercent(sb, TooltipHelper.STAT_DAMAGE, (int)mod.damageMultiplier);
             if (mod.accuracyMod != 0)
-                sb.Append("명중 ").Append(mod.accuracyMod > 0 ? "+" : "").Append(mod.accuracyMod).Append("\n");
+                TooltipHelper.AppendStat(sb, TooltipHelper.STAT_ACCURACY, mod.accuracyMod);
             if (mod.defense != 0)
-                sb.Append("방어").Append(mod.defense > 0 ? "+" : "").Append((int)mod.defense).Append("%\n");
+                TooltipHelper.AppendStatPercent(sb, TooltipHelper.STAT_DEFENCE, (int)mod.defense);
             if (mod.dodge != 0)
-                sb.Append("회피").Append(mod.dodge > 0 ? "+" : "").Append(mod.dodge).Append("\n");
+                TooltipHelper.AppendStat(sb, TooltipHelper.STAT_DODGE, mod.dodge);
             if (mod.speed != 0)
-                sb.Append("속도").Append(mod.speed > 0 ? "+" : "").Append(mod.speed).Append("\n");
+                TooltipHelper.AppendStat(sb, TooltipHelper.STAT_SPEED, mod.speed);
+            if (mod.critChance != 0f)
+                TooltipHelper.AppendStat(sb, TooltipHelper.STAT_CRIT, (int)mod.critChance);
         }
     }
 }

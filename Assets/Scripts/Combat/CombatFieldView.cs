@@ -84,7 +84,9 @@ public class CombatFieldView : MonoBehaviour
             MoveAllToCurrentSlots();
             return;
         }
-        SpriteRenderer view = m_UnitViews[e.Unit];
+
+        if (!m_UnitViews.TryGetValue(e.Unit, out SpriteRenderer view))
+            return;
         m_UnitViews.Remove(e.Unit);
 
         // 적이고 시체 스프라이트가 있으면 교체, 없으면 제거?
@@ -143,9 +145,9 @@ public class CombatFieldView : MonoBehaviour
     private Vector3 GetSlotPosition(CombatUnit unit)
     {
         Transform[] unitSlots = GetSlots(unit.UnitType);
-        if (unit.SlotSize == 2)
+        if (unit.SlotSize == 2 && unit.SlotIndex + 1 < unitSlots.Length)
             return (unitSlots[unit.SlotIndex].position + unitSlots[unit.SlotIndex + 1].position) / 2f;
-        return GetSlots(unit.UnitType)[unit.SlotIndex].position;
+        return unitSlots[unit.SlotIndex].position;
     }
 
     private void MoveAllToCurrentSlots()

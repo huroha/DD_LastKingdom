@@ -16,6 +16,8 @@ public static class EventBus
     // Dictionary로 만든 이유 -> 검색에서 O(1)의 속도를 보여준다. list는 전체 리스트를 확인하기 때문에 O(n)
     // Delegate는 함수를 변수로 선언한것.
 
+    private static readonly List<Delegate> s_TempHandlers = new List<Delegate>();
+
     public static void Subscribe<TEvent>(Action<TEvent> handler)
     {
         Type type = typeof(TEvent);                                        
@@ -42,11 +44,14 @@ public static class EventBus
         Type type = typeof(TEvent);
         if (!m_Handlers.ContainsKey(type))
             return;
-        List<Delegate> handlers = new List<Delegate>(m_Handlers[type]);      // 복사본을 순회
-        for(int i = 0; i < handlers.Count; ++i)
-        {
-            ((Action<TEvent>)handlers[i]).Invoke(evt);  
-        }
+
+        s_TempHandlers.Clear();
+        s_TempHandlers.AddRange(m_Handlers[type]);
+        
+        for (int i = 0; i < s_TempHandlers.Count; ++i)
+            ((Action<TEvent>)s_TempHandlers[i]).Invoke(evt);
+
+        s_TempHandlers.Clear();  // 순회 후 참조 해제
     }
 
     public static void Clear()

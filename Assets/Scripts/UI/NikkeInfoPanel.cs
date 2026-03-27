@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+using System.Text;
 
 
 public class NikkeInfoPanel : MonoBehaviour
@@ -34,8 +34,9 @@ public class NikkeInfoPanel : MonoBehaviour
     private static readonly Color COLOR_NORMAL = new Color(0.8f, 0.8f, 0.8f, 1f);
     private static readonly Color COLOR_BUFF = new Color(0.8f, 0.76f, 0.56f, 1f);
     private static readonly Color COLOR_DEBUFF = new Color(0.75f, 0.1f, 0.1f, 1f);
+    private static readonly Color COLOR_SKILL_DISABLED = new Color(0.4f, 0.4f, 0.4f, 1f);
 
-
+    private StringBuilder m_Sb = new StringBuilder(64);
 
 
 
@@ -48,8 +49,9 @@ public class NikkeInfoPanel : MonoBehaviour
         //Portrait & Identity
         m_Portrait.sprite = data.PortraitSprite;
         m_NameText.text = data.NikkeName;
-        m_ClassText.text = GetManufacturerDisplayName(data.Manufacturer) +"  "+ GetClassDisplayName(data.NikkeClass);
-
+        m_Sb.Clear();
+        m_Sb.Append(GetManufacturerDisplayName(data.Manufacturer)).Append("  ").Append(GetClassDisplayName(data.NikkeClass));
+        m_ClassText.SetText(m_Sb);
         // Skill Icon
         for (int i=0; i< m_SkillIcons.Length; ++i)
         {
@@ -60,36 +62,36 @@ public class NikkeInfoPanel : MonoBehaviour
             {
                 m_SkillIcons[i].sprite = unit.Skills[i].SkillIcon;
                 bool isValid =(m_CombatStateMachine != null) && m_CombatStateMachine.ValidateSkill(unit, unit.Skills[i]);
-                m_SkillIcons[i].color = isValid ? Color.white : new Color(0.4f, 0.4f, 0.4f, 1f);
+                m_SkillIcons[i].color = isValid ? Color.white : COLOR_SKILL_DISABLED;
             }
         }
 
         // hp & Ebla
-        m_HpText.text = $"{unit.CurrentHp} / {unit.MaxHp}";
-        m_EblaText.text = $"{unit.Ebla} / 200";
+        m_HpText.SetText("{0} / {1}", unit.CurrentHp, unit.MaxHp);
+        m_EblaText.SetText("{0} / {1}", unit.Ebla, CombatUnit.MaxEbla);
 
         //Stats
         StatBlock baseStats = unit.BaseStats;
 
-        m_AccText.text = stats.accuracyMod.ToString();
+        m_AccText.SetText("{0}", stats.accuracyMod);
         m_AccText.color = GetStatColor(stats.accuracyMod, baseStats.accuracyMod);
 
-        m_CritText.text = $"{stats.critChance:F1}%";
+        m_CritText.SetText("{0:F0}%", stats.critChance);
         m_CritText.color = GetStatColor(stats.critChance, baseStats.critChance);
 
         float dmgMul = 1f + stats.damageMultiplier / 100f;
         int displayMin = Mathf.Max((int)(stats.minDamage * dmgMul), 0);
         int displayMax = Mathf.Max((int)(stats.maxDamage * dmgMul), 0);
-        m_DmgText.text = $"{displayMin} - {displayMax}";
+        m_DmgText.SetText("{0} - {1}", displayMin, displayMax);
         m_DmgText.color = GetStatColor(displayMin + displayMax, baseStats.minDamage + baseStats.maxDamage);
 
-        m_DodgeText.text = stats.dodge.ToString();
+        m_DodgeText.SetText("{0}", stats.dodge);
         m_DodgeText.color = GetStatColor(stats.dodge, baseStats.dodge);
 
-        m_ProtText.text = $"{stats.defense:F0}%";
+        m_ProtText.SetText("{0:F0}%", stats.defense);
         m_ProtText.color = GetStatColor(stats.defense, baseStats.defense);
 
-        m_SpeedText.text = stats.speed.ToString();
+        m_SpeedText.SetText("{0}", stats.speed);
         m_SpeedText.color = GetStatColor(stats.speed, baseStats.speed);
 
 
@@ -116,8 +118,8 @@ public class NikkeInfoPanel : MonoBehaviour
     private void OnTurnEnded(TurnEndedEvent e)
     {
         if (m_CurrentUnit == null) return;
-        m_HpText.text = $"{m_CurrentUnit.CurrentHp} / {m_CurrentUnit.MaxHp}";
-        m_EblaText.text = $"{m_CurrentUnit.Ebla} / 200";
+        m_HpText.SetText("{0} / {1}", m_CurrentUnit.CurrentHp, m_CurrentUnit.MaxHp);
+        m_EblaText.SetText("{0} / 200", m_CurrentUnit.Ebla);
     }
 
     private static string GetClassDisplayName(NikkeClass nikkeClass)

@@ -37,19 +37,18 @@ public class NikkeData : ScriptableObject
     [SerializeField] private ElementType m_Element;
     [SerializeField] private SquadData m_Squad;
 
-
-
+    public const int MaxSkillCount = 7;
 
     [Header("Base Stats")]
     [SerializeField] private StatBlock m_BaseStats;
 
     [Header("Level")]
     [SerializeField] private int        m_MaxLevel = 6;
-    [SerializeField] private int[]      m_ExpThresholds;        // 인덱스 = 레밸, 값 = 해당 레벨 도달 누적 경험치
+    [SerializeField] private int[]      m_ExpThresholds = new int[0];        // 인덱스 = 레밸, 값 = 해당 레벨 도달 누적 경험치
     [SerializeField] private StatBlock  m_StatGrowthPerLevel;   // 레벨업 시 가산되는 스탯
 
     [Header("Skills")]
-    [SerializeField] private SkillData[] m_Skills = new SkillData[7];
+    [SerializeField] private SkillData[] m_Skills = new SkillData[MaxSkillCount];
 
     [Header("Visuals")]
     [SerializeField] private Sprite m_PortraitSprite;           // 초상화

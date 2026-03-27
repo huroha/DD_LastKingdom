@@ -20,6 +20,12 @@ public class SkillExecutor
     private const int CRIT_EBLA_PARTY_HEAL = -5;
     private const float CRIT_DAMAGE_MULTI = 1.5f;
 
+    // 리스트 버퍼들
+    private List<CombatUnit> m_TargetsBuffer = new List<CombatUnit>();
+    private List<CombatUnit> m_AllNikkesBuffer = new List<CombatUnit>();
+    private List<StatusEffectData> m_AppliedBuffer = new List<StatusEffectData>();
+    private List<StatusEffectData> m_ResistedBuffer = new List<StatusEffectData>();
+
 
     public SkillExecutor(PositionSystem positionSystem, EblaSystem eblaSystem, StatusEffectData deathsDoorDebuff, StatusEffectData deathsDoorRecovery)
     {
@@ -41,8 +47,8 @@ public class SkillExecutor
         // 각성 스킬이면 flase
         if (skill.RequiredState == SkillRequiredState.Awakened)
             return false;
-        List<CombatUnit> validTarget = m_PositionSystem.GetValidTargets(user, skill);
-        if (validTarget.Count == 0)
+        m_PositionSystem.GetValidTargets(user, skill,m_TargetsBuffer);
+        if (m_TargetsBuffer.Count == 0)
             return false;
 
         return true;
@@ -51,15 +57,16 @@ public class SkillExecutor
     public SkillResult Execute(CombatUnit user, SkillData skill, CombatUnit selectedTarget = null)
     {
         // ValidateSkill 실패 시 빈 SkillResult 반환 (early return)
-        SkillResult FinalResult;
+        SkillResult finalResult;
 
         if (!ValidateSkill(user, skill))
             return new SkillResult();
         // ResolveTargets로 최종 타겟 리스트 결정
-        List<CombatUnit> targets = ResolveTargets(user, skill, selectedTarget);
+        ResolveTargets(user, skill, selectedTarget, m_TargetsBuffer);
+        List<CombatUnit> targets = m_TargetsBuffer;
 
-        // 크리티컬 파티 에블라용: m_PositionSystem.GetAllUnits(CombatUnitType.Nikke)
-        List<CombatUnit> allNikkes = null;
+        // 크리티컬 파티 에블라용
+        bool allNikkesFetched = false;
         //m_PositionSystem.GetAllUnits(CombatUnitType.Nikke);
         bool isHealSkill = skill.HealAmount > 0;
         // TargetResult 배열 선언 (targets.Count 크기)
@@ -69,17 +76,18 @@ public class SkillExecutor
         // for 루프: 각 타겟에 대해
         for (int i = 0; i < result.Length; ++i)
         {
-
-            List<StatusEffectData> applied = new List<StatusEffectData>();
-            List<StatusEffectData> resisted = new List<StatusEffectData>();
+            m_AppliedBuffer.Clear();
+            m_ResistedBuffer.Clear();
 
             // [명중 판정]
             if (isHealSkill)
                 result[i].IsHit = true;
             else
                 result[i].IsHit = RollHit(user, targets[i], skill);
+                
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log($"[Skill] {user.UnitName} → {targets[i].UnitName} | Hit:{result[i].IsHit}");
-
+            #endif
             // [명중 성공 시]
             if (result[i].IsHit)
             {
@@ -131,14 +139,17 @@ public class SkillExecutor
 
 
                 // [상태이상] ApplyOnHitEffects 호출 (applied, resisted 리스트 준비)
-                ApplyOnHitEffects(targets[i], skill, applied, resisted, result[i].IsCrit);
+                ApplyOnHitEffects(targets[i], skill, m_AppliedBuffer, m_ResistedBuffer, result[i].IsCrit);
 
                 // [크리티컬 추가 효과] 크리티컬이면 ApplyCritEffects 호출
                 if (result[i].IsCrit)
                 {
-                    if (allNikkes == null)
-                        allNikkes = m_PositionSystem.GetAllUnits(CombatUnitType.Nikke);
-                    ApplyCritEffects(user, targets[i], allNikkes);
+                    if (!allNikkesFetched)
+                    {
+                        m_PositionSystem.GetAllUnits(CombatUnitType.Nikke, m_AllNikkesBuffer);
+                        allNikkesFetched = true;
+                    }
+                    ApplyCritEffects(user, targets[i], m_AllNikkesBuffer);
                 }
             }
 
@@ -150,47 +161,48 @@ public class SkillExecutor
             // - results[i] 할당
             result[i].Target = targets[i];
             result[i].ResultState = targets[i].State;
-            result[i].AppliedEffects = new StatusEffectData[applied.Count];
-            for (int j = 0; j < applied.Count; ++j)
-                result[i].AppliedEffects[j] = applied[j];
-            result[i].ResistedEffects = new StatusEffectData[resisted.Count];
-            for (int j = 0; j < resisted.Count; ++j)
-                result[i].ResistedEffects[j] = resisted[j];
+            result[i].AppliedEffects = new StatusEffectData[m_AppliedBuffer.Count];
+            for (int j = 0; j < m_AppliedBuffer.Count; ++j)
+                result[i].AppliedEffects[j] = m_AppliedBuffer[j];
+            result[i].ResistedEffects = new StatusEffectData[m_ResistedBuffer.Count];
+            for (int j = 0; j < m_ResistedBuffer.Count; ++j)
+                result[i].ResistedEffects[j] = m_ResistedBuffer[j];
         }
 
         // SkillResult 반환 (User, Skill, TargetResults 채워서)
-        FinalResult.User = user;
-        FinalResult.Skill = skill;
-        FinalResult.TargetResults = result;
-        return FinalResult;
+        finalResult.User = user;
+        finalResult.Skill = skill;
+        finalResult.TargetResults = result;
+        return finalResult;
     }
 
     // 타겟 리스트 결정
-    private List<CombatUnit> ResolveTargets(CombatUnit user, SkillData skill, CombatUnit selectedTarget)
+    private void ResolveTargets(CombatUnit user, SkillData skill, CombatUnit selectedTarget, List<CombatUnit> result)
     {
-        List<CombatUnit> targets = new List<CombatUnit>();
-
+        result.Clear();
         // TargetType이 EnemyAll이면: 살아있는 모든 적 반환 (TargetPositions 무시)
         if (skill.TargetType == TargetType.EnemyAll)
         {
             CombatUnitType enemyType = (user.UnitType == CombatUnitType.Nikke) ? CombatUnitType.Enemy : CombatUnitType.Nikke;
-            targets = m_PositionSystem.GetAllTargetable(enemyType);
+            m_PositionSystem.GetAllTargetable(enemyType, result);
+            return;
         }
         // TargetType이 AllyAll이면: 살아있는 모든 아군 반환 (TargetPositions 무시)
         else if (skill.TargetType == TargetType.AllyAll)
         {
-            targets = m_PositionSystem.GetAllTargetable(user.UnitType);
+            m_PositionSystem.GetAllTargetable(user.UnitType, result);
+            return;
         }
         else if (skill.TargetType == TargetType.EnemySingle || skill.TargetType == TargetType.AllySingle)
-            targets.Add(selectedTarget);
-        else
         {
-            targets = m_PositionSystem.GetValidTargets(user, skill);
+            if (selectedTarget != null)
+                result.Add(selectedTarget);
+            return;
         }
+        else
+            m_PositionSystem.GetValidTargets(user, skill, result);
         // TargetType이 EnemySingle 또는 AllySingle이면: selectedTarget을 리스트에 담아 반환
         // TargetType이 EnemyMulti, AllyMulti, Self이면: GetValidTargets 결과 반환
-
-        return targets;
     }
 
     private float CalcHitChance(CombatUnit attacker, CombatUnit target, SkillData skill)
@@ -220,13 +232,13 @@ public class SkillExecutor
 
         return (min, max);
     }
-    // 데미지 계산: BaseDamage → RawDamage → FinalDamage (defense % 감소)
+    // 데미지 계산: BaseDamage → RawDamage → finalDamage (defense % 감소)
     private int CalcDamage(CombatUnit user, CombatUnit target, SkillData skill)
     {
         (int min, int max) range = CalcDamageRange(user, target, skill);
-        int FinalDamage = Random.Range(range.min, range.max + 1);
+        int finalDamage = Random.Range(range.min, range.max + 1);
 
-        return FinalDamage;
+        return finalDamage;
     }
     private float CalcCritChance(CombatUnit attacker, SkillData skill)
     {
@@ -263,21 +275,14 @@ public class SkillExecutor
             {
                 ActiveStatusEffect existing = null;
 
-                if (IsDotEffect(effect.EffectType))
+                if (effect.EffectType.IsDot())
                 {
                     int duration = isCrit ? Mathf.CeilToInt(effect.Duration * 1.5f) : effect.Duration;
-                    target.ActiveEffects.Add(new ActiveStatusEffect(effect, duration));
+                    target.AddEffect(new ActiveStatusEffect(effect, duration));
                 }
                 else
                 {
-                    for (int j = 0; j < target.ActiveEffects.Count; ++j)
-                    {
-                        if (target.ActiveEffects[j].Data == effect)
-                        {
-                            existing = target.ActiveEffects[j];
-                            break;
-                        }
-                    }
+                    existing = target.FindEffect(effect);
                     if (existing != null)
                     {
                         if (effect.IsStackable)
@@ -292,7 +297,7 @@ public class SkillExecutor
                     }
                     else
                     {
-                        target.ActiveEffects.Add(new ActiveStatusEffect(effect));
+                        target.AddEffect(new ActiveStatusEffect(effect));
                     }
                 }
                 applied.Add(effect);
@@ -348,14 +353,14 @@ public class SkillExecutor
         {
             for (int i = 0; i < user.NikkeData.OnCritSelfEffects.Count; ++i)
             {
-                user.ActiveEffects.Add(new ActiveStatusEffect(user.NikkeData.OnCritSelfEffects[i]));
+                user.AddEffect(new ActiveStatusEffect(user.NikkeData.OnCritSelfEffects[i]));
             }
         }
         if (target.NikkeData != null)
         {
             for (int i = 0; i < target.NikkeData.OnReceiveCritSelfEffects.Count; ++i)
             {
-                target.ActiveEffects.Add(new ActiveStatusEffect(target.NikkeData.OnReceiveCritSelfEffects[i]));
+                target.AddEffect(new ActiveStatusEffect(target.NikkeData.OnReceiveCritSelfEffects[i]));
             }
         }
     }
@@ -405,10 +410,10 @@ public class SkillExecutor
         if (m_DeathsDoorDebuff == null) return;
 
         // recovery 제거 (있다면)
-        RemoveEffect(unit, m_DeathsDoorRecovery);
+        unit.RemoveEffect(m_DeathsDoorRecovery);
 
         // debuff 부여
-        unit.ActiveEffects.Add(new ActiveStatusEffect(m_DeathsDoorDebuff));
+        unit.AddEffect(new ActiveStatusEffect(m_DeathsDoorDebuff));
         unit.RecalculateStats();
     }
     private void ApplyDeathsDoorRecovery(CombatUnit unit)
@@ -416,31 +421,13 @@ public class SkillExecutor
         if (m_DeathsDoorDebuff == null) return;
 
         // debuff 제거
-        RemoveEffect(unit, m_DeathsDoorDebuff);
+        unit.RemoveEffect(m_DeathsDoorDebuff);
 
         // recovery 부여
         if (m_DeathsDoorRecovery != null)
-            unit.ActiveEffects.Add(new ActiveStatusEffect(m_DeathsDoorRecovery));
+            unit.AddEffect(new ActiveStatusEffect(m_DeathsDoorRecovery));
 
         unit.RecalculateStats();
     }
 
-    private bool IsDotEffect(StatusEffectType type)
-    {
-        return type == StatusEffectType.Bleed || type == StatusEffectType.Poison;
-    }
-
-    private void RemoveEffect(CombatUnit unit, StatusEffectData effectData)
-    {
-        if (effectData == null)
-            return;
-        for (int i = unit.ActiveEffects.Count - 1; i >= 0; --i)
-        {
-            if (unit.ActiveEffects[i].Data == effectData)
-            {
-                unit.ActiveEffects.RemoveAt(i);
-                return;
-            }
-        }
-    }
 }
