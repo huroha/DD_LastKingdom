@@ -6,9 +6,11 @@ public class SkillPositionDisplay : MonoBehaviour
     [SerializeField] private Image[] m_UsableCircles; // 4°³
     [SerializeField] private Image[] m_TargetCircles; // 4°³
     [SerializeField] private Image m_ConnectionBar;
+    [SerializeField] private float m_ConnectionBarHeight = 8f;
 
     [SerializeField] private Sprite m_ActiveSprite;
     [SerializeField] private Sprite m_InactiveSprite;
+    [SerializeField] private Sprite m_TargetSprite;
 
     public void Refresh(SkillData skill)
     {
@@ -18,13 +20,19 @@ public class SkillPositionDisplay : MonoBehaviour
 
         int targetCount = Mathf.Min(m_TargetCircles.Length, skill.TargetPositions.Count);
         for (int i = 0; i < targetCount; ++i)
-            m_TargetCircles[i].sprite = skill.TargetPositions[i] ? m_ActiveSprite : m_InactiveSprite;
+            m_TargetCircles[i].sprite = skill.TargetPositions[i] ? m_TargetSprite : m_InactiveSprite;
 
         RefreshConnectionBar(skill);
     }
 
     private void RefreshConnectionBar(SkillData skill)
     {
+        if (skill.TargetType == TargetType.EnemySingle || skill.TargetType == TargetType.AllySingle)
+        {
+            m_ConnectionBar.gameObject.SetActive(false);
+            return;
+        }
+
         int firstActive = -1;
         int lastActive = -1;
         int count = Mathf.Min(m_TargetCircles.Length, skill.TargetPositions.Count);
@@ -51,11 +59,11 @@ public class SkillPositionDisplay : MonoBehaviour
         Vector2 firstPos = firstRect.anchoredPosition;
         Vector2 lastPos = lastRect.anchoredPosition;
 
-        float width = Mathf.Abs(lastPos.x - firstPos.x) + firstRect.rect.width;
+        float width = Mathf.Abs(lastPos.x - firstPos.x);
         Vector2 mid = (firstPos + lastPos) * 0.5f;
 
         m_ConnectionBar.rectTransform.anchoredPosition = mid;
-        m_ConnectionBar.rectTransform.sizeDelta = new Vector2(width, firstRect.rect.height);
+        m_ConnectionBar.rectTransform.sizeDelta = new Vector2(width, m_ConnectionBarHeight);
         m_ConnectionBar.gameObject.SetActive(true);
     }
 }
