@@ -39,6 +39,7 @@ public class CombatStateMachine : MonoBehaviour
     [SerializeField] private StatusEffectData m_StunResistBuff;
 
 
+
     // 패널티 에블라 수치
     private const int PASS_EBLA_PENALTY = 5;
     private const int ALLY_DEATH_EBLA = 20;
@@ -295,6 +296,7 @@ public class CombatStateMachine : MonoBehaviour
             // 패스 선택 시
             if (m_SelectedSkill == null)
             {
+                m_CombatHUD.ShowPassLabel(m_ActiveUnit);
                 if (m_EblaSystem.ModifyEbla(m_ActiveUnit, PASS_EBLA_PENALTY))
                 {
                     m_PositionSystem.RemoveUnit(m_ActiveUnit);
@@ -351,7 +353,9 @@ public class CombatStateMachine : MonoBehaviour
                 ProcessDeadUnits(result);
             }
             else
-                m_CombatHUD.ShowEnemySkillName("턴 넘김");
+            {
+                m_CombatHUD.ShowPassLabel(m_ActiveUnit);
+            }
         }
 
         yield return new WaitForSeconds(m_EnemyActionDelay);

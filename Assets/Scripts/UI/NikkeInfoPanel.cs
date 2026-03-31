@@ -76,7 +76,7 @@ public class NikkeInfoPanel : MonoBehaviour
         m_AccText.SetText("{0}", stats.accuracyMod);
         m_AccText.color = GetStatColor(stats.accuracyMod, baseStats.accuracyMod);
 
-        m_CritText.SetText("{0:F0}%", stats.critChance);
+        m_CritText.SetText("{0}%", stats.critChance);
         m_CritText.color = GetStatColor(stats.critChance, baseStats.critChance);
 
         float dmgMul = 1f + stats.damageMultiplier / 100f;
@@ -88,7 +88,7 @@ public class NikkeInfoPanel : MonoBehaviour
         m_DodgeText.SetText("{0}", stats.dodge);
         m_DodgeText.color = GetStatColor(stats.dodge, baseStats.dodge);
 
-        m_ProtText.SetText("{0:F0}%", stats.defense);
+        m_ProtText.SetText("{0}%", stats.defense);
         m_ProtText.color = GetStatColor(stats.defense, baseStats.defense);
 
         m_SpeedText.SetText("{0}", stats.speed);

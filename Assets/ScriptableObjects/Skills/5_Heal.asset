@@ -23,7 +23,8 @@ MonoBehaviour:
   m_DamageMultiplier: 0
   m_AccuracyMod: 0
   m_CritMod: 100
-  m_HealAmount: 25
+  m_MinHeal: 4
+  m_MaxHeal: 5
   m_EblaDamage: 0
   m_EblaHealAmount: 0
   m_MoveUserAmount: 0

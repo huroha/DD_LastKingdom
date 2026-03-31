@@ -3,14 +3,17 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 
 
 public class SkillSelectPanel : MonoBehaviour
 {
-    public static readonly Key[] SkillKeys = { Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4 };
+    public static readonly Key[] SkillKeys = { Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4, Key.Digit5 };
 
     private int m_PendingSkillIndex = -1;
+    private bool m_PendingPass = false;
+    private bool m_PendingMove = false;
 
     [Header("Skill Buttons")]
     [SerializeField] private Button[] m_SkillButtons;   //4∞≥
@@ -34,6 +37,10 @@ public class SkillSelectPanel : MonoBehaviour
     [Header("Tooltip Offset")]
     [SerializeField] private Vector2 m_TooltipOffset;
 
+    [SerializeField] private RectTransform m_SkillSelectIconRect;
+    [SerializeField] private float m_PopInDuration = 0.15f;
+    private int m_SelectedSkillIndex = -1;
+
     public delegate void SkillSelectedHandler(SkillData skill);
     public delegate void PassHandler();
     public delegate void MoveHandler();
@@ -44,7 +51,7 @@ public class SkillSelectPanel : MonoBehaviour
 
     private CombatUnit m_CurrentUnit;
 
-    private void Awake() 
+    private void Awake()
     {
         for (int i = 0; i < m_SkillButtons.Length; ++i)
         {
@@ -92,26 +99,37 @@ public class SkillSelectPanel : MonoBehaviour
         m_OnMove = onMove;
         RefreshButtons();
         m_SkillSelectIcon.SetActive(false);
+        m_SelectedSkillIndex = -1;
+        m_PassButton.gameObject.SetActive(true);
+        m_MoveButton.gameObject.SetActive(true);
         gameObject.SetActive(true);
 
-        if(m_PendingSkillIndex >= 0)
+        if (m_PendingPass)
+        {
+            m_PendingPass = false;
+            OnPassButtonClicked();
+        }
+        else if (m_PendingMove)
+        {
+            m_PendingMove = false;
+            OnMoveButtonClicked();
+        }
+        else if (m_PendingSkillIndex >= 0)
         {
             int pending = m_PendingSkillIndex;
             m_PendingSkillIndex = -1;
-            if(pending < m_SkillButtons.Length && m_SkillButtons[pending].interactable)
+            if (pending < m_SkillButtons.Length && m_SkillButtons[pending].interactable)
                 OnSkillButtonClicked(pending);
+
         }
-        
     }
-    public void Hide() 
-    { 
+    public void Hide()
+    {
         gameObject.SetActive(false);
     }
 
     public void ShowSkillsOnly()
     {
-        m_PassButton.gameObject.SetActive(false);
-        m_MoveButton.gameObject.SetActive(false);
         gameObject.SetActive(true);
     }
     private void RefreshButtons()
@@ -132,7 +150,7 @@ public class SkillSelectPanel : MonoBehaviour
     }
     private void OnSkillButtonClicked(int index)
     {
-        if(m_TargetSelectPanel !=null && m_TargetSelectPanel.gameObject.activeSelf)
+        if (m_TargetSelectPanel != null && m_TargetSelectPanel.gameObject.activeSelf)
         {
             SetPendingSkill(index);
             m_TargetSelectPanel.TriggerCancel();
@@ -140,17 +158,39 @@ public class SkillSelectPanel : MonoBehaviour
         }
         SkillData skill = m_CurrentUnit.Skills[index];
         m_OnSkillSelected(skill);
-        m_SkillSelectIcon.transform.position = m_SkillIconTransforms[index].position;
+        if (m_SelectedSkillIndex >= 0 && m_SelectedSkillIndex != index)
+            StartCoroutine(PopIn(m_SkillIconTransforms[m_SelectedSkillIndex]));
+
+        // ªı º±≈√ Ω∫≈≥ ∆À¿Œ
+        m_CombatStateMachine.StartCoroutine(PopIn(m_SkillIconTransforms[index]));
+
+        // ºø∑∫∆Æ æ∆¿Ãƒ‹ ¿Ãµø + ∆À¿Œ
+        m_SkillSelectIconRect.position = m_SkillIconTransforms[index].position;
         m_SkillSelectIcon.SetActive(true);
+        m_CombatStateMachine.StartCoroutine(PopIn(m_SkillSelectIconRect));
+
+        m_SelectedSkillIndex = index;
         Hide();
     }
     private void OnPassButtonClicked()
     {
+        if (m_TargetSelectPanel != null && m_TargetSelectPanel.gameObject.activeSelf)
+        {
+            m_PendingPass = true;
+            m_TargetSelectPanel.TriggerCancel();
+            return;
+        }
         m_OnPass();
         Hide();
     }
     private void OnMoveButtonClicked()
     {
+        if (m_TargetSelectPanel != null && m_TargetSelectPanel.gameObject.activeSelf)
+        {
+            m_PendingMove = true;
+            m_TargetSelectPanel.TriggerCancel();
+            return;
+        }
         m_OnMove();
         Hide();
     }
@@ -158,8 +198,6 @@ public class SkillSelectPanel : MonoBehaviour
     {
         m_PendingSkillIndex = index;
     }
-
-    // «ÓµÈ∑Ø
     private void OnSkillHoverEnter(int index)
     {
         if (m_CurrentUnit == null)
@@ -176,4 +214,22 @@ public class SkillSelectPanel : MonoBehaviour
         m_SkillTooltip.Hide();
     }
 
+    private IEnumerator PopIn(RectTransform rt)
+    {
+        float elapsed = 0f;
+        while (elapsed < m_PopInDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / m_PopInDuration;
+            float scale = t < 0.7f ? Mathf.Lerp(1f, 1.15f, t / 0.7f) : Mathf.Lerp(1.15f, 1f, (t - 0.7f) / 0.3f);
+            rt.localScale = Vector3.one * scale;
+            yield return null;
+        }
+        rt.localScale = Vector3.one;
+    }
+
+    public void SetPendingMove()
+    {
+        m_PendingMove = true;
+    }
 }

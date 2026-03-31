@@ -36,6 +36,7 @@ CombatScene
 │       │       ├── EnemyTargetHighlight (Image)
 │       │       └── TurnTickers
 │       │           └── TurnTicker Image × 3
+│       │       └── StatusEffectIcon →StatuEffectIconDisplay.cs
 │       ├── Enemies (empty)
 │       │   ├── EnemySlot_0~3 (prefab)
 │       │   │   ├── Hp bar (Slider)
@@ -44,6 +45,7 @@ CombatScene
 │       │   │   ├── TurnTickers
 │       │   │   │   └── TurnTicker Image × 2
 │       │   │   └── Highlight (Image)
+│       │       └── StatusEffectIcon →StatuEffectIconDisplay.cs
 │       │   └── LargeEnemySlot_0~2 (prefab)
 │       │       ├── Hp bar (Slider)
 │       │       ├── UnitName (TMP)
@@ -51,6 +53,7 @@ CombatScene
 │       │       ├── TurnTickers
 │       │       │   └── TurnTicker Image × 3
 │       │       └── Highlight (Image)
+│       │       └── StatusEffectIcon →StatuEffectIconDisplay.cs
 │       ├── TurnOrderPanel (empty)
 │       │   ├── TMP text (전체 유닛 턴 순서 출력용)
 │       ├── AnnouncePanel (empty) → Animator
@@ -85,6 +88,10 @@ CombatScene
 │       │       ├── Dmg (TMP)
 │       │       ├── Dodge (TMP)
 │       │       └── Prot (TMP)
+│       ├── EnemyInfoPanel → EnemyInfoPanel.cs
+│       │   ├── Enemy_infopanel (image)
+│       │   ├── basic_info (empty)
+│       │   ├── preview_info (empty)
 │       ├── TargetSelectPanel → TargetSelectPanel.cs
 │       │   └── Cancel (Button)
 │       ├── SelectBar (empty)
@@ -97,6 +104,14 @@ CombatScene
 │           ├── round_effect (Image) → RoundAnimEvent.cs + Animator
 │           ├── roundbg2 (Image)
 │           └── roundtext (TMP text)
+│       └── CombatTooltip (empty)→ CombatTooltip.cs
+│           ├── bg_tooltip (Image)
+│           └── txt_tooltip (TMP)
+│       └── SkillTooltip (empty)→ SkillTooltip.cs
+│           ├── bg_tooltip (Image)
+│           ├── position_display → Skill position Display.cs
+│           └── txt_tooltip (TMP)
+│       └── PassLabel (empty)→ FloatingLabel.cs
 └── EventSystem
 ```
 

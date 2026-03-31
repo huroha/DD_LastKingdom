@@ -31,7 +31,7 @@ public class EnemyInfoPanel : MonoBehaviour
         m_HpText.SetText("{0} / {1}", unit.CurrentHp, unit.MaxHp);
         m_TypeText.text = unit.EnemyData.EnemyType.ToString();
         m_ElementText.text = unit.EnemyData.Element.ToString();
-        m_ProtText.SetText("{0:F0}%", unit.CurrentStats.defense);
+        m_ProtText.SetText("{0}%", unit.CurrentStats.defense);
         m_SpeedText.SetText("{0}", unit.CurrentStats.speed);
         m_DodgeText.SetText("{0}", unit.CurrentStats.dodge);
         ResistanceBlock res = unit.CurrentStats.resistance;
@@ -49,8 +49,8 @@ public class EnemyInfoPanel : MonoBehaviour
 
     public void PopulatePreview(AttackPreview preview)
     {
-        m_HitChanceText.SetText("{0:F0}%", preview.HitChance);
-        m_CritChanceText.SetText("{0:F0}%", preview.CritChance);
+        m_HitChanceText.SetText("{0}%", preview.HitChance);
+        m_CritChanceText.SetText("{0}%", preview.CritChance);
         m_DamageRangeText.SetText("{0} - {1}", preview.MinDamage, preview.MaxDamage);
     }
 

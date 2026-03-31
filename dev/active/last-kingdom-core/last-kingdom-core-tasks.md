@@ -8,7 +8,7 @@
 - [⏭️] Skipped
 
 ## Progress Summary
-22 / 65 tasks complete (34%)
+26 / 69 tasks complete (38%)
 
 ---
 
@@ -78,6 +78,7 @@
 - [✅] SkillData ScriptableObject 정의
   - File: `Assets/Scripts/Data/SkillData.cs`
   - Details: 이름, 스킬타입(근/원거리), 사용가능위치 bool[4], 타겟위치 bool[4], 타겟타입, 피해배율, 명중보정, 크리보정, 특수상태 조건, 적중 효과 리스트
+  - Update: HealAmount → MinHeal/MaxHeal 범위로 변경 (랜덤 힐량)
 
 - [✅] SquadData ScriptableObject 정의 (신규 추가)
   - File: `Assets/Scripts/Data/SquadData.cs`
@@ -157,6 +158,21 @@
   - Size: M
   - Dependencies: SkillSelectPanel, SkillExecutor
 
+- [✅] 스킬 포지션 디스플레이 그룹 토글
+  - File: `Assets/Scripts/UI/SkillPositionDisplay.cs`
+  - Details: 적 대상 스킬만 UserGroup+TargetGroup 모두 표시, 아군/자신 대상 스킬은 UserGroup만 표시 (TargetGroup SetActive false)
+  - Size: S
+
+- [✅] FloatingLabel (패스 표시)
+  - File: `Assets/Scripts/UI/FloatingLabel.cs`
+  - Details: 턴 패스 시 해당 캐릭터 슬롯 위에 "PASS" 텍스트 표시 후 위로 올라가며 사라지는 애니메이션. BarAnchor 기준 Screen Space 위치 계산. 플레이어/적 패스 모두 적용
+  - Size: S
+  - Dependencies: CombatHUD, CombatStateMachine
+
+- [✅] SkillExecutor 아군 스킬 명중 판정 버그 수정
+  - Details: EblaHeal 전용 스킬(MaxHeal=0)이 명중 판정을 받아 hit:false 발생. TargetType 기준으로 AllySingle/AllyMulti/AllyAll/Self는 항상 IsHit=true 처리
+  - Size: S
+
 ### 1.6 테스트 씬
 - [🔄] CombatScene 구성
   - Details: 전투 배경 스프라이트(placeholder), 유닛 배치 위치, Canvas + HUD, CombatManager 오브젝트
@@ -180,6 +196,7 @@
 - [✅] StatusEffectData SO 정의 (Phase 1.3에서 선행 완료)
   - File: `Assets/Scripts/Data/StatusEffectData.cs`
   - Details: 이름, 타입(DOT/Buff/Debuff), 지속턴, 틱데미지, 스탯보정 값, 스택 가능 여부
+  - Update: BaseApplyRate 필드 추가 (기본 100%, 스킬 레벨업 시 증가 가능). 저항 판정 공식: effectiveResist = Max(0, resistance - (BaseApplyRate - 100))
   - Size: M
 
 - [ ] StatusEffectManager 구현

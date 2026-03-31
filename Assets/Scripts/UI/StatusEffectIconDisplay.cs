@@ -53,7 +53,7 @@ public class StatusEffectIconDisplay : MonoBehaviour
             // TooltipTrigger 초기화
             TooltipTrigger trigger = m_TriggerPool[i];
             ActiveStatusEffect effect = activeEffect[i];  // 클로저용 로컬 변수
-            trigger.Initialize(m_Tooltip, (sb) => BuildEffectTooltip(sb, effect), new Vector2(0, -50));
+            trigger.Initialize(m_Tooltip, (sb) => BuildEffectTooltip(sb, effect), new Vector2(0, -25));
             image.sprite = activeEffect[i].Data.Icon;
             image.gameObject.SetActive(true);
         }

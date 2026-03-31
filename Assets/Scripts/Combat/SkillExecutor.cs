@@ -68,7 +68,10 @@ public class SkillExecutor
         // 크리티컬 파티 에블라용
         bool allNikkesFetched = false;
         //m_PositionSystem.GetAllUnits(CombatUnitType.Nikke);
-        bool isHealSkill = skill.HealAmount > 0;
+        bool isAllySkill = skill.TargetType == TargetType.AllySingle
+                  || skill.TargetType == TargetType.AllyMulti
+                  || skill.TargetType == TargetType.AllyAll
+                  || skill.TargetType == TargetType.Self;
         // TargetResult 배열 선언 (targets.Count 크기)
         TargetResult[] result = new TargetResult[targets.Count];
 
@@ -80,12 +83,9 @@ public class SkillExecutor
             m_ResistedBuffer.Clear();
 
             // [명중 판정]
-            if (isHealSkill)
-                result[i].IsHit = true;
-            else
-                result[i].IsHit = RollHit(user, targets[i], skill);
-                
-            #if UNITY_EDITOR || DEVELOPMENT_BUILD
+            result[i].IsHit = isAllySkill || RollHit(user, targets[i], skill);
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log($"[Skill] {user.UnitName} → {targets[i].UnitName} | Hit:{result[i].IsHit}");
             #endif
             // [명중 성공 시]
@@ -93,8 +93,8 @@ public class SkillExecutor
             {
                 int damage = 0;
                 // [데미지/힐 계산]
-                if (skill.HealAmount > 0)
-                    result[i].HealAmount = skill.HealAmount;
+                if (skill.MaxHeal > 0)
+                    result[i].HealAmount = (int)Random.Range(skill.MinHeal, skill.MaxHeal + 1);
                 else
                     damage = CalcDamage(user, targets[i], skill);
 
@@ -109,7 +109,7 @@ public class SkillExecutor
 
                 // [적용]
                 // 힐 스킬이면: target.Heal(healAmount)
-                if (skill.HealAmount > 0)
+                if (skill.MaxHeal > 0)
                 {
                     UnitState preHealState = targets[i].State;
                     targets[i].Heal(result[i].HealAmount);
@@ -265,10 +265,9 @@ public class SkillExecutor
         {
             StatusEffectData effect = skill.OnHitEffects[i];
             float resistance = GetResistance(target, effect.EffectType);
+            float effectiveResist = Mathf.Max(0f, resistance - (effect.BaseApplyRate - 100f));
             roll = Random.Range(0f, 100f);
-
-            //저항 성공
-            if (roll < resistance)
+            if (roll < effectiveResist)  // 저항 성공
                 resisted.Add(effect);
 
             else

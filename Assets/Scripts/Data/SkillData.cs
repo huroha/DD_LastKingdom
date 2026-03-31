@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEditor.ShaderGraph.Internal;
 
 
 public enum SkillType
@@ -47,7 +48,8 @@ public class SkillData : ScriptableObject
     [SerializeField] private float m_CritMod;                       // 치명 보정
 
     [Header("Heal & Ebla")]
-    [SerializeField] private int m_HealAmount;                  // hp 회복량
+    [SerializeField] private int m_MinHeal;                  // hp 회복량
+    [SerializeField] private int m_MaxHeal;                  // hp 회복량
     [SerializeField] private int m_EblaDamage;                  // 에블라 피해량
     [SerializeField] private int m_EblaHealAmount;              // 에블라 감소량
 
@@ -76,8 +78,8 @@ public class SkillData : ScriptableObject
     public float DamageMultiplier => m_DamageMultiplier;
     public int AccuracyMod => m_AccuracyMod;
     public float CritMod => m_CritMod;
-
-    public int HealAmount => m_HealAmount;
+    public float MaxHeal => m_MaxHeal;
+    public float MinHeal => m_MinHeal;
     public int EblaDamage => m_EblaDamage;
     public int EblaHealAmount => m_EblaHealAmount;
     public int MoveUserAmount => m_MoveUserAmount;

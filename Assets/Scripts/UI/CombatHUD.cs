@@ -13,6 +13,7 @@ public class CombatHUD : MonoBehaviour
 {
     [Header("Tooltip")]
     [SerializeField] private CombatTooltip m_CombatTooltip;
+    [SerializeField] private FloatingLabel m_FloatingLabel;
 
     [Header("Round")]
     [SerializeField] private TextMeshProUGUI m_RoundText;
@@ -223,10 +224,10 @@ public class CombatHUD : MonoBehaviour
             {
                 CombatUnit u = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Nikke, nikkeIndex);
                 if (u == null) return;
-                sb.Append("<color=#BF1313>체력: ").Append(u.CurrentHp).Append(" / </color>").Append(u.MaxHp)
-                  .Append('\n')
+                sb.Append("<color=#BF1313>체력: ").Append(u.CurrentHp).Append(" / ").Append(u.MaxHp)
+                  .Append(" </color>\n")
                   .Append("<color=white>에블라: ").Append(u.Ebla).Append(" / 200</color>");
-            },new Vector2(0, 40));
+            },new Vector2(0, 85));
         }
 
         for (int i = 0; i < e.Enemies.Count; ++i)
@@ -262,7 +263,7 @@ public class CombatHUD : MonoBehaviour
                 }
                 if (count == 0) return;
                 sb.Append("남은 행동:").Append(count);
-            },new Vector2(0, -25));
+            },new Vector2(0, 0));
         }
         RefreshTurnOrder();
         ShowAllTickersAnimated();
@@ -660,6 +661,20 @@ public class CombatHUD : MonoBehaviour
         m_EnemySkillPanel.SetActive(false);
         m_EnemySkillPanel.SetActive(true);
     }
+    public void ShowPassLabel(CombatUnit unit)
+    {
+        bool isLarge = unit.UnitType == CombatUnitType.Enemy && unit.SlotSize == 2;
+        RectTransform anchor;
+        if (unit.UnitType == CombatUnitType.Nikke)
+            anchor = m_NikkeBarAnchor[unit.SlotIndex];
+        else if (isLarge)
+            anchor = m_LargeEnemyBarAnchors[unit.SlotIndex];
+        else
+            anchor = m_EnemyBarAnchor[unit.SlotIndex];
+
+        m_FloatingLabel.Show("넘기기", anchor);
+    }
+    public void HidePassLabel() => m_FloatingLabel.Hide();
     public void HideEnemySkillName()
     {
         m_EnemySkillPanel.SetActive(false);
@@ -684,6 +699,7 @@ public class CombatHUD : MonoBehaviour
         else
             m_EnemyStatusIcons[unit.SlotIndex].Refresh(unit.ActiveEffects);
     }
+
 
 
 }

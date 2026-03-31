@@ -3,6 +3,8 @@ using UnityEngine.UI;
 
 public class SkillPositionDisplay : MonoBehaviour
 {
+    [SerializeField] private GameObject m_UserGroup;
+    [SerializeField] private GameObject m_TargetGroup;
     [SerializeField] private Image[] m_UsableCircles; // 4°³
     [SerializeField] private Image[] m_TargetCircles; // 4°³
     [SerializeField] private Image m_ConnectionBar;
@@ -14,6 +16,13 @@ public class SkillPositionDisplay : MonoBehaviour
 
     public void Refresh(SkillData skill)
     {
+        bool isEnemyTarget = skill.TargetType == TargetType.EnemySingle
+                    || skill.TargetType == TargetType.EnemyMulti
+                    || skill.TargetType == TargetType.EnemyAll;
+
+        m_UserGroup.SetActive(true);
+        m_TargetGroup.SetActive(isEnemyTarget);
+
         int usableCount = Mathf.Min(m_UsableCircles.Length, skill.UsablePositions.Count);
         for (int i = 0; i < usableCount; ++i)
             m_UsableCircles[i].sprite = skill.UsablePositions[i] ? m_ActiveSprite : m_InactiveSprite;
@@ -21,8 +30,8 @@ public class SkillPositionDisplay : MonoBehaviour
         int targetCount = Mathf.Min(m_TargetCircles.Length, skill.TargetPositions.Count);
         for (int i = 0; i < targetCount; ++i)
             m_TargetCircles[i].sprite = skill.TargetPositions[i] ? m_TargetSprite : m_InactiveSprite;
-
-        RefreshConnectionBar(skill);
+        if (isEnemyTarget)
+            RefreshConnectionBar(skill);
     }
 
     private void RefreshConnectionBar(SkillData skill)

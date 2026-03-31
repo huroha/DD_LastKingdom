@@ -37,7 +37,9 @@ public class StatusEffectData : ScriptableObject
     [SerializeField] private bool m_IsStackable;
     [SerializeField] private int m_MaxStack = 1;    // 스택 가능일때만 유효
 
-
+    [Header("Apply Rate")]
+    [Range(0f, 200f)]
+    [SerializeField] private float m_BaseApplyRate = 100f;
     public string EffectName => m_EffectName;
     public Sprite Icon => m_Icon;
     public StatusEffectType EffectType => m_EffectType;
@@ -48,6 +50,7 @@ public class StatusEffectData : ScriptableObject
     public StatBlock StatModifier => m_StatModifier;
     public bool IsStackable => m_IsStackable;
     public int MaxStack => m_MaxStack;
+    public float BaseApplyRate => m_BaseApplyRate;
 
 }
 public static class StatusEffectTypeExtensions
