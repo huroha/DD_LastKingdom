@@ -48,3 +48,6 @@ Thumbs.db
 # Gradle (Android)
 ExportedObj/
 .gradle/
+
+# Claude Code Review Graph (large binary files)
+.code-review-graph/
