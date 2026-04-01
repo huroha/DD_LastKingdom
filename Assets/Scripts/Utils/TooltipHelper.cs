@@ -75,6 +75,33 @@ public static class TooltipHelper
             sb.Append("Â÷·Ê)");
         }
     }
-    
+    public static string GetEffectColorTag(StatusEffectType effectType)
+    {
+        if (effectType == StatusEffectType.Stun)
+            return TAG_STUN;
+        else if (effectType == StatusEffectType.Poison)
+            return TAG_POISON;
+        else if (effectType == StatusEffectType.Debuff)
+            return TAG_DEBUFF;
+        else if (effectType == StatusEffectType.Bleed)
+            return TAG_BLEED;
+        else
+            return TAG_NORMAL_OPEN;
+    }
 
+    public static void AppendStatBlock(StringBuilder sb, StatBlock mod, int turns = 0)
+    {
+        if (mod.damageMultiplier != 0)
+            AppendStatPercent(sb, STAT_DAMAGE, (int)mod.damageMultiplier, turns);
+        if (mod.accuracyMod != 0)
+            AppendStat(sb, STAT_ACCURACY, mod.accuracyMod, turns);
+        if (mod.defense != 0)
+            AppendStatPercent(sb, STAT_DEFENCE, (int)mod.defense, turns);
+        if (mod.dodge != 0)
+            AppendStat(sb, STAT_DODGE, mod.dodge, turns);
+        if (mod.speed != 0)
+            AppendStat(sb, STAT_SPEED, mod.speed, turns);
+        if (mod.critChance != 0f)
+            AppendStat(sb, STAT_CRIT, (int)mod.critChance, turns);
+    }
 }

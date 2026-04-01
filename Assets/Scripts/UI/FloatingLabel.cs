@@ -48,6 +48,7 @@ public class FloatingLabel : MonoBehaviour
             elapsed += Time.deltaTime;
             yield return null;
         }
-        Hide();
+        m_FloatRoutine = null;
+        gameObject.SetActive(false);
     }
 }

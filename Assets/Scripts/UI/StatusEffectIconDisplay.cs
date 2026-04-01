@@ -86,19 +86,7 @@ public class StatusEffectIconDisplay : MonoBehaviour
         }
 
         // Ω∫≈» ∫Ø»≠
-        StatBlock mod = effect.Data.StatModifier;
-        if (mod.damageMultiplier != 0f)
-            TooltipHelper.AppendStatPercent(sb, TooltipHelper.STAT_DAMAGE, (int)mod.damageMultiplier, turns);
-        if (mod.accuracyMod != 0)
-            TooltipHelper.AppendStat(sb, TooltipHelper.STAT_ACCURACY, mod.accuracyMod, turns);
-        if (mod.critChance != 0f)
-            TooltipHelper.AppendStat(sb, TooltipHelper.STAT_CRIT, (int)mod.critChance, turns);
-        if (mod.defense != 0f)
-            TooltipHelper.AppendStatPercent(sb, TooltipHelper.STAT_DEFENCE, (int)mod.defense, turns);
-        if (mod.dodge != 0)
-            TooltipHelper.AppendStat(sb, TooltipHelper.STAT_DODGE, mod.dodge, turns);
-        if (mod.speed != 0)
-            TooltipHelper.AppendStat(sb, TooltipHelper.STAT_SPEED, mod.speed, turns);
+        TooltipHelper.AppendStatBlock(sb, effect.Data.StatModifier, turns);
     }
 
 }

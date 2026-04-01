@@ -67,6 +67,13 @@ public class SkillData : ScriptableObject
     [Header("Effects")]
     [SerializeField] private StatusEffectData[] m_OnHitEffects;     // 적중 시 타겟에 적용
 
+
+    public bool IsEnemyTargeting => m_TargetType == TargetType.EnemySingle
+                                  || m_TargetType == TargetType.EnemyMulti
+                                  || m_TargetType == TargetType.EnemyAll;
+    public bool IsAllyTargeting => m_TargetType == TargetType.AllySingle
+                                  || m_TargetType == TargetType.AllyMulti
+                                  || m_TargetType == TargetType.AllyAll;
     public string SkillName => m_SkillName;
     public string Description => m_Description;
     public Sprite SkillIcon => m_SkillIcon;
@@ -78,8 +85,8 @@ public class SkillData : ScriptableObject
     public float DamageMultiplier => m_DamageMultiplier;
     public int AccuracyMod => m_AccuracyMod;
     public float CritMod => m_CritMod;
-    public float MaxHeal => m_MaxHeal;
-    public float MinHeal => m_MinHeal;
+    public int MaxHeal => m_MaxHeal;
+    public int MinHeal => m_MinHeal;
     public int EblaDamage => m_EblaDamage;
     public int EblaHealAmount => m_EblaHealAmount;
     public int MoveUserAmount => m_MoveUserAmount;

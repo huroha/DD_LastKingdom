@@ -16,12 +16,9 @@ public class SkillPositionDisplay : MonoBehaviour
 
     public void Refresh(SkillData skill)
     {
-        bool isEnemyTarget = skill.TargetType == TargetType.EnemySingle
-                    || skill.TargetType == TargetType.EnemyMulti
-                    || skill.TargetType == TargetType.EnemyAll;
 
         m_UserGroup.SetActive(true);
-        m_TargetGroup.SetActive(isEnemyTarget);
+        m_TargetGroup.SetActive(skill.IsEnemyTargeting);
 
         int usableCount = Mathf.Min(m_UsableCircles.Length, skill.UsablePositions.Count);
         for (int i = 0; i < usableCount; ++i)
@@ -30,7 +27,7 @@ public class SkillPositionDisplay : MonoBehaviour
         int targetCount = Mathf.Min(m_TargetCircles.Length, skill.TargetPositions.Count);
         for (int i = 0; i < targetCount; ++i)
             m_TargetCircles[i].sprite = skill.TargetPositions[i] ? m_TargetSprite : m_InactiveSprite;
-        if (isEnemyTarget)
+        if (skill.IsEnemyTargeting)
             RefreshConnectionBar(skill);
     }
 

@@ -13,7 +13,7 @@ public class CombatFieldView : MonoBehaviour
     [SerializeField] private CombatHUD m_CombatHUD;
 
     // CombatUnit -> 해당 유닛의 SpriteRenderer 맵핑
-    private Dictionary<CombatUnit, SpriteRenderer> m_UnitViews;
+    private Dictionary<CombatUnit, UnitView> m_UnitViews;
     // 중복 코루틴 방지용
     private Dictionary<CombatUnit, Coroutine> m_MoveCoroutines;
     // 시체 관리용
@@ -21,6 +21,13 @@ public class CombatFieldView : MonoBehaviour
 
     // 이동 후 패턴사용
     public bool IsMoving => m_MoveCoroutines.Count > 0;
+
+    public struct UnitView
+    {
+        public SpriteRenderer Renderer;
+        public Animator Animator;
+        public UnitAnimBridge AnimBridge;
+    }
 
 
     private void OnEnable()
@@ -42,11 +49,11 @@ public class CombatFieldView : MonoBehaviour
     {
         if(m_UnitViews != null)
         {
-            foreach (KeyValuePair<CombatUnit, SpriteRenderer> pair in m_UnitViews)
-                Destroy(pair.Value.gameObject);
+            foreach (KeyValuePair<CombatUnit, UnitView> pair in m_UnitViews)
+                Destroy(pair.Value.Renderer.gameObject);
         }
 
-        m_UnitViews = new Dictionary<CombatUnit, SpriteRenderer>();
+        m_UnitViews = new Dictionary<CombatUnit, UnitView>();
         m_MoveCoroutines = new Dictionary<CombatUnit, Coroutine>();
         m_CorpseViews = new Dictionary<CombatUnit, SpriteRenderer>();
 
@@ -54,7 +61,7 @@ public class CombatFieldView : MonoBehaviour
         {
             CombatUnit unit = e.Nikkes[i];
             Vector3 pos = GetSlotPosition(unit);
-            SpriteRenderer view = CreateUnitView(unit, pos);
+            UnitView view = CreateUnitView(unit, pos);
             m_UnitViews[unit] = view;
         }
 
@@ -62,7 +69,7 @@ public class CombatFieldView : MonoBehaviour
         {
             CombatUnit unit = e.Enemies[i];
             Vector3 pos = GetSlotPosition(unit);
-            SpriteRenderer view = CreateUnitView(unit, pos);
+            UnitView view = CreateUnitView(unit, pos);
             m_UnitViews[unit] = view;
         }
     }
@@ -85,24 +92,24 @@ public class CombatFieldView : MonoBehaviour
             return;
         }
 
-        if (!m_UnitViews.TryGetValue(e.Unit, out SpriteRenderer view))
+        if (!m_UnitViews.TryGetValue(e.Unit, out UnitView view))
             return;
         m_UnitViews.Remove(e.Unit);
 
         // 적이고 시체 스프라이트가 있으면 교체, 없으면 제거?
         if(e.Unit.UnitType == CombatUnitType.Enemy && e.Unit.EnemyData.CorpseSprite != null)
         {
-            view.sprite = e.Unit.EnemyData.CorpseSprite;
-            m_CorpseViews[e.Unit] = view;
+            view.Renderer.sprite = e.Unit.EnemyData.CorpseSprite;
+            m_CorpseViews[e.Unit] = view.Renderer;
         }
         else
         {
-            Destroy(view.gameObject);
+            Destroy(view.Renderer.gameObject);
             MoveAllToCurrentSlots();
         }
     }
 
-    private SpriteRenderer CreateUnitView(CombatUnit unit, Vector3 pos)
+    private UnitView CreateUnitView(CombatUnit unit, Vector3 pos)
     {
         GameObject go = new GameObject(unit.UnitName);
         SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
@@ -131,8 +138,27 @@ public class CombatFieldView : MonoBehaviour
         }
         go.transform.position = pos;
         go.transform.localScale = Vector3.one * scale;
-        return sr;
+        sr.sortingOrder = 0;
+        RuntimeAnimatorController animCtrl = null;
+        if (unit.UnitType == CombatUnitType.Nikke)
+            animCtrl = unit.NikkeData.CombatAnimator;
+        else if (unit.UnitType == CombatUnitType.Enemy)
+            animCtrl = unit.EnemyData.CombatAnimator;
 
+        Animator animator = null;
+        UnitAnimBridge animBridge = null;
+        if (animCtrl != null)
+        {
+            animator = go.AddComponent<Animator>();
+            animator.runtimeAnimatorController = animCtrl;
+            animBridge = go.AddComponent<UnitAnimBridge>();
+        }
+
+        UnitView view;
+        view.Renderer = sr;
+        view.Animator = animator;
+        view.AnimBridge = animBridge;
+        return view;
     }
     private Transform[] GetSlots(CombatUnitType type)
     {
@@ -152,15 +178,15 @@ public class CombatFieldView : MonoBehaviour
 
     private void MoveAllToCurrentSlots()
     {
-        foreach(KeyValuePair<CombatUnit, SpriteRenderer> pair in m_UnitViews)
+        foreach(KeyValuePair<CombatUnit, UnitView> pair in m_UnitViews)
         {
             CombatUnit unit = pair.Key;
-            SpriteRenderer view = pair.Value;
+            UnitView view = pair.Value;
 
             Vector3 targetPos = GetSlotPosition(unit);
             if(m_MoveCoroutines.ContainsKey(unit))
                 StopCoroutine(m_MoveCoroutines[unit]);
-            m_MoveCoroutines[unit] = StartCoroutine(LerpToPosition(unit,view, targetPos));
+            m_MoveCoroutines[unit] = StartCoroutine(LerpToPosition(unit,view.Renderer, targetPos));
         }
 
         foreach (KeyValuePair<CombatUnit, SpriteRenderer> pair in m_CorpseViews)
@@ -203,5 +229,16 @@ public class CombatFieldView : MonoBehaviour
         Debug.Log($"[Nikke] {unit.UnitName} | HP:{unit.CurrentHp}/{unit.MaxHp} | Ebla:{unit.Ebla}/200" +
                   $"\nDMG:{stats.minDamage}-{stats.maxDamage} | ACC:{stats.accuracyMod} | DODGE:{stats.dodge}" +
                   $"\nDEF:{stats.defense:F0}% | SPD:{stats.speed} | CRIT:{stats.critChance:F1}% | State:{unit.State}");
+    }
+
+    public UnitView GetView(CombatUnit unit)
+    {
+        return m_UnitViews.TryGetValue(unit, out UnitView view) ? view : default(UnitView);
+    }
+    public void GetAllLivingUnits(List<CombatUnit> result)
+    {
+        result.Clear();
+        foreach(CombatUnit unit in m_UnitViews.Keys)
+            result.Add(unit);
     }
 }

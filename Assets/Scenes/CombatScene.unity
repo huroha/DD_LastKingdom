@@ -1242,6 +1242,53 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8333598524925732860, guid: 076eeb649484f24438d25c4512faa185, type: 3}
   m_PrefabInstance: {fileID: 7573761023556054923}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &118473945
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 118473947}
+  - component: {fileID: 118473946}
+  m_Layer: 0
+  m_Name: CombatFeedback
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &118473946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 118473945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a37d67b39417db4aac610354e373ec4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatFeedback
+  m_HitStopDuration: 0.05
+  m_FlashColor: {r: 1, g: 1, b: 1, a: 1}
+  m_FlashDuration: 0.1
+--- !u!4 &118473947
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 118473945}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &131460102 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1720100222203148246, guid: 076eeb649484f24438d25c4512faa185, type: 3}
@@ -3697,6 +3744,7 @@ MonoBehaviour:
   m_EnemyActionDelay: 1
   m_SkillSelectPanel: {fileID: 1281108709}
   m_TargetSelectPanel: {fileID: 1148400936}
+  m_CombatDirector: {fileID: 510657038}
   m_EblaFreeRounds: 4
   m_EblaRoundMultiplier: 1
   m_FieldView: {fileID: 1064561593}
@@ -3982,6 +4030,62 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &510657037
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 510657039}
+  - component: {fileID: 510657038}
+  m_Layer: 0
+  m_Name: CombatDirector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &510657038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510657037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d60bc72d81a33c4395c81c819722799, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatDirector
+  m_FieldView: {fileID: 1064561593}
+  m_Feedback: {fileID: 118473946}
+  m_PopupPool: {fileID: 954582674}
+  m_FocusScale: 1.5
+  m_FocusInDuration: 0.3
+  m_FocusOutDuration: 0.2
+  m_UnfocusedAlpha: 0.3
+  m_PostHitDelay: 0.2
+  m_PopupDuration: 0.6
+  m_StatusPopupDelay: 0.3
+  m_PostSequenceDelay: 0.2
+  m_FallbackHitDelay: 0.3
+--- !u!4 &510657039
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510657037}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &514669265 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1150171205724379594, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
@@ -6494,6 +6598,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!1 &954582673
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 954582675}
+  - component: {fileID: 954582674}
+  m_Layer: 0
+  m_Name: DamagePopupPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &954582674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 954582673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33aa1e01dcaeba943aad5340dccc914f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamagePopupPool
+  m_Prefab: {fileID: 9065342648341615469, guid: b842bc142b82af34f80bb9c77c0d41a9, type: 3}
+  m_InitialSize: 8
+--- !u!4 &954582675
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 954582673}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &955293403 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1231875513069768822, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
@@ -7686,7 +7836,7 @@ GameObject:
   - component: {fileID: 1064561592}
   - component: {fileID: 1064561593}
   m_Layer: 0
-  m_Name: CombatField
+  m_Name: CombatFieldView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16312,3 +16462,6 @@ SceneRoots:
   - {fileID: 1064561592}
   - {fileID: 2145186757}
   - {fileID: 2036833133}
+  - {fileID: 510657039}
+  - {fileID: 118473947}
+  - {fileID: 954582675}

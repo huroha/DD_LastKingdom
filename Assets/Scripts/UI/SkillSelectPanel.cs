@@ -4,16 +4,21 @@ using TMPro;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using System.Collections;
+using System.Collections.Generic;
 
 
 
 public class SkillSelectPanel : MonoBehaviour
 {
-    public static readonly Key[] SkillKeys = { Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4, Key.Digit5 };
+
+    private static readonly Key[] s_SkillKeys = { Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4, Key.Digit5 };
+    
 
     private int m_PendingSkillIndex = -1;
     private bool m_PendingPass = false;
     private bool m_PendingMove = false;
+
+    public const int SkillKeyCount = 4;
 
     [Header("Skill Buttons")]
     [SerializeField] private Button[] m_SkillButtons;   //4개
@@ -50,6 +55,7 @@ public class SkillSelectPanel : MonoBehaviour
     private MoveHandler m_OnMove;
 
     private CombatUnit m_CurrentUnit;
+    public static IReadOnlyList<Key> SkillKeys => s_SkillKeys;
 
     private void Awake()
     {
@@ -78,7 +84,7 @@ public class SkillSelectPanel : MonoBehaviour
     {
         if (m_TargetSelectPanel != null && m_TargetSelectPanel.gameObject.activeSelf)
             return;
-        for (int i = 0; i < SkillKeys.Length; ++i)
+        for (int i = 0; i < SkillKeyCount; ++i)
         {
             if (Keyboard.current[SkillKeys[i]].wasPressedThisFrame)
             {
@@ -159,7 +165,7 @@ public class SkillSelectPanel : MonoBehaviour
         SkillData skill = m_CurrentUnit.Skills[index];
         m_OnSkillSelected(skill);
         if (m_SelectedSkillIndex >= 0 && m_SelectedSkillIndex != index)
-            StartCoroutine(PopIn(m_SkillIconTransforms[m_SelectedSkillIndex]));
+            m_CombatStateMachine.StartCoroutine(PopIn(m_SkillIconTransforms[m_SelectedSkillIndex]));
 
         // 새 선택 스킬 팝인
         m_CombatStateMachine.StartCoroutine(PopIn(m_SkillIconTransforms[index]));

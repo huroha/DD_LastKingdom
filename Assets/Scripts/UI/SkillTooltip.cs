@@ -10,7 +10,6 @@ public class SkillTooltip : MonoBehaviour
     [SerializeField] private RectTransform m_RectTransform;
     [SerializeField] private Vector2 m_Padding;
 
-    private string m_EffectColor;
     private RectTransform m_PositionDisplayRect;
     private StringBuilder m_SB = new StringBuilder(256);
 
@@ -35,20 +34,20 @@ public class SkillTooltip : MonoBehaviour
         m_SB.Append("<b>").Append(skill.SkillName).Append("</b>1\n"); // 숫자는 추후 skilldata 멤버 추가해서 가져올것.
 
         // 스킬 타입
-        if(skill.TargetType == TargetType.EnemySingle || skill.TargetType == TargetType.EnemyMulti || skill.TargetType == TargetType.EnemyAll)
+        if(skill.IsEnemyTargeting)
             m_SB.Append(TooltipHelper.TAG_SKILLTYPE).Append(skill.SkillType == SkillType.Melee ? "근접" : "원거리").Append("\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
         // 기본 스탯
         if(skill.AccuracyMod != 0)
-            m_SB.Append("명중 보정: ").Append(skill.AccuracyMod);
+            m_SB.Append("명중 보정: ").Append(skill.AccuracyMod).Append("\n");
         if(skill.DamageMultiplier != 0)
-            m_SB.Append("피해 보정: ").Append((int)(skill.DamageMultiplier * 100f) - 100).Append("%");
+            m_SB.Append("피해 보정: ").Append((int)(skill.DamageMultiplier * 100f) - 100).Append("%").Append("\n");
         if (skill.MaxHeal != 0)
-            m_SB.Append((int)skill.MinHeal).Append("-").Append((int)skill.MaxHeal).Append(TooltipHelper.TAG_HEAL).Append(" 회복\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
+            m_SB.Append(skill.MinHeal).Append("-").Append(skill.MaxHeal).Append(TooltipHelper.TAG_HEAL).Append(" 회복\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
         if (skill.EblaHealAmount != 0)
-            m_SB.Append("에블라 : -").Append((int)skill.EblaHealAmount);
+            m_SB.Append("에블라 : -").Append(skill.EblaHealAmount).Append("\n");
 
         if (skill.CritMod != 0)
-            m_SB.Append("치명타 보정: ").Append((int)skill.CritMod).Append("%");
+            m_SB.Append("치명타 보정: ").Append((int)skill.CritMod).Append("%\n");
 
         // OnHitEffects
         if (skill.OnHitEffects != null && skill.OnHitEffects.Count > 0)
@@ -89,52 +88,19 @@ public class SkillTooltip : MonoBehaviour
 
     private void BuildEffectText(StringBuilder sb, StatusEffectData effect)
     {
-        m_EffectColor = EffectColor(effect);
+        string effectColor = TooltipHelper.GetEffectColorTag(effect.EffectType);
         // 효과명 (기본 100%)
-        sb.Append(m_EffectColor).Append(effect.EffectName).Append(TooltipHelper.TAG_COLOR_CLOSE)
+        sb.Append(effectColor).Append(effect.EffectName).Append(TooltipHelper.TAG_COLOR_CLOSE)
           .Append(" (기본 ").Append(effect.BaseApplyRate).Append("%)\n");
 
         // Description이 있으면 표시
         if (!string.IsNullOrEmpty(effect.Description))
             sb.Append(effect.Description).Append("\n");
-
+        
         if (effect.TickDamage != 0)
             sb.Append("턴당 ").Append(effect.TickDamage).Append(" 피해,").Append(effect.Duration).Append("턴 지속");
 
         // 스탯 변화가 있으면
-        StatBlock mod = effect.StatModifier;
-        bool hasStatMod = mod.damageMultiplier != 0 || mod.accuracyMod != 0
-                       || mod.critChance != 0 || mod.defense != 0 || mod.dodge != 0 || mod.speed != 0;
-        if (hasStatMod)
-        {
-            if (mod.damageMultiplier != 0)
-                TooltipHelper.AppendStatPercent(sb, TooltipHelper.STAT_DAMAGE, (int)mod.damageMultiplier);
-            if (mod.accuracyMod != 0)
-                TooltipHelper.AppendStat(sb, TooltipHelper.STAT_ACCURACY, mod.accuracyMod);
-            if (mod.defense != 0)
-                TooltipHelper.AppendStatPercent(sb, TooltipHelper.STAT_DEFENCE, (int)mod.defense);
-            if (mod.dodge != 0)
-                TooltipHelper.AppendStat(sb, TooltipHelper.STAT_DODGE, mod.dodge);
-            if (mod.speed != 0)
-                TooltipHelper.AppendStat(sb, TooltipHelper.STAT_SPEED, mod.speed);
-            if (mod.critChance != 0f)
-                TooltipHelper.AppendStat(sb, TooltipHelper.STAT_CRIT, (int)mod.critChance);
-        }
-    }
-
-    private string EffectColor(StatusEffectData effect)
-    {
-
-        if (effect.EffectType == StatusEffectType.Stun)
-            return TooltipHelper.TAG_STUN;
-        else if (effect.EffectType == StatusEffectType.Poison)
-            return TooltipHelper.TAG_POISON;
-        else if (effect.EffectType == StatusEffectType.Debuff)
-            return TooltipHelper.TAG_DEBUFF;
-        else if (effect.EffectType == StatusEffectType.Bleed)
-            return TooltipHelper.TAG_BLEED;
-        else
-            return TooltipHelper.TAG_NORMAL_OPEN;
-
+        TooltipHelper.AppendStatBlock(sb, effect.StatModifier);
     }
 }

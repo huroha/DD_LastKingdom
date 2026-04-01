@@ -23,6 +23,7 @@ public class CombatStateMachine : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private SkillSelectPanel m_SkillSelectPanel;
     [SerializeField] private TargetSelectPanel m_TargetSelectPanel;
+    [SerializeField] private CombatDirector m_CombatDirector;
 
     [SerializeField] private int m_EblaFreeRounds = 4;
     [SerializeField] private int m_EblaRoundMultiplier = 1;
@@ -37,6 +38,7 @@ public class CombatStateMachine : MonoBehaviour
 
     [Header("Status Effects")]
     [SerializeField] private StatusEffectData m_StunResistBuff;
+
 
 
 
@@ -71,6 +73,7 @@ public class CombatStateMachine : MonoBehaviour
     private List<CombatUnit> m_MoveTargetBuffer = new List<CombatUnit>();
     private List<CombatUnit> m_IsValidTargetBuffer = new List<CombatUnit>();
 
+    private List<CombatUnit> m_TargetExtractBuffer = new List<CombatUnit>(4);
 
     // 외부 읽기용 프로퍼티
     public CombatState CurrentState => m_CurrentState;
@@ -255,7 +258,6 @@ public class CombatStateMachine : MonoBehaviour
         }
     }
 
-
     private IEnumerator HandlePlayerTurn()
     {
         bool turnHandled = false;
@@ -328,9 +330,10 @@ public class CombatStateMachine : MonoBehaviour
         {
             SetState(CombatState.ExecuteSkill);
             SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, m_SelectedSkill, m_SelectedTarget);
+            List<CombatUnit> targets = ExtractTargets(result);
+            yield return m_CombatDirector.PlaySkillSequence(m_ActiveUnit, m_SelectedSkill, targets, result);
             EventBus.Publish(new SkillExecutedEvent(result));
             ProcessDeadUnits(result);
-            yield return null;
         }
     }
     private IEnumerator HandleEnemyTurn()
@@ -341,29 +344,31 @@ public class CombatStateMachine : MonoBehaviour
 
         EnemyAction action = m_EnemyAI.DecideAction(m_ActiveUnit);
         SetState(CombatState.ExecuteSkill);
-        if (m_CombatHUD != null)
+        if (!action.IsPass)
         {
-            if (!action.IsPass)
+            if (m_CombatHUD != null)
             {
                 if (action.Target != null)
                     m_CombatHUD.ShowEnemyTargetHighlight(action.Target.SlotIndex);
                 m_CombatHUD.ShowEnemySkillName(action.Skill.SkillName);
-                SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, action.Skill, action.Target);
-                EventBus.Publish(new SkillExecutedEvent(result));
-                ProcessDeadUnits(result);
             }
-            else
-            {
-                m_CombatHUD.ShowPassLabel(m_ActiveUnit);
-            }
+            SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, action.Skill, action.Target);
+            List<CombatUnit> targets = ExtractTargets(result);
+            yield return m_CombatDirector.PlaySkillSequence(m_ActiveUnit, action.Skill, targets, result);
+            EventBus.Publish(new SkillExecutedEvent(result));
+            ProcessDeadUnits(result);
         }
-
-        yield return new WaitForSeconds(m_EnemyActionDelay);
+        else
+        {
+            if (m_CombatHUD != null)
+                m_CombatHUD.ShowPassLabel(m_ActiveUnit);
+        }
         if (m_CombatHUD != null)
         {
             m_CombatHUD.HideEnemyTargetHighlights();
             m_CombatHUD.HideEnemySkillName();
         }
+
     }
 
     // 헬퍼
@@ -536,6 +541,16 @@ public class CombatStateMachine : MonoBehaviour
                     ApplyAllyDeathEbla();
             }
         }
+    }
+
+    private List<CombatUnit> ExtractTargets(SkillResult result)
+    {
+        m_TargetExtractBuffer.Clear();
+        if (result.TargetResults == null)
+            return m_TargetExtractBuffer;
+        for(int i=0; i<result.TargetResults.Length; ++i)
+            m_TargetExtractBuffer.Add(result.TargetResults[i].Target);
+        return m_TargetExtractBuffer;
     }
 
 

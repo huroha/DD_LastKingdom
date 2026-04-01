@@ -116,7 +116,7 @@ public class TargetSelectPanel : MonoBehaviour
     }
     private void Update()
     {
-        for (int i = 0; i < SkillSelectPanel.SkillKeys.Length - 1; ++i)
+        for (int i = 0; i < SkillSelectPanel.SkillKeyCount; ++i)
         {
             if (Keyboard.current[SkillSelectPanel.SkillKeys[i]].wasPressedThisFrame)
             {
@@ -127,7 +127,7 @@ public class TargetSelectPanel : MonoBehaviour
         }
         if (Keyboard.current[Key.Digit5].wasPressedThisFrame)
         {
-            m_SkillSelectPanel.SetPendingMove();  // 새 메서드 or 직접 플래그
+            m_SkillSelectPanel.SetPendingMove();  
             OnCancelButtonClicked();
         }
         if (Keyboard.current[Key.Escape].wasPressedThisFrame)

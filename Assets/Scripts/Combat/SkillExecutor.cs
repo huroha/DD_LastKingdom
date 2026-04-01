@@ -67,11 +67,6 @@ public class SkillExecutor
 
         // 크리티컬 파티 에블라용
         bool allNikkesFetched = false;
-        //m_PositionSystem.GetAllUnits(CombatUnitType.Nikke);
-        bool isAllySkill = skill.TargetType == TargetType.AllySingle
-                  || skill.TargetType == TargetType.AllyMulti
-                  || skill.TargetType == TargetType.AllyAll
-                  || skill.TargetType == TargetType.Self;
         // TargetResult 배열 선언 (targets.Count 크기)
         TargetResult[] result = new TargetResult[targets.Count];
 
@@ -83,18 +78,18 @@ public class SkillExecutor
             m_ResistedBuffer.Clear();
 
             // [명중 판정]
-            result[i].IsHit = isAllySkill || RollHit(user, targets[i], skill);
+            result[i].IsHit = skill.IsAllyTargeting || RollHit(user, targets[i], skill);
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log($"[Skill] {user.UnitName} → {targets[i].UnitName} | Hit:{result[i].IsHit}");
-            #endif
+#endif
             // [명중 성공 시]
             if (result[i].IsHit)
             {
                 int damage = 0;
                 // [데미지/힐 계산]
                 if (skill.MaxHeal > 0)
-                    result[i].HealAmount = (int)Random.Range(skill.MinHeal, skill.MaxHeal + 1);
+                    result[i].HealAmount = Random.Range(skill.MinHeal, skill.MaxHeal + 1);
                 else
                     damage = CalcDamage(user, targets[i], skill);
 
