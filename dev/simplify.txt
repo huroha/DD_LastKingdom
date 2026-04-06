@@ -1,0 +1,26 @@
+1. 하드코딩된 Animator 트리거 문자열 → const string
+  - CombatDirector.cs: "Attack", "Hit", "Death" 가 여러 곳에 산재
+  - 클래스 상단에 const 선언:
+  private const string TRIGGER_ATTACK = "Attack";
+  private const string TRIGGER_HIT = "Hit";
+  private const string TRIGGER_DEATH = "Death";
+
+  2. 하드코딩된 팝업 문자열 → const string
+  - "회피", "저항!", "사망의 문턱!" 등
+  private const string POPUP_DODGE = "회피";
+  private const string POPUP_RESIST = "저항!";
+  private const string POPUP_DEATHS_DOOR = "사망의 문턱!";
+
+  3. ProcessSingleHit / ProcessHitBatch 중복 로직
+  - Hit 판정 → Animator 트리거 → PlayFlash → SpawnDamagePopup / DODGE 팝업 로직이 거의 동일
+  - 공통 부분을 ProcessOneTarget(TargetResult, SkillData) 같은 메서드로 추출하고, Batch에서는 for 루프 + 히트스탑을
+  마지막에 한 번만
+
+  4. FocusIn/FocusOut 루프 내 GetView() 중복 호출
+  - 매 프레임 foreach에서 m_FieldView.GetView(unit) 호출 → Dictionary 룩업이 프레임당 유닛 수만큼 반복
+  - Lerp 루프 진입 전에 Dictionary<CombatUnit, CombatFieldView.UnitView> 로컬 캐시에 저장해두고 루프 내에서 재사용
+
+  5. m_FocusBuffer.Contains() → HashSet 교체
+  - FocusIn/FocusOut에서 매 프레임 List.Contains() → O(n) 선형 탐색
+  - m_FocusBuffer를 HashSet<CombatUnit>으로 교체하면 O(1)
+  - 유닛 수가 적어서(~10) 체감 차이는 작지만, HashSet이 의도도 더 명확

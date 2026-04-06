@@ -7,15 +7,14 @@ public class DamagePopup : MonoBehaviour
     [SerializeField] private TextMeshPro m_Text;
     [SerializeField] private float m_FloatSpeed = 1f;
     [SerializeField] private float m_Duration = 0.8f;
-    [SerializeField] private Vector3 m_Offset;
 
     private Coroutine m_FloatRoutine;
 
-    public void Show(Vector3 worldPosition, string text, Color color, float scale = 1f)
+    public void Show(Vector3 worldPosition, Vector3 offset,string text, Color color, float scale = 1f)
     {
         m_Text.text = text;
         m_Text.color = color;
-        transform.position = worldPosition + m_Offset;
+        transform.position = worldPosition + offset;
         transform.localScale = Vector3.one * scale;
         gameObject.SetActive(true);
 

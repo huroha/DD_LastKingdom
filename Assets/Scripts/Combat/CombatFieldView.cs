@@ -7,7 +7,7 @@ public class CombatFieldView : MonoBehaviour
     [SerializeField] private Transform[] m_NikkeSlots;      // Inspector에서 연결
     [SerializeField] private Transform[] m_EnemySlots;
     [SerializeField] private float m_MoveDuration = 0.3f;
-    [SerializeField] private float m_UnitScale = 0.3f;
+    [SerializeField] private float m_UnitScale = 0.33f;
     [SerializeField] private float m_LargeUnitScale = 0.5f;
 
     [SerializeField] private CombatHUD m_CombatHUD;
@@ -19,9 +19,12 @@ public class CombatFieldView : MonoBehaviour
     // 시체 관리용
     private Dictionary<CombatUnit, SpriteRenderer> m_CorpseViews;
 
+
+
     // 이동 후 패턴사용
     public bool IsMoving => m_MoveCoroutines.Count > 0;
-
+    // 포커싱중 이동 금지
+    private bool m_FocusLocked;
     public struct UnitView
     {
         public SpriteRenderer Renderer;
@@ -75,6 +78,8 @@ public class CombatFieldView : MonoBehaviour
     }
     private void OnUnitMoved(UnitMovedEvent e)
     {
+        if (m_FocusLocked)
+            return;
         MoveAllToCurrentSlots();
     }
     private void OnUnitDied(UnitDiedEvent e)
@@ -168,7 +173,7 @@ public class CombatFieldView : MonoBehaviour
             return m_EnemySlots;
     }
 
-    private Vector3 GetSlotPosition(CombatUnit unit)
+    public Vector3 GetSlotPosition(CombatUnit unit)
     {
         Transform[] unitSlots = GetSlots(unit.UnitType);
         if (unit.SlotSize == 2 && unit.SlotIndex + 1 < unitSlots.Length)
@@ -176,7 +181,7 @@ public class CombatFieldView : MonoBehaviour
         return unitSlots[unit.SlotIndex].position;
     }
 
-    private void MoveAllToCurrentSlots()
+    public void MoveAllToCurrentSlots()
     {
         foreach(KeyValuePair<CombatUnit, UnitView> pair in m_UnitViews)
         {
@@ -240,5 +245,10 @@ public class CombatFieldView : MonoBehaviour
         result.Clear();
         foreach(CombatUnit unit in m_UnitViews.Keys)
             result.Add(unit);
+    }
+
+    public void SetFocusLock(bool locekd)
+    {
+        m_FocusLocked = locekd;
     }
 }

@@ -9,6 +9,7 @@ public struct DotTickResult
     public int Damage;
     public UnitState PreviousState;
     public UnitState ResultState;
+    public bool Expired;
 }
 
 public class StatusEffectManager
@@ -22,45 +23,47 @@ public class StatusEffectManager
     {
         m_StunResistBuff = stunResistBuff;
     }
-
-    public List<DotTickResult> ProcessTurnStart(CombatUnit unit) 
+    public List<DotTickResult> ApplyDotDamage(CombatUnit unit)
     {
         m_DotResultsBuffer.Clear();
         if (!unit.IsAlive)
             return m_DotResultsBuffer;
-        for(int i=0; i<unit.ActiveEffects.Count; ++i)
+
+        for (int i = 0; i < unit.ActiveEffects.Count; ++i)
         {
             ActiveStatusEffect effect = unit.ActiveEffects[i];
-            if(!(effect.Data.EffectType.IsDot()))
+            if (!effect.Data.EffectType.IsDot())
                 continue;
-            int damage = effect.Data.TickDamage;
+
             UnitState previousState = unit.State;
-            UnitState resultState = unit.TakeDamage(damage, isDot: true);
+            UnitState resultState = unit.TakeDamage(effect.Data.TickDamage, isDot: true);
 
             DotTickResult result;
             result.Unit = unit;
             result.Effect = effect.Data;
-            result.Damage = damage;
+            result.Damage = effect.Data.TickDamage;
             result.PreviousState = previousState;
             result.ResultState = resultState;
+            result.Expired = effect.RemainingTurns <= 1;
             m_DotResultsBuffer.Add(result);
 
             if (unit.State == UnitState.Dead)
                 break;
         }
-
-        // Dot 지속시간 감소 + 만료제거
-        for(int i= unit.ActiveEffects.Count-1; i>=0; --i)
+        return m_DotResultsBuffer;
+    }
+    public void DecrementDotEffects(CombatUnit unit)
+    {
+        for (int i = unit.ActiveEffects.Count - 1; i >= 0; --i)
         {
             ActiveStatusEffect effect = unit.ActiveEffects[i];
-            if (!(effect.Data.EffectType.IsDot()))
+            if (!effect.Data.EffectType.IsDot())
                 continue;
             effect.RemainingTurns--;
-            if(effect.RemainingTurns <= 0)
+            if (effect.RemainingTurns <= 0)
                 unit.RemoveEffectAt(i);
         }
         unit.RecalculateStats();
-        return m_DotResultsBuffer;
     }
 
     public void ProcessTurnEnd(CombatUnit unit)

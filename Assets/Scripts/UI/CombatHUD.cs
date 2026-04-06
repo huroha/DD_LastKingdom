@@ -25,7 +25,10 @@ public class CombatHUD : MonoBehaviour
     [SerializeField] private StatusEffectIconDisplay[] m_EnemyStatusIcons;          // 4
     [SerializeField] private StatusEffectIconDisplay[] m_LargeEnemyStatusIcons;     // 3
 
-
+    [Header("Root Slots")]
+    [SerializeField] private GameObject m_NikkeHpBarRoot;
+    [SerializeField] private GameObject m_EnemyHpBarRoot;
+    [SerializeField] private GameObject m_SelectBar;
 
     [Header("Nikke Slots")]
     [SerializeField] private Slider[] m_NikkeHpBars;    // 4°³
@@ -48,6 +51,10 @@ public class CombatHUD : MonoBehaviour
     [Header("Enemy Slots")]
     [SerializeField] private Slider[] m_EnemyHpBars;  // 4°³
     [SerializeField] private TextMeshProUGUI[] m_EnemyNames;   // 4°³
+
+
+    [Header("Announce")]
+    [SerializeField] private float m_AnnounceDisplayDuration = 1.2f;
     [SerializeField] private GameObject m_EnemySkillPanel;
     [SerializeField] private TextMeshProUGUI m_EnemySkillNameText;
 
@@ -700,6 +707,26 @@ public class CombatHUD : MonoBehaviour
             m_EnemyStatusIcons[unit.SlotIndex].Refresh(unit.ActiveEffects);
     }
 
+    public void SetHpBarsVisible(bool visible)
+    {
+        m_NikkeHpBarRoot.SetActive(visible);
+        m_EnemyHpBarRoot.SetActive(visible);
+        m_SelectBar.SetActive(visible);
+    }
 
+    public Coroutine PlayEnemySkillAnnounce(string skillName)
+    {
+        return StartCoroutine(EnemySkillAnnounceRoutine(skillName));
+    }
 
+    private IEnumerator EnemySkillAnnounceRoutine(string skillName)
+    {
+        ShowEnemySkillName(skillName);
+        yield return new WaitForSecondsRealtime(m_AnnounceDisplayDuration);
+        HideEnemySkillName();
+    }
+    public void RefreshUnit(CombatUnit unit)
+    {
+        RefreshHpBar(unit);
+    }
 }

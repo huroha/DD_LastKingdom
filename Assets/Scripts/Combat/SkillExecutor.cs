@@ -133,8 +133,9 @@ public class SkillExecutor
                     m_EblaSystem.ModifyEbla(targets[i], -skill.EblaHealAmount);
 
 
-                // [상태이상] ApplyOnHitEffects 호출 (applied, resisted 리스트 준비)
-                ApplyOnHitEffects(targets[i], skill, m_AppliedBuffer, m_ResistedBuffer, result[i].IsCrit);
+                // 상태이상 타겟이 살아있을때만 적용
+                if (targets[i].IsAlive)
+                    ApplyOnHitEffects(targets[i], skill, m_AppliedBuffer, m_ResistedBuffer, result[i].IsCrit);
 
                 // [크리티컬 추가 효과] 크리티컬이면 ApplyCritEffects 호출
                 if (result[i].IsCrit)
@@ -152,8 +153,6 @@ public class SkillExecutor
             ApplyPositionMove(user, skill, targets[i], result[i].IsHit);
 
             // TargetResult 채우기
-            // - applied/resisted List → 배열로 변환 (for문 복사)
-            // - results[i] 할당
             result[i].Target = targets[i];
             result[i].ResultState = targets[i].State;
             result[i].AppliedEffects = new StatusEffectData[m_AppliedBuffer.Count];
@@ -227,7 +226,7 @@ public class SkillExecutor
 
         return (min, max);
     }
-    // 데미지 계산: BaseDamage → RawDamage → finalDamage (defense % 감소)
+    // 데미지 계산: BaseDamage -> RawDamage -> finalDamage (defense % 감소)
     private int CalcDamage(CombatUnit user, CombatUnit target, SkillData skill)
     {
         (int min, int max) range = CalcDamageRange(user, target, skill);
@@ -248,7 +247,7 @@ public class SkillExecutor
     }
 
 
-    // 상태이상 저항 판정 → target.ActiveEffects에 실제 추가 + applied/resisted 분류
+    // 상태이상 저항 판정 -> target.ActiveEffects에 실제 추가 + applied/resisted 분류
     private void ApplyOnHitEffects(CombatUnit target, SkillData skill,
                                    List<StatusEffectData> applied,
                                    List<StatusEffectData> resisted,
@@ -299,7 +298,7 @@ public class SkillExecutor
         }
     }
 
-    // Buff/Guard/Mark → 0 반환 (항상 적용), 나머지 → resistance 블록 필드 반환
+    // Buff/Guard/Mark -> 0 반환 (항상 적용), 나머지 -> resistance 블록 필드 반환
     private float GetResistance(CombatUnit target, StatusEffectType effectType)
     {
         // effectType이 Buff, Guard, Mark이면 0 반환 (항상 적용)
@@ -359,13 +358,12 @@ public class SkillExecutor
         }
     }
 
-    // skill.MoveUserAmount → user 이동, skill.MoveTargetAmount → target 이동
+    // skill.MoveUserAmount -> user 이동, skill.MoveTargetAmount -> target 이동
     private void ApplyPositionMove(CombatUnit user, SkillData skill, CombatUnit target, bool isHit)
     {
         if (skill.MoveUserAmount != 0)
         {
-            if (m_PositionSystem.Move(user, skill.MoveUserAmount))
-                EventBus.Publish(new UnitMovedEvent(user, user));
+            m_PositionSystem.Move(user, skill.MoveUserAmount);
         }
         if (skill.MoveTargetAmount != 0 && isHit)
         {
@@ -374,8 +372,7 @@ public class SkillExecutor
             float roll = Random.Range(0f, 100f);
             if (roll >= target.CurrentStats.resistance.move)
             {
-                if (m_PositionSystem.Move(target, skill.MoveTargetAmount))
-                    EventBus.Publish(new UnitMovedEvent(target, target));
+                m_PositionSystem.Move(target, skill.MoveTargetAmount);
             }
         }
     }

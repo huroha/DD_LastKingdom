@@ -27,7 +27,7 @@ MonoBehaviour:
     defense: 25
     dodge: 10
     deathBlowResist: 0
-    speed: 5
+    speed: 10
     moveRange: 2
     resistance:
       stun: 40
@@ -37,6 +37,8 @@ MonoBehaviour:
       bleed: 40
       debuff: 40
       trap: 40
+    damageMultiplier: 0
+    eblaMultiplier: 0
   m_MaxLevel: 6
   m_ExpThresholds: 00000000640000002c01000058020000e8030000dc050000
   m_StatGrowthPerLevel:
@@ -58,6 +60,8 @@ MonoBehaviour:
       bleed: 0
       debuff: 0
       trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
   m_Skills:
   - {fileID: 11400000, guid: 1af9adf875143234ea659f8e9ac6e0f9, type: 2}
   - {fileID: 11400000, guid: 6bfc8192882314a49973a1cca8b1f05e, type: 2}
@@ -68,6 +72,7 @@ MonoBehaviour:
   - {fileID: 0}
   m_PortraitSprite: {fileID: 1032635755590463704, guid: 08cba6c78a218644fb5b9da39711e2f3, type: 3}
   m_CombatIdleSprite: {fileID: -3371497870711704084, guid: 75423a9606906084da699dd74e450735, type: 3}
+  m_CombatAnimator: {fileID: 0}
   m_VirtuePortraitSprite: {fileID: 0}
   m_OnCritSelfEffects: []
   m_OnReceiveCritSelfEffects: []

@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Poison_test
   m_EditorClassIdentifier: Assembly-CSharp::StatusEffectData
   m_EffectName: "\uC911\uB3C5"
-  m_Icon: {fileID: -6592538365307346872, guid: f129567a2f27b7049b4a673994d8266c, type: 3}
+  m_Icon: {fileID: -6592538365307346872, guid: 9cb4baa2209e2264896e8f14e4b5a86f, type: 3}
   m_EffectType: 1
+  m_Description: 
+  m_ShowName: 0
   m_Duration: 3
   m_TickDamage: 3
   m_StatModifier:
@@ -36,5 +38,8 @@ MonoBehaviour:
       bleed: 0
       debuff: 0
       trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
   m_IsStackable: 1
   m_MaxStack: 2
+  m_BaseApplyRate: 100

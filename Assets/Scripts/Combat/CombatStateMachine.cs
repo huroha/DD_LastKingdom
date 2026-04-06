@@ -196,8 +196,11 @@ public class CombatStateMachine : MonoBehaviour
                     yield return null;
 
             // Dot 틱
-            List<DotTickResult> dotResults = m_StatusEffectManager.ProcessTurnStart(m_ActiveUnit);
-            ProcessDotResults(dotResults);
+            List<DotTickResult> dotResults = m_StatusEffectManager.ApplyDotDamage(m_ActiveUnit);
+            yield return StartCoroutine(ProcessDotResultsRoutine(dotResults));
+            m_StatusEffectManager.DecrementDotEffects(m_ActiveUnit);
+            if (m_CombatHUD != null)
+                m_CombatHUD.RefreshUnit(m_ActiveUnit);
 
             EventBus.Publish(new TurnStartedEvent(m_ActiveUnit));
             // Dot 사망으로 사망 시 턴 스킵
@@ -341,17 +344,18 @@ public class CombatStateMachine : MonoBehaviour
         SetState(CombatState.EnemyDecide);
         yield return new WaitForSeconds(m_EnemyActionDelay);
 
-
         EnemyAction action = m_EnemyAI.DecideAction(m_ActiveUnit);
-        SetState(CombatState.ExecuteSkill);
+
         if (!action.IsPass)
         {
             if (m_CombatHUD != null)
             {
                 if (action.Target != null)
                     m_CombatHUD.ShowEnemyTargetHighlight(action.Target.SlotIndex);
-                m_CombatHUD.ShowEnemySkillName(action.Skill.SkillName);
+                yield return m_CombatHUD.PlayEnemySkillAnnounce(action.Skill.SkillName);
             }
+
+            SetState(CombatState.ExecuteSkill);
             SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, action.Skill, action.Target);
             List<CombatUnit> targets = ExtractTargets(result);
             yield return m_CombatDirector.PlaySkillSequence(m_ActiveUnit, action.Skill, targets, result);
@@ -363,11 +367,9 @@ public class CombatStateMachine : MonoBehaviour
             if (m_CombatHUD != null)
                 m_CombatHUD.ShowPassLabel(m_ActiveUnit);
         }
+
         if (m_CombatHUD != null)
-        {
             m_CombatHUD.HideEnemyTargetHighlights();
-            m_CombatHUD.HideEnemySkillName();
-        }
 
     }
 
@@ -520,26 +522,27 @@ public class CombatStateMachine : MonoBehaviour
         m_PositionSystem.GetValidTargets(m_ActiveUnit, m_SelectedSkill, m_IsValidTargetBuffer);
         return m_IsValidTargetBuffer.Contains(target);
     }
-    private void ProcessDotResults(List<DotTickResult> results)
+    private IEnumerator ProcessDotResultsRoutine(List<DotTickResult> results)
     {
         for (int i = 0; i < results.Count; ++i)
         {
-            CombatUnit unit = results[i].Unit;
+            DotTickResult tr = results[i];
 
-            if (results[i].PreviousState == UnitState.Alive
-                          && results[i].ResultState == UnitState.DeathsDoor)
+            if (tr.PreviousState == UnitState.Alive && tr.ResultState == UnitState.DeathsDoor)
             {
-                m_EblaSystem.ModifyEbla(unit, CombatUnit.DEATHS_DOOR_EBLA);
-                unit.AddEffect(new ActiveStatusEffect(m_DeathsDoorDebuff));
-                unit.RecalculateStats();
+                m_EblaSystem.ModifyEbla(tr.Unit, CombatUnit.DEATHS_DOOR_EBLA);
+                tr.Unit.AddEffect(new ActiveStatusEffect(m_DeathsDoorDebuff));
+                tr.Unit.RecalculateStats();
             }
-            if (results[i].ResultState == UnitState.Dead)
+            if (tr.ResultState == UnitState.Dead)
             {
                 m_PositionSystem.RemoveUnit(m_ActiveUnit);
                 EventBus.Publish(new UnitDiedEvent(m_ActiveUnit));
                 if (m_ActiveUnit.UnitType == CombatUnitType.Nikke)
                     ApplyAllyDeathEbla();
             }
+
+            yield return m_CombatDirector.PlayDotTick(tr.Unit, tr.Damage, tr.Effect.EffectType);
         }
     }
 
