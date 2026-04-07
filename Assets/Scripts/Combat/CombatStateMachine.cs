@@ -536,9 +536,9 @@ public class CombatStateMachine : MonoBehaviour
             }
             if (tr.ResultState == UnitState.Dead)
             {
-                m_PositionSystem.RemoveUnit(m_ActiveUnit);
-                EventBus.Publish(new UnitDiedEvent(m_ActiveUnit));
-                if (m_ActiveUnit.UnitType == CombatUnitType.Nikke)
+                m_PositionSystem.RemoveUnit(tr.Unit);
+                EventBus.Publish(new UnitDiedEvent(tr.Unit));
+                if (tr.Unit.UnitType == CombatUnitType.Nikke)
                     ApplyAllyDeathEbla();
             }
 

@@ -36,14 +36,19 @@ MonoBehaviour:
       bleed: 0
       debuff: 0
       trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
   m_Skills:
   - {fileID: 11400000, guid: aa0bba7d332e50e46b083318c321aeb2, type: 2}
   m_DropTable:
-    minGold: 50
-    maxGold: 100
-    minGems: 1
-    maxGems: 2
+    MinGold: 0
+    MaxGold: 0
+    MinGems: 0
+    MaxGems: 0
   m_CorpseHp: 15
   m_CorpseDecayTurns: 2
   m_Sprite: {fileID: -9028174854095376850, guid: 1d2cd198ff55ba24ab63ab1252194b71, type: 3}
   m_CorpseSprite: {fileID: 8489385813877351179, guid: d45cc4269d0bb63408255658389eb757, type: 3}
+  m_Hitsprite: {fileID: -9028174854095376850, guid: 1d2cd198ff55ba24ab63ab1252194b71, type: 3}
+  m_CombatAnimator: {fileID: 0}
+  m_ScaleOffset: 1

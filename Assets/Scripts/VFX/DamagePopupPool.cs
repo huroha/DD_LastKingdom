@@ -10,7 +10,8 @@ public class DamagePopupPool : MonoBehaviour
     [Header("Offsets")]
     [SerializeField] private Vector3 m_NikkeDamageOffset;
     [SerializeField] private Vector3 m_EnemyDamageOffset;
-    [SerializeField] private Vector3 m_EffectOffset;
+    [SerializeField] private Vector3 m_NikkeEffectOffset;
+    [SerializeField] private Vector3 m_EnemyEffectOffset;
 
     [Header("Pool Size")]
     [SerializeField] private int m_DamageInitialSize = 8;
@@ -44,10 +45,11 @@ public class DamagePopupPool : MonoBehaviour
         popup.Show(pos, offset, text, color, scale);
     }
 
-    public void SpawnEffect(Vector3 pos, string text, Color color)
+    public void SpawnEffect(Vector3 pos, bool isNikke, string text, Color color)
     {
+        Vector3 offset = isNikke ? m_NikkeEffectOffset : m_EnemyEffectOffset;
         DamagePopup popup = GetFromPool(m_EffectPool, m_EffectPrefab);
-        popup.Show(pos, m_EffectOffset, text, color);
+        popup.Show(pos, offset, text, color);
     }
 
     private DamagePopup GetFromPool(List<DamagePopup> pool, DamagePopup prefab)

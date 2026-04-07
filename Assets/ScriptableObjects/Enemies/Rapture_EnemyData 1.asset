@@ -49,3 +49,6 @@ MonoBehaviour:
   m_CorpseDecayTurns: 3
   m_Sprite: {fileID: -7382081116707789574, guid: 36dce3df22a4e2c4ca85e503dc0195d9, type: 3}
   m_CorpseSprite: {fileID: 3001937120653127659, guid: 1071487d4fbc5dc41ae5759bd09631bd, type: 3}
+  m_Hitsprite: {fileID: -7382081116707789574, guid: 36dce3df22a4e2c4ca85e503dc0195d9, type: 3}
+  m_CombatAnimator: {fileID: 0}
+  m_ScaleOffset: 1

@@ -9,7 +9,6 @@ public struct DotTickResult
     public int Damage;
     public UnitState PreviousState;
     public UnitState ResultState;
-    public bool Expired;
 }
 
 public class StatusEffectManager
@@ -44,7 +43,6 @@ public class StatusEffectManager
             result.Damage = effect.Data.TickDamage;
             result.PreviousState = previousState;
             result.ResultState = resultState;
-            result.Expired = effect.RemainingTurns <= 1;
             m_DotResultsBuffer.Add(result);
 
             if (unit.State == UnitState.Dead)

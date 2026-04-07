@@ -53,7 +53,12 @@ public class NikkeData : ScriptableObject
     [Header("Visuals")]
     [SerializeField] private Sprite m_PortraitSprite;           // 초상화
     [SerializeField] private Sprite m_CombatIdleSprite;           // Idle
-    [SerializeField] private RuntimeAnimatorController m_CombatAnimator;
+    [SerializeField] private GameObject m_CombatPrefab;
+    [SerializeField] private Sprite m_AttackSprite;
+    [SerializeField] private Sprite m_HitSprite;
+
+    [SerializeField] private float m_ScaleOffset;
+
 
     [SerializeField] private Sprite m_VirtuePortraitSprite;     // 각성 영웅만 사용
 
@@ -74,7 +79,11 @@ public class NikkeData : ScriptableObject
     public Sprite PortraitSprite            => m_PortraitSprite;   
     public Sprite CombatIdleSprite            => m_CombatIdleSprite;   
     public Sprite VirtuePortraitSprite      => m_VirtuePortraitSprite;
-    public RuntimeAnimatorController CombatAnimator => m_CombatAnimator;
+    public float ScaleOffset => m_ScaleOffset;
+    public Sprite AttackSprite => m_AttackSprite;
+    public Sprite HitSprite => m_HitSprite;
+
+    public GameObject CombatPrefab => m_CombatPrefab;
     public Manufacturer Manufacturer        => m_Manufacturer;
     public SquadData Squad                  => m_Squad;
     public ElementType  Element             => m_Element;

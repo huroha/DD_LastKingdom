@@ -116,48 +116,53 @@ public class CombatFieldView : MonoBehaviour
 
     private UnitView CreateUnitView(CombatUnit unit, Vector3 pos)
     {
-        GameObject go = new GameObject(unit.UnitName);
-        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
+        GameObject go;
+        SpriteRenderer sr;
         float scale = unit.SlotSize == 2 ? m_LargeUnitScale : m_UnitScale;
-
-        if(unit.UnitType == CombatUnitType.Nikke)
+        if(unit.UnitType == CombatUnitType.Nikke && unit.NikkeData.CombatPrefab != null)
         {
-            sr.sprite = unit.NikkeData.CombatIdleSprite;
-            go.AddComponent<BoxCollider2D>();
-            UnitClickHandler handler = go.AddComponent<UnitClickHandler>();
-            CombatUnit captured = unit;
-            handler.Initialize(() => LogNikkeInfo(captured));
+            go = Instantiate(unit.NikkeData.CombatPrefab);
+            go.name = unit.UnitName;
+            sr = go.GetComponent<SpriteRenderer>();
         }
-        else if(unit.UnitType == CombatUnitType.Enemy)
+        else
         {
-            sr.sprite = unit.EnemyData.Sprite;
-            go.AddComponent<BoxCollider2D>();
-            UnitClickHandler handler = go.AddComponent<UnitClickHandler>();
+            go = new GameObject(unit.UnitName);
+            sr = go.AddComponent<SpriteRenderer>();
+            if (unit.UnitType == CombatUnitType.Nikke)
+                sr.sprite = unit.NikkeData.CombatIdleSprite;
+            else
+                sr.sprite = unit.EnemyData.Sprite;
+        }
+        go.AddComponent<BoxCollider2D>();
+        if(unit.UnitType == CombatUnitType.Enemy)
+        {
             UnitHoverHandler hoverHandler = go.AddComponent<UnitHoverHandler>();
             CombatUnit captured = unit;
-            handler.Initialize(() => LogEnemyInfo(captured));
             hoverHandler.Initialize(
                 () => m_CombatHUD.ShowEnemyInfo(captured),
-                () => m_CombatHUD.HideEnemyInfo()
-            );
+                () => m_CombatHUD.HideEnemyInfo());
         }
         go.transform.position = pos;
-        go.transform.localScale = Vector3.one * scale;
-        sr.sortingOrder = 0;
-        RuntimeAnimatorController animCtrl = null;
-        if (unit.UnitType == CombatUnitType.Nikke)
-            animCtrl = unit.NikkeData.CombatAnimator;
-        else if (unit.UnitType == CombatUnitType.Enemy)
-            animCtrl = unit.EnemyData.CombatAnimator;
+        float scaleoffset =  unit.UnitType == CombatUnitType.Nikke ? unit.NikkeData.ScaleOffset : unit.EnemyData.ScaleOffset;
+        go.transform.localScale = Vector3.one * scale * scaleoffset;
+        sr.sortingOrder = 10 -unit.SlotIndex;
 
-        Animator animator = null;
-        UnitAnimBridge animBridge = null;
-        if (animCtrl != null)
+        Animator animator = go.GetComponent<Animator>();
+        if(animator == null)
         {
-            animator = go.AddComponent<Animator>();
-            animator.runtimeAnimatorController = animCtrl;
-            animBridge = go.AddComponent<UnitAnimBridge>();
+            RuntimeAnimatorController animCtrl = null;
+            if (unit.UnitType == CombatUnitType.Enemy)
+                animCtrl = unit.EnemyData.CombatAnimator;
+            if(animCtrl != null)
+            {
+                animator = go.AddComponent<Animator>();
+                animator.runtimeAnimatorController = animCtrl;
+            }
         }
+        UnitAnimBridge animBridge = go.GetComponent<UnitAnimBridge>();
+        if (animBridge == null && animator != null)
+            animBridge = go.AddComponent<UnitAnimBridge>();
 
         UnitView view;
         view.Renderer = sr;
@@ -221,24 +226,19 @@ public class CombatFieldView : MonoBehaviour
 
     }
 
-    private void LogEnemyInfo(CombatUnit unit)
-    {
-        StatBlock stats = unit.CurrentStats;
-        Debug.Log($"[Enemy] {unit.UnitName} | HP:{unit.CurrentHp}/{unit.MaxHp} | " +
-                  $"\nDMG:{stats.minDamage}-{stats.maxDamage} | ACC:{stats.accuracyMod} | DODGE:{stats.dodge}" +
-                  $"\nDEF:{stats.defense:F0}% | SPD:{stats.speed} | State:{unit.State}");
-    }
-    private void LogNikkeInfo(CombatUnit unit)
-    {
-        StatBlock stats = unit.CurrentStats;
-        Debug.Log($"[Nikke] {unit.UnitName} | HP:{unit.CurrentHp}/{unit.MaxHp} | Ebla:{unit.Ebla}/200" +
-                  $"\nDMG:{stats.minDamage}-{stats.maxDamage} | ACC:{stats.accuracyMod} | DODGE:{stats.dodge}" +
-                  $"\nDEF:{stats.defense:F0}% | SPD:{stats.speed} | CRIT:{stats.critChance:F1}% | State:{unit.State}");
-    }
-
     public UnitView GetView(CombatUnit unit)
     {
-        return m_UnitViews.TryGetValue(unit, out UnitView view) ? view : default(UnitView);
+        if (m_UnitViews.TryGetValue(unit, out UnitView view))
+            return view;
+        if (m_CorpseViews.TryGetValue(unit, out SpriteRenderer sr))
+        {
+            UnitView corpseView;
+            corpseView.Renderer = sr;
+            corpseView.Animator = null;
+            corpseView.AnimBridge = null;
+            return corpseView;
+        }
+        return default(UnitView);
     }
     public void GetAllLivingUnits(List<CombatUnit> result)
     {
@@ -247,8 +247,8 @@ public class CombatFieldView : MonoBehaviour
             result.Add(unit);
     }
 
-    public void SetFocusLock(bool locekd)
+    public void SetFocusLock(bool locked)
     {
-        m_FocusLocked = locekd;
+        m_FocusLocked = locked;
     }
 }

@@ -4196,9 +4196,9 @@ MonoBehaviour:
   m_Feedback: {fileID: 118473946}
   m_PopupPool: {fileID: 954582674}
   m_CombatHUD: {fileID: 335391953}
-  m_FocusScale: 1.5
-  m_FocusOutDuration: 0.2
-  m_NikkeFocusLayoutScale: 1.3
+  m_FocusScale: 1.55
+  m_FocusOutDuration: 0.3
+  m_NikkeFocusLayoutScale: 1.2
   m_EnemyFocusLayoutScale: 1.1
   m_EnemyFocusMinXMargin: 1.8
   m_NikkeFocusPoint: {fileID: 1567845931}
@@ -4208,10 +4208,11 @@ MonoBehaviour:
   m_BlurController: {fileID: 510657040}
   m_BlurStrength: 3
   m_FocusSortingOrder: 10
-  m_DriftSpeed: 0.5
+  m_DriftSpeed: 0.45
   m_PopupDuration: 0.8
   m_StatusPopupDelay: 0.5
   m_PostSequenceDelay: 0.5
+  m_HitDuration: 1.2
 --- !u!4 &510657039
 Transform:
   m_ObjectHideFlags: 0

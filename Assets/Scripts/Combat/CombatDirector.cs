@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 public class CombatDirector : MonoBehaviour
 {
@@ -39,6 +40,7 @@ public class CombatDirector : MonoBehaviour
     [SerializeField] private float m_PopupDuration = 0.6f;
     [SerializeField] private float m_StatusPopupDelay = 0.3f;
     [SerializeField] private float m_PostSequenceDelay = 0.2f;
+    [SerializeField] private float m_HitDuration = 0.15f;
 
     // 색상 상수
     private static readonly Color COLOR_DAMAGE = new Color(0.75f, 0.07f, 0.07f);
@@ -85,6 +87,10 @@ public class CombatDirector : MonoBehaviour
 
     // GC 방지
     private Dictionary<CombatUnit, CombatFieldView.UnitView> m_ViewCache;
+    private Dictionary<CombatUnit, Vector3> m_AllyTargetDirBuffer;
+
+
+    private StringBuilder m_PopupTextBuilder;
 
     private void Awake()
     {
@@ -100,6 +106,8 @@ public class CombatDirector : MonoBehaviour
 
         m_FocusLayer = LayerMask.NameToLayer("FocusForeground");
         m_DefaultLayer = LayerMask.NameToLayer("Default");
+
+        m_PopupTextBuilder = new StringBuilder();
     }
     public Coroutine PlaySkillSequence(CombatUnit user, SkillData skill, List<CombatUnit> targets, SkillResult result)
     {
@@ -130,25 +138,36 @@ public class CombatDirector : MonoBehaviour
             else
                 ProcessSingleHit(result.TargetResults[0], skill);
         }
-
         CombatFieldView.UnitView userView = m_FieldView.GetView(user);
-        if (userView.Animator != null)
+
+        if (user.UnitType == CombatUnitType.Nikke && user.NikkeData.AttackSprite != null)
         {
-            userView.AnimBridge.SetCallbacks(null, OnAttackEnd);
-            m_AttackEndReceived = false;
-            userView.Animator.SetTrigger(TRIGGER_ATTACK);
+            if (userView.Animator != null)
+                userView.Animator.enabled = false;
+            userView.Renderer.sprite = user.NikkeData.AttackSprite;
+            yield return new WaitForSecondsRealtime(m_PopupDuration);
+            if (userView.Animator != null)
+                userView.Animator.enabled = true;
+            else
+                userView.Renderer.sprite = user.NikkeData.CombatIdleSprite;
         }
-
-        yield return new WaitForSecondsRealtime(m_PopupDuration);
-
-        if (userView.Animator != null)
+        else if (userView.Animator != null && HasParameter(userView.Animator, TRIGGER_ATTACK))
+        {
+            m_AttackEndReceived = true;
+            if (userView.AnimBridge != null)
+            {
+                userView.AnimBridge.SetCallbacks(null, OnAttackEnd);
+                m_AttackEndReceived = false;
+            }
+            userView.Animator.SetTrigger(TRIGGER_ATTACK);
+            yield return new WaitForSecondsRealtime(m_PopupDuration);
             while (!m_AttackEndReceived) yield return null;
-
+        }
+        else
+        {
+            yield return new WaitForSecondsRealtime(m_PopupDuration);
+        }
         StopDrift();
-
-
-
-
 
         // 8.콜백 정리
         if (userView.AnimBridge != null)
@@ -165,12 +184,14 @@ public class CombatDirector : MonoBehaviour
             for (int i = 0; i < result.TargetResults.Length; ++i)
             {
                 TargetResult tr = result.TargetResults[i];
-                CombatFieldView.UnitView v = m_FieldView.GetView(tr.Target);
+                Vector3 pos = m_FieldView.GetSlotPosition(tr.Target);
+                bool isNikke = tr.Target.UnitType == CombatUnitType.Nikke;
                 if (tr.AppliedEffects != null)
                 {
                     for (int j = 0; j < tr.AppliedEffects.Length; ++j)
                     {
-                        m_PopupPool.SpawnEffect(v.Renderer.transform.position, tr.AppliedEffects[j].EffectName,GetEffectColor(tr.AppliedEffects[j].EffectType)); 
+                        m_PopupPool.SpawnEffect(pos, isNikke, tr.AppliedEffects[j].EffectName,
+                                                GetEffectColor(tr.AppliedEffects[j].EffectType));
                         yield return new WaitForSecondsRealtime(m_StatusPopupDelay);
                     }
                 }
@@ -178,21 +199,13 @@ public class CombatDirector : MonoBehaviour
                 {
                     for (int j = 0; j < tr.ResistedEffects.Length; ++j)
                     {
-                        m_PopupPool.SpawnEffect(v.Renderer.transform.position, POPUP_RESIST, COLOR_RESIST);
+                        m_PopupPool.SpawnEffect(pos, isNikke, POPUP_RESIST, COLOR_RESIST);
                         yield return new WaitForSecondsRealtime(m_StatusPopupDelay);
                     }
                 }
-            }
-        }
-        if(result.TargetResults != null)
-        {
-            for (int i = 0; i < result.TargetResults.Length; ++i)
-            {
-                TargetResult tr = result.TargetResults[i];
                 if (tr.PreviousState == UnitState.Alive && tr.ResultState == UnitState.DeathsDoor)
                 {
-                    CombatFieldView.UnitView v = m_FieldView.GetView(tr.Target);
-                    m_PopupPool.SpawnEffect(v.Renderer.transform.position, POPUP_DEATHS_DOOR, COLOR_DEATHDOOR);
+                    m_PopupPool.SpawnEffect(pos, isNikke, POPUP_DEATHS_DOOR, COLOR_DEATHDOOR);
                     yield return new WaitForSecondsRealtime(m_StatusPopupDelay);
                 }
             }
@@ -224,6 +237,18 @@ public class CombatDirector : MonoBehaviour
             m_OriginalPositions[unit] = view.Renderer.transform.position;
             m_OriginalSortingOrders[unit] = view.Renderer.sortingOrder;
         }
+        foreach (CombatUnit unit in m_FocusBuffer)
+        {
+            if (m_ViewCache.ContainsKey(unit))
+                continue;
+            CombatFieldView.UnitView view = m_FieldView.GetView(unit);
+            if (view.Renderer == null)
+                continue;
+            m_ViewCache[unit] = view;
+            m_OriginalScales[unit] = view.Renderer.transform.localScale;
+            m_OriginalPositions[unit] = view.Renderer.transform.position;
+            m_OriginalSortingOrders[unit] = view.Renderer.sortingOrder;
+        }
 
         m_NikkeFocusBuffer.Clear();
         m_EnemyFocusBuffer.Clear();
@@ -235,7 +260,6 @@ public class CombatDirector : MonoBehaviour
                 m_EnemyFocusBuffer.Add(unit);
         }
         Vector3 screenCenter = (m_NikkeFocusPoint.position + m_EnemyFocusPoint.position) * 0.5f;
-        Vector3 nikkeForward = (m_EnemyFocusPoint.position - m_NikkeFocusPoint.position).normalized;
 
         bool allSameTeam = m_NikkeFocusBuffer.Count == 0 || m_EnemyFocusBuffer.Count == 0;
 
@@ -294,7 +318,7 @@ public class CombatDirector : MonoBehaviour
     private IEnumerator FocusOut()
     {
         m_DriftedPositions.Clear();
-        foreach (CombatUnit unit in m_AllLivingBuffer)
+        foreach (CombatUnit unit in m_FocusBuffer)
             m_DriftedPositions[unit] = m_ViewCache[unit].Renderer.transform.position;
 
         float elapsed = 0f;
@@ -303,39 +327,30 @@ public class CombatDirector : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = elapsed / m_FocusOutDuration;
 
-            foreach (CombatUnit unit in m_AllLivingBuffer)
+            foreach (CombatUnit unit in m_FocusBuffer)
             {
-                if (m_FocusBuffer.Contains(unit))
-                {
-                    CombatFieldView.UnitView view = m_ViewCache[unit];
-                    view.Renderer.transform.localScale = Vector3.Lerp(
-                        m_OriginalScales[unit] * m_FocusScale,
-                        m_OriginalScales[unit],
-                        t);
-                    Vector3 targetPos = (unit == m_FocusUser)
-                        ? m_FieldView.GetSlotPosition(unit)
-                        : m_OriginalPositions[unit];
-                    view.Renderer.transform.position = Vector3.Lerp(
-                        m_DriftedPositions[unit],
-                        targetPos,
-                        t);
-
-
-                }
+                CombatFieldView.UnitView view = m_ViewCache[unit];
+                view.Renderer.transform.localScale = Vector3.Lerp(
+                    m_OriginalScales[unit] * m_FocusScale,
+                    m_OriginalScales[unit],
+                    t);
+                Vector3 targetPos = (unit == m_FocusUser)
+                    ? m_FieldView.GetSlotPosition(unit)
+                    : m_OriginalPositions[unit];
+                view.Renderer.transform.position = Vector3.Lerp(
+                    m_DriftedPositions[unit],
+                    targetPos,
+                    t);
             }
 
             m_Camera.orthographicSize = Mathf.Lerp(m_FocusOrthoSize, m_OriginalOrthoSize, t);
-
             yield return null;
         }
 
-        foreach (CombatUnit unit in m_AllLivingBuffer)
+        foreach (CombatUnit unit in m_FocusBuffer)
         {
-            if (m_FocusBuffer.Contains(unit))
-            {
-                m_ViewCache[unit].Renderer.sortingOrder = m_OriginalSortingOrders[unit];
-                m_ViewCache[unit].Renderer.gameObject.layer = m_DefaultLayer;
-            }
+            m_ViewCache[unit].Renderer.sortingOrder = m_OriginalSortingOrders[unit];
+            m_ViewCache[unit].Renderer.gameObject.layer = m_DefaultLayer;
         }
         m_BlurController.SetBlurStrength(0f);
         m_CombatHUD.SetHpBarsVisible(true);
@@ -368,7 +383,11 @@ public class CombatDirector : MonoBehaviour
         }
         else
         {
-            string text = result.IsCrit ? POPUP_CRIT + result.DamageDealt : result.DamageDealt.ToString();
+            m_PopupTextBuilder.Clear();
+            if (result.IsCrit)
+                m_PopupTextBuilder.Append(POPUP_CRIT);
+            m_PopupTextBuilder.Append(result.DamageDealt);
+            string text = m_PopupTextBuilder.ToString();
             Color color = result.IsCrit ? COLOR_CRIT : COLOR_DAMAGE;
             float scale = result.IsCrit ? 1.15f : 1f;
             m_PopupPool.SpawnDamage(pos, text, color, isNikke, scale);
@@ -396,9 +415,10 @@ public class CombatDirector : MonoBehaviour
     private IEnumerator DotTickRoutine(CombatUnit unit, int damage, StatusEffectType type)
     {
         CombatFieldView.UnitView view = m_FieldView.GetView(unit);
+        bool isNikke = unit.UnitType == CombatUnitType.Nikke;
         if (view.Renderer == null)
             yield break;
-        m_PopupPool.SpawnEffect(view.Renderer.transform.position, damage.ToString(), GetEffectColor(type));
+        m_PopupPool.SpawnEffect(m_FieldView.GetSlotPosition(unit), isNikke, damage.ToString(), GetEffectColor(type));
         yield return new WaitForSecondsRealtime(m_PopupDuration);
     }
 
@@ -412,18 +432,61 @@ public class CombatDirector : MonoBehaviour
         CombatFieldView.UnitView targetView = m_FieldView.GetView(result.Target);
         if (result.IsHit)
         {
-            if (targetView.Animator != null)
+            if (targetView.Animator != null && HasParameter(targetView.Animator, TRIGGER_HIT))
             {
                 targetView.Animator.SetTrigger(TRIGGER_HIT);
                 if (result.ResultState == UnitState.Dead || result.ResultState == UnitState.Corpse)
                     targetView.Animator.SetTrigger(TRIGGER_DEATH);
             }
+            else
+            {
+                StartCoroutine(HitSpriteRoutine(result.Target, targetView , result.PreviousState));
+            }
             SpawnDamagePopup(result.Target, result, skill);
         }
         else
-            m_PopupPool.SpawnEffect(targetView.Renderer.transform.position, POPUP_DODGE, COLOR_MISS);
+        {
+            StartCoroutine(HitSpriteRoutine(result.Target, targetView, result.PreviousState));
+            bool isNikke = result.Target.UnitType == CombatUnitType.Nikke;
+            m_PopupPool.SpawnEffect(m_FieldView.GetSlotPosition(result.Target), isNikke, POPUP_DODGE, COLOR_MISS);
+        }
     }
+    private IEnumerator HitSpriteRoutine(CombatUnit unit, CombatFieldView.UnitView view, UnitState previousState)
+    {
+        Sprite hitSprite = null;
+        Sprite idleSprite = null;
 
+        if (unit.UnitType == CombatUnitType.Nikke)
+        {
+            hitSprite = unit.NikkeData.HitSprite;
+            idleSprite = unit.NikkeData.CombatIdleSprite;
+        }
+        else
+        {
+            if (previousState == UnitState.Corpse)
+            {
+                hitSprite = unit.EnemyData.CorpseSprite;
+                idleSprite = unit.EnemyData.CorpseSprite;
+            }
+            else
+            {
+                hitSprite = unit.EnemyData.HitSprite;
+                idleSprite = unit.EnemyData.Sprite;
+            }
+        }
+
+        if (hitSprite != null)
+        {
+            if (view.Animator != null)
+                view.Animator.enabled = false;
+            view.Renderer.sprite = hitSprite;
+            yield return new WaitForSecondsRealtime(m_HitDuration);
+            if (view.Animator != null)
+                view.Animator.enabled = true;
+            else
+                view.Renderer.sprite = idleSprite;
+        }
+    }
     private void StartDrift(CombatUnit user, SkillData skill)
     {
         m_DriftCoroutine = StartCoroutine(DriftRoutine(user, skill));
@@ -442,7 +505,6 @@ public class CombatDirector : MonoBehaviour
         Vector3 enemyForward = (m_NikkeFocusPoint.position - m_EnemyFocusPoint.position).normalized;
 
         Vector3 userForward = user.UnitType == CombatUnitType.Nikke ? nikkeForward : enemyForward;
-        int nonUserCount = m_FocusBuffer.Count - 1;
 
         CombatFieldView.UnitView userView = m_FieldView.GetView(user);
         float centerX = m_Camera.transform.position.x;
@@ -457,16 +519,15 @@ public class CombatDirector : MonoBehaviour
             userDir = -userForward;
 
         // 아군 타겟팅: 초기 위치 기반 방향 스냅샷
-        Dictionary<CombatUnit, Vector3> allyTargetDirs = null;
         if (skill.IsAllyTargeting)
         {
-            allyTargetDirs = new Dictionary<CombatUnit, Vector3>();
+            m_AllyTargetDirBuffer.Clear();
             foreach (CombatUnit t in m_FocusBuffer)
             {
                 if (t == user) continue;
                 CombatFieldView.UnitView tv = m_FieldView.GetView(t);
                 if (tv.Renderer == null) continue;
-                allyTargetDirs[t] = (tv.Renderer.transform.position.x >= centerX)
+                m_AllyTargetDirBuffer[t] = (tv.Renderer.transform.position.x >= centerX)
                     ? Vector3.right : Vector3.left;
             }
         }
@@ -485,7 +546,7 @@ public class CombatDirector : MonoBehaviour
                 Vector3 targetDir;
 
                 if (skill.IsAllyTargeting)
-                    targetDir = allyTargetDirs[target];
+                    targetDir = m_AllyTargetDirBuffer[target];
                 else if (target.UnitType == user.UnitType)
                     targetDir = (target.SlotIndex < 2) ? targetForward : -targetForward;
                 else
@@ -496,6 +557,15 @@ public class CombatDirector : MonoBehaviour
             yield return null;
         }
     }
-
+    private bool HasParameter(Animator animator, string paramName)
+    {
+        AnimatorControllerParameter[] parameters = animator.parameters;
+        for (int i = 0; i < parameters.Length; ++i)
+        {
+            if (parameters[i].name == paramName)
+                return true;
+        }
+        return false;
+    }
 
 }

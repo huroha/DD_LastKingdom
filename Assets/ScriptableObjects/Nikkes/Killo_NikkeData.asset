@@ -37,6 +37,8 @@ MonoBehaviour:
       bleed: 40
       debuff: 40
       trap: 60
+    damageMultiplier: 0
+    eblaMultiplier: 0
   m_MaxLevel: 6
   m_ExpThresholds: 00000000640000002c01000058020000e8030000dc050000
   m_StatGrowthPerLevel:
@@ -58,6 +60,8 @@ MonoBehaviour:
       bleed: 0
       debuff: 0
       trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
   m_Skills:
   - {fileID: 11400000, guid: 0db16968f2d832c4e852a5dea5ad2fd5, type: 2}
   - {fileID: 11400000, guid: 95700198bc6f56446bcda1e8bdc6109e, type: 2}
@@ -68,6 +72,10 @@ MonoBehaviour:
   - {fileID: 0}
   m_PortraitSprite: {fileID: -5197925854481112785, guid: daf0b4e1adeffe048a4274472aca4a8b, type: 3}
   m_CombatIdleSprite: {fileID: 6582780264575104500, guid: 857d5a24a377eff42a7bc1089f75b6f2, type: 3}
+  m_CombatPrefab: {fileID: 0}
+  m_AttackSprite: {fileID: 21300000, guid: 28139720df2571045a1a19c1323b8974, type: 3}
+  m_HitSprite: {fileID: 21300000, guid: 6782c0508881db34ab1bae04024b8e2f, type: 3}
+  m_ScaleOffset: 1
   m_VirtuePortraitSprite: {fileID: 0}
   m_OnCritSelfEffects: []
   m_OnReceiveCritSelfEffects: []
