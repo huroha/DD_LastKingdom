@@ -245,7 +245,6 @@ public class CombatHUD : MonoBehaviour
         for (int i = 0; i < e.Enemies.Count; ++i)
         {
             CombatUnit enemy = e.Enemies[i];
-            InitHpBar(enemy);
             if (enemy.SlotSize == 2)
             {
                 int largeIndex = enemy.SlotIndex;

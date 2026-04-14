@@ -126,7 +126,7 @@ public class CombatDirector : MonoBehaviour
             TargetResult tr = result.TargetResults[i];
             if (tr.PreviousState != UnitState.Corpse && tr.Target.State == UnitState.Corpse)
                 continue;   // alive -> corpse∏∏ ∫“≈Î
-            m_CombatHUD.PrepareHpGhost(tr.Target,tr.PrevisouHp);
+            m_CombatHUD.PrepareHpGhost(tr.Target,tr.PreviousHp);
         }
 
         // FocusOut

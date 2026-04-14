@@ -311,4 +311,5 @@ public class CombatUnit
         m_ActiveEffects.Clear();
         RecalculateStats();
     }
+
 }

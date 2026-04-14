@@ -114,7 +114,7 @@ public class CombatFieldView : MonoBehaviour
         // 적이고 시체 스프라이트가 있으면 교체, 없으면 제거?
         if(e.Unit.UnitType == CombatUnitType.Enemy && e.Unit.EnemyData.CorpseSprite != null)
         {
-            if (e.Unit.State == UnitState.Corpse && e.Unit.UnitType == CombatUnitType.Enemy && e.Unit.EnemyData.CorpseSprite != null)
+            if (e.Unit.State == UnitState.Corpse)
             {
                 view.Renderer.sprite = e.Unit.EnemyData.CorpseSprite;
                 m_CorpseViews[e.Unit] = view.Renderer;

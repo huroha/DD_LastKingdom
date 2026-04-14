@@ -3906,6 +3906,7 @@ MonoBehaviour:
   m_DeathsDoorDebuff: {fileID: 11400000, guid: a463bc1fa86ebf0458051fce7778442c, type: 2}
   m_DeathsDoorRecovery: {fileID: 11400000, guid: d405d3cc03d0a0d489614a8ddcdee426, type: 2}
   m_StunResistBuff: {fileID: 11400000, guid: 55d6a4c0cc9e2474185220726b3d473a, type: 2}
+  m_BetweenTurnDelay: 0.3
 --- !u!4 &442149359
 Transform:
   m_ObjectHideFlags: 0
@@ -8248,6 +8249,8 @@ MonoBehaviour:
   m_UnitScale: 0.3
   m_LargeUnitScale: 0.5
   m_CombatHUD: {fileID: 335391953}
+  m_PopScale: 1.05
+  m_PopDuration: 0.5
 --- !u!114 &1075459464 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7125260554414354830, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
