@@ -19,7 +19,7 @@ public class CombatFieldView : MonoBehaviour
     // 시체 관리용
     private Dictionary<CombatUnit, SpriteRenderer> m_CorpseViews;
 
-
+    private int m_SortingCount = 10;
 
     // 이동 후 패턴사용
     public bool IsMoving => m_MoveCoroutines.Count > 0;
@@ -144,9 +144,9 @@ public class CombatFieldView : MonoBehaviour
                 () => m_CombatHUD.HideEnemyInfo());
         }
         go.transform.position = pos;
-        float scaleoffset =  unit.UnitType == CombatUnitType.Nikke ? unit.NikkeData.ScaleOffset : unit.EnemyData.ScaleOffset;
-        go.transform.localScale = Vector3.one * scale * scaleoffset;
-        sr.sortingOrder = 10 -unit.SlotIndex;
+        float scaleOffset =  unit.UnitType == CombatUnitType.Nikke ? unit.NikkeData.ScaleOffset : unit.EnemyData.ScaleOffset;
+        go.transform.localScale = Vector3.one * scale * scaleOffset;
+        sr.sortingOrder = m_SortingCount - unit.SlotIndex;
 
         Animator animator = go.GetComponent<Animator>();
         if(animator == null)

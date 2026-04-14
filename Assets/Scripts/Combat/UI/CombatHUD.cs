@@ -4,20 +4,21 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 
-
-
-
-
-
 public class CombatHUD : MonoBehaviour
 {
+    [Header("References")]
+    [SerializeField] private CombatStateMachine m_CombatStateMachine;
+    [SerializeField] private CombatFieldView m_FieldView;
+    [SerializeField] private Camera m_Camera;
+    [SerializeField] private CombatTurnTickerDisplay m_TickerDisplay;
+    [SerializeField] private CombatTurnBarDisplay m_TurnBarDisplay;
+
     [Header("Tooltip")]
     [SerializeField] private CombatTooltip m_CombatTooltip;
     [SerializeField] private FloatingLabel m_FloatingLabel;
 
     [Header("Round")]
     [SerializeField] private TextMeshProUGUI m_RoundText;
-    [SerializeField] private GameObject m_RoundBg;
     [SerializeField] private int m_PendingRound;
 
     [Header("Status Effect Icons")]
@@ -31,7 +32,7 @@ public class CombatHUD : MonoBehaviour
     [SerializeField] private GameObject m_SelectBar;
 
     [Header("Nikke Slots")]
-    [SerializeField] private Slider[] m_NikkeHpBars;    // 4개
+    [SerializeField] private HpBarAnimator[] m_NikkeHpBars;    // 4개
 
     [System.Serializable]
     private struct EblaBarCells
@@ -49,9 +50,21 @@ public class CombatHUD : MonoBehaviour
 
 
     [Header("Enemy Slots")]
-    [SerializeField] private Slider[] m_EnemyHpBars;  // 4개
+    [SerializeField] private HpBarAnimator[] m_EnemyHpBars;  // 4개
     [SerializeField] private TextMeshProUGUI[] m_EnemyNames;   // 4개
 
+
+    [Header("Large Enemy Slots")]
+    [SerializeField] private HpBarAnimator[] m_LargeEnemyHpBars;
+
+    [Header("Slot Roots")]
+    [SerializeField] private RectTransform[] m_NikkeSlotRoots;      // 4개
+    [SerializeField] private RectTransform[] m_EnemySlotRoots;      // 4개
+    [SerializeField] private RectTransform[] m_LargeEnemySlotRoots; // 3개
+
+    private Vector3[] m_OriginalNikkeSlotPositions;
+    private Vector3[] m_OriginalEnemySlotPositions;
+    private Vector3[] m_OriginalLargeEnemySlotPositions;
 
     [Header("Announce")]
     [SerializeField] private float m_AnnounceDisplayDuration = 1.2f;
@@ -59,52 +72,39 @@ public class CombatHUD : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_EnemySkillNameText;
 
 
-    [Header("Large Enemy Slots")]
-    [SerializeField] private Slider[] m_LargeEnemyHpBars;
-    [SerializeField] private RectTransform[] m_LargeEnemyBarAnchors;
-
     [Header("Enemy Info Panel")]
     [SerializeField] private EnemyInfoPanel m_EnemyInfoPanel;
 
-    [System.Serializable]
-    private struct TickerGroup
-    {
-        public Image[] Tickers;     // 슬롯당 최대 ActionsPerRound  갯수
-        [System.NonSerialized] public Animator[] Animators;
-    }
-    [Header("Turn Tickers")]
-    [SerializeField] private TickerGroup[] m_NikkeTurnTickerGroups;     // 4개
-    [SerializeField] private TickerGroup[] m_EnemyTurnTickerGroups;     // 4개
-    [SerializeField] private TickerGroup[] m_LargeEnemyTickerGroups;   // 3개
-    [SerializeField] private float m_TickerAnimDuration = 0.5f;
-
-
-    [Header("Active turn Bar")]
-    [SerializeField] private Image m_ActiveTurnBar;
-    [SerializeField] private Image m_LargeActiveTurnBar;
-    [SerializeField] private RectTransform[] m_NikkeBarAnchor;
-    [SerializeField] private RectTransform[] m_EnemyBarAnchor;
     [SerializeField] private Image[] m_NTargetHighlights;  // 4개
-
 
     [Header("Turn Order")]
     [SerializeField] private TextMeshProUGUI m_TurnOrderText;
 
 
-    [Header("References")]
-    [SerializeField] private CombatStateMachine m_CombatStateMachine;
+
+
+
     private CombatUnit m_HoveredUnit;
 
     private System.Text.StringBuilder m_TurnOrderBuilder = new System.Text.StringBuilder(128);
 
-    private Dictionary<CombatUnit, int> m_TickerCountCache = new Dictionary<CombatUnit, int>(); // 턴 refresh용
-
-    public bool IsTickerAnimating { get; private set; }
+    public bool IsTickerAnimating => m_TickerDisplay.IsTickerAnimating;
 
     private void Awake()
     {
-        CacheTickerAnimators();
         Initialize(m_CombatStateMachine);
+
+        m_OriginalNikkeSlotPositions = new Vector3[m_NikkeSlotRoots.Length];
+        for (int i = 0; i < m_NikkeSlotRoots.Length; ++i)
+            m_OriginalNikkeSlotPositions[i] = m_NikkeSlotRoots[i].position;
+
+        m_OriginalEnemySlotPositions = new Vector3[m_EnemySlotRoots.Length];
+        for (int i = 0; i < m_EnemySlotRoots.Length; ++i)
+            m_OriginalEnemySlotPositions[i] = m_EnemySlotRoots[i].position;
+
+        m_OriginalLargeEnemySlotPositions = new Vector3[m_LargeEnemySlotRoots.Length];
+        for (int i = 0; i < m_LargeEnemySlotRoots.Length; ++i)
+            m_OriginalLargeEnemySlotPositions[i] = m_LargeEnemySlotRoots[i].position;
     }
     public void Initialize(CombatStateMachine stateMachine)
     {
@@ -145,7 +145,7 @@ public class CombatHUD : MonoBehaviour
     private void OnUnitDied(UnitDiedEvent e)
     {
 
-        RefreshTurnTickers();
+        m_TickerDisplay.RefreshTurnTickers();
         if (e.Unit == m_HoveredUnit)
             HideEnemyInfo();
         if (e.Unit.State == UnitState.Dead)
@@ -172,24 +172,23 @@ public class CombatHUD : MonoBehaviour
                 UpdateEblaBar(i, unit.Ebla);
 
         }
-        RefreshTurnTickers();
-        m_ActiveTurnBar.gameObject.SetActive(false);
-        m_LargeActiveTurnBar.gameObject.SetActive(false);
+        m_TickerDisplay.RefreshTurnTickers();
+        m_TurnBarDisplay.Hide();
     }
     private void OnTurnStarted(TurnStartedEvent e)
     {
-        HideOneTicker(e.Unit);
-        SnapTurnBar(e.Unit);
+        m_TickerDisplay.HideOneTicker(e.Unit);
+        m_TurnBarDisplay.Snap(e.Unit);
     }
     private void OnUnitMoved(UnitMovedEvent e)
     {
         RefreshNikkeSlots();
-        RefreshTurnTickers();
+        m_TickerDisplay.RefreshTurnTickers();
     }
     private void OnBattleStarted(BattleStartedEvent e)
     {
         // 전체 숨기기
-        HideAllTickers();
+        m_TickerDisplay.HideAllTickers();
         HideEnemyTargetHighlights();
         HideEnemySkillName();
 
@@ -225,7 +224,7 @@ public class CombatHUD : MonoBehaviour
             m_NikkeNames[i].gameObject.SetActive(true);
             m_NikkeEblaBars[i].Root.SetActive(true);
             m_NikkeNames[i].text = e.Nikkes[i].UnitName;
-            RefreshHpBar(e.Nikkes[i]);
+            InitHpBar(e.Nikkes[i]);
             int nikkeIndex = i;
             SetupTooltipTrigger(m_NikkeHpBars[i].gameObject, (sb) =>
             {
@@ -252,7 +251,7 @@ public class CombatHUD : MonoBehaviour
                 m_EnemyNames[enemy.SlotIndex].text = enemy.UnitName;
             }
 
-            RefreshHpBar(enemy);
+            InitHpBar(enemy);
             int enemyIndex = enemy.SlotIndex;
             GameObject barObj = enemy.SlotSize == 2
                 ? m_LargeEnemyHpBars[enemyIndex].gameObject
@@ -273,9 +272,8 @@ public class CombatHUD : MonoBehaviour
             },new Vector2(0, 0));
         }
         RefreshTurnOrder();
-        ShowAllTickersAnimated();
-        m_ActiveTurnBar.gameObject.SetActive(false);
-        m_LargeActiveTurnBar.gameObject.SetActive(false);
+        m_TickerDisplay.ShowAllTickersAnimated();
+        m_TurnBarDisplay.Hide();
     }
 
     private void OnSkillExecuted(SkillExecutedEvent e)
@@ -302,8 +300,8 @@ public class CombatHUD : MonoBehaviour
     private void OnRoundStarted(RoundStartedEvent e)
     {
         m_PendingRound = e.Round;
-        HideAllTickers();
-        ShowAllTickersAnimated();
+        m_TickerDisplay.HideAllTickers();
+        m_TickerDisplay.ShowAllTickersAnimated();
     }
 
     private void OnCombatStateChanged(CombatState newState)
@@ -320,48 +318,39 @@ public class CombatHUD : MonoBehaviour
             trigger = target.AddComponent<TooltipTrigger>();
         trigger.Initialize(m_CombatTooltip, contentBuilder, offset);
     }
-    private void SnapTurnBar(CombatUnit unit)
-    {
-        if (unit == null)
-            return;
-
-        bool isLarge = unit.UnitType == CombatUnitType.Enemy && unit.SlotSize == 2;
-
-        m_ActiveTurnBar.gameObject.SetActive(!isLarge);
-        m_LargeActiveTurnBar.gameObject.SetActive(isLarge);
-
-        Image bar = isLarge ? m_LargeActiveTurnBar : m_ActiveTurnBar;
-        RectTransform anchor = null;
-
-        if (unit.UnitType == CombatUnitType.Nikke)
-            anchor = m_NikkeBarAnchor[unit.SlotIndex];
-        else if (isLarge)
-            anchor = m_LargeEnemyBarAnchors[unit.SlotIndex];
-        else
-            anchor = m_EnemyBarAnchor[unit.SlotIndex];
-
-        if (anchor == null)
-            return;
-
-        bar.rectTransform.position = anchor.position;
-
-    }
-
     private void RefreshHpBar(CombatUnit unit)
     {
         int index = unit.SlotIndex;
         if (unit.UnitType == CombatUnitType.Nikke)
         {
-            m_NikkeHpBars[index].value = (float)unit.CurrentHp / unit.MaxHp;
+            m_NikkeHpBars[index].SetHp(unit.CurrentHp, unit.MaxHp);
             UpdateEblaBar(index, unit.Ebla);
         }
         else
         {
-            Slider bar = unit.SlotSize == 2 ? m_LargeEnemyHpBars[unit.SlotIndex] : m_EnemyHpBars[unit.SlotIndex];
+            HpBarAnimator bar = unit.SlotSize == 2 ? m_LargeEnemyHpBars[unit.SlotIndex] : m_EnemyHpBars[unit.SlotIndex];
             if (unit.State == UnitState.Corpse)
-                bar.value = (float)unit.CurrentHp / Mathf.Max(unit.EnemyData.CorpseHp, 1);
+                bar.SetHp(unit.CurrentHp, Mathf.Max(unit.EnemyData.CorpseHp, 1));
             else
-                bar.value = (float)unit.CurrentHp / unit.MaxHp;
+                bar.SetHp(unit.CurrentHp, unit.MaxHp);
+        }
+        RefreshStatusIcons(unit);
+    }
+    private void InitHpBar(CombatUnit unit)
+    {
+        int index = unit.SlotIndex;
+        if(unit.UnitType == CombatUnitType.Nikke)
+        {
+            m_NikkeHpBars[index].InitHp(unit.CurrentHp, unit.MaxHp);
+            UpdateEblaBar(index, unit.Ebla);
+        }
+        else
+        {
+            HpBarAnimator bar = unit.SlotSize == 2 ? m_LargeEnemyHpBars[unit.SlotIndex] : m_EnemyHpBars[unit.SlotIndex];
+            if (unit.State == UnitState.Corpse)
+                bar.InitHp(unit.CurrentHp, Mathf.Max(unit.EnemyData.CorpseHp, 1));
+            else
+                bar.InitHp(unit.CurrentHp, unit.MaxHp);
         }
         RefreshStatusIcons(unit);
     }
@@ -459,171 +448,6 @@ public class CombatHUD : MonoBehaviour
                 cells[i].sprite = m_EblaEmptySprite;
         }
     }
-
-    // ticker
-    private void CacheTickerAnimators()
-    {
-        for (int i = 0; i < m_NikkeTurnTickerGroups.Length; ++i)
-        {
-            m_NikkeTurnTickerGroups[i].Animators = new Animator[m_NikkeTurnTickerGroups[i].Tickers.Length];
-            for (int j = 0; j < m_NikkeTurnTickerGroups[i].Tickers.Length; ++j)
-                m_NikkeTurnTickerGroups[i].Animators[j] = m_NikkeTurnTickerGroups[i].Tickers[j].GetComponent<Animator>();
-        }
-        for (int i = 0; i < m_EnemyTurnTickerGroups.Length; ++i)
-        {
-            m_EnemyTurnTickerGroups[i].Animators = new Animator[m_EnemyTurnTickerGroups[i].Tickers.Length];
-            for (int j = 0; j < m_EnemyTurnTickerGroups[i].Tickers.Length; ++j)
-                m_EnemyTurnTickerGroups[i].Animators[j] = m_EnemyTurnTickerGroups[i].Tickers[j].GetComponent<Animator>();
-        }
-        for (int i = 0; i < m_LargeEnemyTickerGroups.Length; ++i)
-        {
-            m_LargeEnemyTickerGroups[i].Animators = new Animator[m_LargeEnemyTickerGroups[i].Tickers.Length];
-            for (int j = 0; j < m_LargeEnemyTickerGroups[i].Tickers.Length; ++j)
-                m_LargeEnemyTickerGroups[i].Animators[j] = m_LargeEnemyTickerGroups[i].Tickers[j].GetComponent<Animator>();
-        }
-    }
-
-    private void SetTickerCount(CombatUnit unit, int count)
-    {
-        if (unit == null)
-            return;
-
-        TickerGroup group = GetTickerGroup(unit);
-        for (int i = 0; i < group.Tickers.Length; ++i)
-        {
-            bool shouldBeActive = i < count;
-            if (group.Tickers[i].gameObject.activeSelf != shouldBeActive)
-            {
-                if (shouldBeActive)
-                {
-                    if (unit == m_CombatStateMachine.ActiveUnit)
-                        continue;
-                    group.Tickers[i].gameObject.SetActive(true);
-                    Animator anim = group.Animators[i];
-                    if (anim != null)
-                        anim.enabled = false;
-                }
-                else
-                    group.Tickers[i].gameObject.SetActive(false);
-            }
-        }
-    }
-
-
-    private void RefreshTurnTickers()
-    {
-        HideAllTickers();
-
-        IReadOnlyList<CombatUnit> order = m_CombatStateMachine.TurnOrder;
-        if (order == null)
-            return;
-        int currentIndex = m_CombatStateMachine.CurrentTurnIndex;
-        int startIndex = currentIndex + 1; // 현재 유닛 슬롯은 이미 소비됨
-
-        m_TickerCountCache.Clear();
-        for (int i = startIndex; i < order.Count; ++i)
-        {
-            CombatUnit unit = order[i];
-            if (!unit.IsAlive)
-                continue;
-            if (m_TickerCountCache.ContainsKey(unit))
-                m_TickerCountCache[unit]++;
-            else
-                m_TickerCountCache[unit] = 1;
-        }
-
-        foreach (KeyValuePair<CombatUnit, int> pair in m_TickerCountCache)
-            SetTickerCount(pair.Key, pair.Value);
-    }
-
-    private void HideAllTickers()
-    {
-        for (int i = 0; i < m_NikkeTurnTickerGroups.Length; ++i)
-        {
-            for (int j = 0; j < m_NikkeTurnTickerGroups[i].Tickers.Length; ++j)
-                m_NikkeTurnTickerGroups[i].Tickers[j].gameObject.SetActive(false);
-        }
-        for (int i = 0; i < m_EnemyTurnTickerGroups.Length; ++i)
-        {
-            for (int j = 0; j < m_EnemyTurnTickerGroups[i].Tickers.Length; ++j)
-                m_EnemyTurnTickerGroups[i].Tickers[j].gameObject.SetActive(false);
-        }
-        for (int i = 0; i < m_LargeEnemyTickerGroups.Length; ++i)
-        {
-            for (int j = 0; j < m_LargeEnemyTickerGroups[i].Tickers.Length; ++j)
-                m_LargeEnemyTickerGroups[i].Tickers[j].gameObject.SetActive(false);
-        }
-    }
-
-    private void HideOneTicker(CombatUnit unit)
-    {
-        TickerGroup group = GetTickerGroup(unit);
-        for (int i = group.Tickers.Length - 1; i >= 0; --i)
-        {
-            if (group.Tickers[i].gameObject.activeSelf)
-            {
-                group.Tickers[i].gameObject.SetActive(false);
-                return;
-            }
-        }
-    }
-
-    private void ShowAllTickersAnimated()
-    {
-        IReadOnlyList<CombatUnit> order = m_CombatStateMachine.TurnOrder;
-        if (order == null)
-            return;
-        m_TickerCountCache.Clear();
-        for (int i = 0; i < order.Count; ++i)
-        {
-            CombatUnit unit = order[i];
-            if (!unit.IsAlive)
-                continue;
-            if (m_TickerCountCache.ContainsKey(unit))
-                m_TickerCountCache[unit]++;
-            else
-                m_TickerCountCache[unit] = 1;
-        }
-        foreach (KeyValuePair<CombatUnit, int> pair in m_TickerCountCache)
-            ShowTickersAnimated(pair.Key, pair.Value);
-        m_RoundBg.SetActive(false);
-        m_RoundBg.SetActive(true);
-        StartCoroutine(TickerAnimTimer());
-
-    }
-    private IEnumerator TickerAnimTimer()
-    {
-        IsTickerAnimating = true;
-        yield return new WaitForSeconds(m_TickerAnimDuration);
-        IsTickerAnimating = false;
-    }
-
-    private void ShowTickersAnimated(CombatUnit unit, int count)
-    {
-        TickerGroup group = GetTickerGroup(unit);
-        for (int i = 0; i < group.Tickers.Length; ++i)
-        {
-            if (i < count)
-            {
-                group.Tickers[i].gameObject.SetActive(true);
-                Animator anim = group.Animators[i];
-                if (anim != null)
-                    anim.enabled = true;
-            }
-            else
-                group.Tickers[i].gameObject.SetActive(false);
-        }
-    }
-    private TickerGroup GetTickerGroup(CombatUnit unit)
-    {
-        if (unit.UnitType == CombatUnitType.Nikke)
-            return m_NikkeTurnTickerGroups[unit.SlotIndex];
-        else if (unit.SlotSize == 2)
-            return m_LargeEnemyTickerGroups[unit.SlotIndex];
-        else
-            return m_EnemyTurnTickerGroups[unit.SlotIndex];
-    }
-
     public void ShowEnemyInfo(CombatUnit unit)
     {
         m_HoveredUnit = unit;
@@ -670,15 +494,7 @@ public class CombatHUD : MonoBehaviour
     }
     public void ShowPassLabel(CombatUnit unit)
     {
-        bool isLarge = unit.UnitType == CombatUnitType.Enemy && unit.SlotSize == 2;
-        RectTransform anchor;
-        if (unit.UnitType == CombatUnitType.Nikke)
-            anchor = m_NikkeBarAnchor[unit.SlotIndex];
-        else if (isLarge)
-            anchor = m_LargeEnemyBarAnchors[unit.SlotIndex];
-        else
-            anchor = m_EnemyBarAnchor[unit.SlotIndex];
-
+        RectTransform anchor = m_TurnBarDisplay.GetAnchor(unit);
         m_FloatingLabel.Show("넘기기", anchor);
     }
     public void HidePassLabel() => m_FloatingLabel.Hide();
@@ -729,4 +545,54 @@ public class CombatHUD : MonoBehaviour
     {
         RefreshHpBar(unit);
     }
+
+    public void UpdateSlotPositionsForTilt()
+    {
+        for (int i = 0; i < m_NikkeSlotRoots.Length; ++i)
+        {
+            CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Nikke, i);
+            if (unit == null)
+                continue;
+            Vector3 worldPos = m_FieldView.GetSlotPosition(unit);
+            Vector3 screenPos = m_Camera.WorldToScreenPoint(worldPos);
+            m_NikkeSlotRoots[i].position = screenPos;
+        }
+
+        for (int i = 0; i < m_EnemySlotRoots.Length; ++i)
+        {
+            CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Enemy, i);
+            if (unit == null)
+                continue;
+            if (unit.SlotSize == 2)
+                continue;
+            Vector3 worldPos = m_FieldView.GetSlotPosition(unit);
+            Vector3 screenPos = m_Camera.WorldToScreenPoint(worldPos);
+            m_EnemySlotRoots[i].position = screenPos;
+        }
+
+        for (int i = 0; i < m_LargeEnemySlotRoots.Length; ++i)
+        {
+            CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Enemy, i);
+            if (unit == null || unit.SlotSize != 2 || unit.SlotIndex != i)
+                continue;
+            Vector3 worldPos = m_FieldView.GetSlotPosition(unit);
+            Vector3 screenPos = m_Camera.WorldToScreenPoint(worldPos);
+            m_LargeEnemySlotRoots[i].position = screenPos;
+        }
+        m_TurnBarDisplay.Refresh();
+    }
+
+    public void ResetSlotPositions()
+    {
+        for (int i = 0; i < m_NikkeSlotRoots.Length; ++i)
+            m_NikkeSlotRoots[i].position = m_OriginalNikkeSlotPositions[i];
+
+        for (int i = 0; i < m_EnemySlotRoots.Length; ++i)
+            m_EnemySlotRoots[i].position = m_OriginalEnemySlotPositions[i];
+
+        for (int i = 0; i < m_LargeEnemySlotRoots.Length; ++i)
+            m_LargeEnemySlotRoots[i].position = m_OriginalLargeEnemySlotPositions[i];
+        m_TurnBarDisplay.Refresh();
+    }
+
 }

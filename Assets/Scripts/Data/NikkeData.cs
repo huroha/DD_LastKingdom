@@ -71,6 +71,9 @@ public class NikkeData : ScriptableObject
     public string NikkeName                 => m_NikkeName;
     public NikkeClass NikkeClass            => m_NikkeClass;
     public bool CanVirtue                   => m_CanVirtue;
+    public Manufacturer Manufacturer        => m_Manufacturer;
+    public SquadData Squad                  => m_Squad;
+    public ElementType  Element             => m_Element;
     public StatBlock BaseStats              => m_BaseStats;
     public int MaxLevel                     => m_MaxLevel;
     public IReadOnlyList<int> ExpThresholds => m_ExpThresholds;
@@ -78,15 +81,12 @@ public class NikkeData : ScriptableObject
     public IReadOnlyList<SkillData> Skills  => m_Skills;
     public Sprite PortraitSprite            => m_PortraitSprite;   
     public Sprite CombatIdleSprite            => m_CombatIdleSprite;   
-    public Sprite VirtuePortraitSprite      => m_VirtuePortraitSprite;
-    public float ScaleOffset => m_ScaleOffset;
+    public GameObject CombatPrefab => m_CombatPrefab;
     public Sprite AttackSprite => m_AttackSprite;
     public Sprite HitSprite => m_HitSprite;
+    public float ScaleOffset => m_ScaleOffset;
+    public Sprite VirtuePortraitSprite      => m_VirtuePortraitSprite;
 
-    public GameObject CombatPrefab => m_CombatPrefab;
-    public Manufacturer Manufacturer        => m_Manufacturer;
-    public SquadData Squad                  => m_Squad;
-    public ElementType  Element             => m_Element;
     public IReadOnlyList<StatusEffectData> OnCritSelfEffects => m_OnCritSelfEffects;
     public IReadOnlyList<StatusEffectData> OnReceiveCritSelfEffects => m_OnReceiveCritSelfEffects;
 }

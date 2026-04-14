@@ -9,64 +9,73 @@
 ### 씬 설정 (Inspector)
 
 - Main Camera의 Projection을 **Perspective**로 변경
-- FOV 계산: `FOV = 2 * atan(orthoSize / cameraDistance) * Rad2Deg`
-  - cameraDistance = abs(camera.z - sprite평면.z)
-  - 기존 orthographicSize와 동일한 화면 영역이 나오도록 FOV를 맞춤
-
-### Z 위치에 따른 스케일 보정
-
-- Perspective에서는 Z 거리가 다르면 렌더링 크기가 달라짐
-- 배경, 유닛, 이펙트 등 Z값이 다른 오브젝트들의 스케일을 씬 에디터에서 시각적으로 재조정
-- 이 작업은 코드가 아닌 Inspector 수작업
+- FOV: **57** (유닛 기준으로 고정)
+- 배경만 스케일과 Z 거리를 조절하여 기존 화면 구성 유지
 
 ## 2. CombatDirector 수정
 
-`orthographicSize` 관련 코드를 `fieldOfView`로 변경한다.
-
-### 변경 대상
+`orthographicSize` 관련 코드를 `fieldOfView`로 변경.
 
 | 위치 | 변경 전 | 변경 후 |
 |------|---------|---------|
-| SerializeField (line 27) | `float m_FocusOrthoSize` | `float m_FocusFOV` |
-| private 필드 (line 81) | `float m_OriginalOrthoSize` | `float m_OriginalFOV` |
-| FocusIn (line 274) | `m_OriginalOrthoSize = m_Camera.orthographicSize` | `m_OriginalFOV = m_Camera.fieldOfView` |
-| FocusIn (line 275) | `m_Camera.orthographicSize = m_FocusOrthoSize` | `m_Camera.fieldOfView = m_FocusFOV` |
-| FocusOut (line 340) | `m_Camera.orthographicSize = Mathf.Lerp(m_FocusOrthoSize, m_OriginalOrthoSize, t)` | `m_Camera.fieldOfView = Mathf.Lerp(m_FocusFOV, m_OriginalFOV, t)` |
+| SerializeField | `float m_FocusOrthoSize` | `float m_FocusFOV` |
+| private 필드 | `float m_OriginalOrthoSize` | `float m_OriginalFOV` |
+| FocusIn | `m_Camera.orthographicSize` 읽기/쓰기 | `m_Camera.fieldOfView` 읽기/쓰기 |
+| FocusOut | `orthographicSize` Lerp | `fieldOfView` Lerp |
 
 ## 3. CombatCameraTilt — 새 컴포넌트
 
 적 턴에 카메라를 Y축으로 살짝 기울여 원근 불균형을 만드는 컴포넌트.
-
-### 클래스 구조
-
-- **MonoBehaviour**, CombatScene의 카메라 또는 별도 오브젝트에 부착
-- EventBus로 `TurnStartedEvent` 구독/해제 (`OnEnable`/`OnDisable`)
 
 ### SerializeField
 
 | 필드 | 타입 | 설명 | 기본값 |
 |------|------|------|--------|
 | `m_Camera` | Camera | 대상 카메라 | - |
-| `m_TiltAngle` | float | Y축 회전 각도 (degree) | 3 |
+| `m_TiltAngle` | float | Y축 회전 각도 (degree), 음수 사용 | -1.5 |
 | `m_TiltDuration` | float | 전환 Lerp 시간 (초) | 0.3 |
+| `m_CombatHUD` | CombatHUD | UI 슬롯 위치 갱신용 | - |
+
+### private 필드
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `m_TiltCoroutine` | Coroutine | 현재 실행 중인 Lerp 코루틴 |
+| `m_IsTilted` | bool | 현재 기울어진 상태 여부 |
+| `m_CurrentTiltY` | float | 현재 Y 회전값 (eulerAngles.y 대신 직접 추적, 음수 → 360 변환 문제 방지) |
 
 ### 동작 로직
 
-1. `TurnStartedEvent` 수신
-2. `unit.UnitType == Enemy` && 현재 기울어지지 않은 상태 → 코루틴으로 `Lerp(0 → m_TiltAngle)` 시작
-3. `unit.UnitType == Nikke` && 현재 기울어진 상태 → 코루틴으로 `Lerp(m_TiltAngle → 0)` 시작
-4. 적 턴이 연속되면 이미 기울어져 있으므로 무시 (중복 코루틴 방지)
-5. Lerp 대상: `m_Camera.transform.rotation`의 Y 성분 (eulerAngles.y)
+1. `TurnStartedEvent` 수신 (OnEnable/OnDisable에서 구독/해제)
+2. `Enemy` && `!m_IsTilted` → `LerpTilt(m_CurrentTiltY, m_TiltAngle)` 시작
+3. `Nikke` && `m_IsTilted` → `LerpTilt(m_CurrentTiltY, 0)` 시작
+4. 적 턴 연속 시 이미 기울어져 있으므로 무시
 
-### 코루틴 관리
+### LerpTilt 코루틴
 
-- 새 코루틴 시작 전 기존 코루틴이 있으면 StopCoroutine 후 시작
-- Lerp는 현재 Y rotation에서 목표값까지 진행 (중간에 끊겨도 자연스럽게 이어감)
+- `m_CurrentTiltY`로 현재 각도를 직접 추적 (eulerAngles.y의 음수→360 변환 문제 회피)
+- 매 프레임: 카메라 eulerAngles.y 갱신 + `m_CombatHUD.UpdateSlotPositionsForTilt()` 호출
+- 완료 시 `to == 0f`이면 `m_CombatHUD.ResetSlotPositions()`, 아니면 최종 `UpdateSlotPositionsForTilt()`
+- 새 코루틴 시작 전 기존 코루틴 StopCoroutine
 
-## 4. 작업 순서
+## 4. CombatHUD 수정 — 슬롯 위치 연동
 
-1. CombatDirector의 `orthographicSize` → `fieldOfView` 코드 변경
-2. 씬에서 카메라 Perspective 전환 + FOV 설정
-3. Z 위치에 따른 스케일 재조정 (Inspector)
-4. CombatCameraTilt 컴포넌트 구현
-5. 씬에 부착 및 파라미터 튜닝
+카메라 기울기에 따라 UI 슬롯 위치를 유닛 월드 좌표 기준으로 갱신.
+
+### 추가 SerializeField
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `m_NikkeSlotRoots` | RectTransform[] | 니케 슬롯 부모 (4개) |
+| `m_EnemySlotRoots` | RectTransform[] | 적 슬롯 부모 (4개) |
+| `m_LargeEnemySlotRoots` | RectTransform[] | 대형 적 슬롯 부모 (3개) |
+
+### 추가 private 필드
+
+- `m_OriginalNikkeSlotPositions`, `m_OriginalEnemySlotPositions`, `m_OriginalLargeEnemySlotPositions` (Vector3[])
+- Awake에서 각 SlotRoot의 position 캐싱
+
+### public 메서드
+
+- `UpdateSlotPositionsForTilt()`: 각 슬롯 유닛의 `FieldView.GetSlotPosition()` → `Camera.WorldToScreenPoint()` → SlotRoot.position 갱신
+- `ResetSlotPositions()`: 캐싱된 원래 위치로 복원

@@ -258,7 +258,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8333598524925732860, guid: 076eeb649484f24438d25c4512faa185, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 390
+      value: 370
       objectReference: {fileID: 0}
     - target: {fileID: 8333598524925732860, guid: 076eeb649484f24438d25c4512faa185, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -319,6 +319,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &13662284 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1220383523025864978, guid: 076eeb649484f24438d25c4512faa185, type: 3}
+  m_PrefabInstance: {fileID: 13662279}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae278f5576e6ec14dafa42732847d9c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HpBarAnimator
 --- !u!1 &17856542
 GameObject:
   m_ObjectHideFlags: 0
@@ -509,7 +520,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8333598524925732860, guid: 076eeb649484f24438d25c4512faa185, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 830
+      value: 770
       objectReference: {fileID: 0}
     - target: {fileID: 8333598524925732860, guid: 076eeb649484f24438d25c4512faa185, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -570,6 +581,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &38081485 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1220383523025864978, guid: 076eeb649484f24438d25c4512faa185, type: 3}
+  m_PrefabInstance: {fileID: 38081480}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae278f5576e6ec14dafa42732847d9c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HpBarAnimator
 --- !u!1 &51401686
 GameObject:
   m_ObjectHideFlags: 0
@@ -582,6 +604,7 @@ GameObject:
   - component: {fileID: 51401688}
   - component: {fileID: 51401687}
   - component: {fileID: 51401690}
+  - component: {fileID: 51401691}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -630,8 +653,8 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
-  orthographic: 1
+  field of view: 57
+  orthographic: 0
   orthographic size: 5.4
   m_Depth: -1
   m_CullingMask:
@@ -709,6 +732,22 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &51401691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 51401686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75841d337fa5e184e97600750335c0c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatCameraTilt
+  m_Camera: {fileID: 51401688}
+  m_CombatHUD: {fileID: 335391953}
+  m_TiltAngle: -2
+  m_TiltDuration: 0.3
 --- !u!1 &53791553
 GameObject:
   m_ObjectHideFlags: 0
@@ -1033,7 +1072,7 @@ GameObject:
   m_Component:
   - component: {fileID: 97428159}
   m_Layer: 5
-  m_Name: SelectBar
+  m_Name: ActiveBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1282,12 +1321,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 118473945}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1149, y: -482.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1789989203}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &131460102 stripped
 MonoBehaviour:
@@ -1483,7 +1522,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8333598524925732860, guid: 79100821ef085244f990f3710fca897f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 500
+      value: 470
       objectReference: {fileID: 0}
     - target: {fileID: 8333598524925732860, guid: 79100821ef085244f990f3710fca897f, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1527,17 +1566,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4819711751676585024, guid: 79100821ef085244f990f3710fca897f, type: 3}
   m_PrefabInstance: {fileID: 181062190}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &181062194 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4673792297968946451, guid: 79100821ef085244f990f3710fca897f, type: 3}
-  m_PrefabInstance: {fileID: 181062190}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!114 &181062195 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6282388632639933687, guid: 79100821ef085244f990f3710fca897f, type: 3}
@@ -1585,7 +1613,7 @@ Transform:
   m_GameObject: {fileID: 185697460}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8.3, y: -1.4, z: 0}
+  m_LocalPosition: {x: 7.7, y: -1.4, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1734,6 +1762,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &246524258 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9163516669828843138, guid: 79100821ef085244f990f3710fca897f, type: 3}
+  m_PrefabInstance: {fileID: 181062190}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae278f5576e6ec14dafa42732847d9c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HpBarAnimator
 --- !u!1 &250895994
 GameObject:
   m_ObjectHideFlags: 0
@@ -1948,7 +1987,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8333598524925732860, guid: 79100821ef085244f990f3710fca897f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 285
+      value: 270
       objectReference: {fileID: 0}
     - target: {fileID: 8333598524925732860, guid: 79100821ef085244f990f3710fca897f, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1992,17 +2031,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4819711751676585024, guid: 79100821ef085244f990f3710fca897f, type: 3}
   m_PrefabInstance: {fileID: 255785656}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &255785660 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4673792297968946451, guid: 79100821ef085244f990f3710fca897f, type: 3}
-  m_PrefabInstance: {fileID: 255785656}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!114 &255785661 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6282388632639933687, guid: 79100821ef085244f990f3710fca897f, type: 3}
@@ -2184,17 +2212,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
---- !u!114 &270673924 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4673792297968946451, guid: 076eeb649484f24438d25c4512faa185, type: 3}
-  m_PrefabInstance: {fileID: 13662279}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1 &285528907
 GameObject:
   m_ObjectHideFlags: 0
@@ -2544,6 +2561,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 308702305}
   m_CullTransparentMesh: 1
+--- !u!1 &313713800
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 313713801}
+  - component: {fileID: 313713802}
+  m_Layer: 0
+  m_Name: CombatDriftController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &313713801
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 313713800}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1789989203}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &313713802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 313713800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 090c889d106f0a64d8388f12a10b4bfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatDriftController
+  m_DriftSpeed: 0.45
+  m_FieldView: {fileID: 1064561593}
+  m_FocusController: {fileID: 1422265909}
 --- !u!1 &330356111
 GameObject:
   m_ObjectHideFlags: 0
@@ -2813,10 +2877,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a964710b87e2c64aa65d5993895ead8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatHUD
+  m_CombatStateMachine: {fileID: 442149358}
+  m_FieldView: {fileID: 1064561593}
+  m_Camera: {fileID: 51401688}
+  m_TickerDisplay: {fileID: 1031989910}
+  m_TurnBarDisplay: {fileID: 883834224}
   m_CombatTooltip: {fileID: 394946333}
   m_FloatingLabel: {fileID: 2020028444}
   m_RoundText: {fileID: 285528909}
-  m_RoundBg: {fileID: 927724434}
   m_PendingRound: 0
   m_NikkeStatusIcons:
   - {fileID: 1214123008}
@@ -2836,10 +2904,10 @@ MonoBehaviour:
   m_EnemyHpBarRoot: {fileID: 1101408381}
   m_SelectBar: {fileID: 97428158}
   m_NikkeHpBars:
-  - {fileID: 1390893358}
-  - {fileID: 955293403}
-  - {fileID: 1718091591}
-  - {fileID: 1441138861}
+  - {fileID: 1390893362}
+  - {fileID: 1864164831}
+  - {fileID: 1718091595}
+  - {fileID: 1441138865}
   m_NikkeEblaBars:
   - Root: {fileID: 1441533815}
     Cells:
@@ -2898,90 +2966,43 @@ MonoBehaviour:
   m_EblaPhase1Sprite: {fileID: -6837850060274427411, guid: 5fb234ba583a2524e8079502a3f8559c, type: 3}
   m_EblaPhase2Sprite: {fileID: -6455478296969171888, guid: 8b3e17bee08e40f4f9e55fba1a2fbb85, type: 3}
   m_EnemyHpBars:
-  - {fileID: 2068142386}
-  - {fileID: 270673924}
-  - {fileID: 1667153994}
-  - {fileID: 1607335284}
+  - {fileID: 2068142389}
+  - {fileID: 13662284}
+  - {fileID: 1667153997}
+  - {fileID: 38081485}
   m_EnemyNames:
   - {fileID: 1868580069}
   - {fileID: 13662282}
   - {fileID: 780931684}
   - {fileID: 38081483}
+  m_LargeEnemyHpBars:
+  - {fileID: 439709207}
+  - {fileID: 246524258}
+  - {fileID: 669856110}
+  m_NikkeSlotRoots:
+  - {fileID: 54826163}
+  - {fileID: 2098843266}
+  - {fileID: 964667265}
+  - {fileID: 1926262203}
+  m_EnemySlotRoots:
+  - {fileID: 115552583}
+  - {fileID: 13662280}
+  - {fileID: 780931682}
+  - {fileID: 38081481}
+  m_LargeEnemySlotRoots:
+  - {fileID: 255785657}
+  - {fileID: 181062191}
+  - {fileID: 669856107}
   m_AnnounceDisplayDuration: 1.2
   m_EnemySkillPanel: {fileID: 17856542}
   m_EnemySkillNameText: {fileID: 1546824371}
-  m_LargeEnemyHpBars:
-  - {fileID: 255785660}
-  - {fileID: 181062194}
-  - {fileID: 349085472}
-  m_LargeEnemyBarAnchors:
-  - {fileID: 255785659}
-  - {fileID: 181062193}
-  - {fileID: 37217201}
   m_EnemyInfoPanel: {fileID: 1192003309}
-  m_NikkeTurnTickerGroups:
-  - Tickers:
-    - {fileID: 6289146074251616037}
-    - {fileID: 6289146074251616039}
-    - {fileID: 6289146074251616038}
-  - Tickers:
-    - {fileID: 1690548266}
-    - {fileID: 1690548268}
-    - {fileID: 1690548267}
-  - Tickers:
-    - {fileID: 1279907805}
-    - {fileID: 1279907807}
-    - {fileID: 1279907806}
-  - Tickers:
-    - {fileID: 1395334970}
-    - {fileID: 1395334972}
-    - {fileID: 1395334971}
-  m_EnemyTurnTickerGroups:
-  - Tickers:
-    - {fileID: 428212334}
-    - {fileID: 7573761023556054924}
-  - Tickers:
-    - {fileID: 813279506}
-    - {fileID: 13662281}
-  - Tickers:
-    - {fileID: 2104121016}
-    - {fileID: 780931683}
-  - Tickers:
-    - {fileID: 549700774}
-    - {fileID: 38081482}
-  m_LargeEnemyTickerGroups:
-  - Tickers:
-    - {fileID: 255785658}
-    - {fileID: 255785662}
-    - {fileID: 255785661}
-  - Tickers:
-    - {fileID: 181062192}
-    - {fileID: 181062196}
-    - {fileID: 181062195}
-  - Tickers:
-    - {fileID: 109181289}
-    - {fileID: 669856109}
-    - {fileID: 669856108}
-  m_TickerAnimDuration: 0.8
-  m_ActiveTurnBar: {fileID: 1851459251}
-  m_LargeActiveTurnBar: {fileID: 346016801}
-  m_NikkeBarAnchor:
-  - {fileID: 6289146074251616041}
-  - {fileID: 1967805561}
-  - {fileID: 1947298112}
-  - {fileID: 1612101095}
-  m_EnemyBarAnchor:
-  - {fileID: 1859020314}
-  - {fileID: 1023384600}
-  - {fileID: 1773372574}
-  - {fileID: 434525453}
   m_NTargetHighlights:
   - {fileID: 1343853186}
   - {fileID: 1075459464}
   - {fileID: 1524209145}
   - {fileID: 411940828}
   m_TurnOrderText: {fileID: 989826762}
-  m_CombatStateMachine: {fileID: 442149358}
 --- !u!114 &336091198 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 110226187874370554, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
@@ -3006,7 +3027,7 @@ GameObject:
   - component: {fileID: 346016801}
   - component: {fileID: 346016800}
   m_Layer: 5
-  m_Name: SelectBar_real2
+  m_Name: selectBar_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3102,17 +3123,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
---- !u!114 &349085472 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4673792297968946451, guid: 79100821ef085244f990f3710fca897f, type: 3}
-  m_PrefabInstance: {fileID: 669856106}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1 &349990385
 GameObject:
   m_ObjectHideFlags: 0
@@ -3138,7 +3148,7 @@ Transform:
   m_GameObject: {fileID: 349990385}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.19, y: -1.4, z: 0}
+  m_LocalPosition: {x: -7.3, y: -1.4, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3207,7 +3217,7 @@ Transform:
   m_GameObject: {fileID: 363368237}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.73, y: -1.4, z: 0}
+  m_LocalPosition: {x: -3.7, y: -1.4, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3814,7 +3824,7 @@ Transform:
   m_GameObject: {fileID: 423308181}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.46, y: -1.4, z: 0}
+  m_LocalPosition: {x: -5.5, y: -1.4, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3836,6 +3846,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4819711751676585024, guid: 076eeb649484f24438d25c4512faa185, type: 3}
   m_PrefabInstance: {fileID: 38081480}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &439709207 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9163516669828843138, guid: 79100821ef085244f990f3710fca897f, type: 3}
+  m_PrefabInstance: {fileID: 255785656}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae278f5576e6ec14dafa42732847d9c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HpBarAnimator
 --- !u!1 &442149357
 GameObject:
   m_ObjectHideFlags: 0
@@ -4196,19 +4217,8 @@ MonoBehaviour:
   m_Feedback: {fileID: 118473946}
   m_PopupPool: {fileID: 954582674}
   m_CombatHUD: {fileID: 335391953}
-  m_FocusScale: 1.55
-  m_FocusOutDuration: 0.3
-  m_NikkeFocusLayoutScale: 1.2
-  m_EnemyFocusLayoutScale: 1.1
-  m_EnemyFocusMinXMargin: 1.8
-  m_NikkeFocusPoint: {fileID: 1567845931}
-  m_EnemyFocusPoint: {fileID: 568675757}
-  m_Camera: {fileID: 51401688}
-  m_FocusOrthoSize: 4.5
-  m_BlurController: {fileID: 510657040}
-  m_BlurStrength: 3
-  m_FocusSortingOrder: 10
-  m_DriftSpeed: 0.45
+  m_FocusController: {fileID: 1422265909}
+  m_DriftController: {fileID: 313713802}
   m_PopupDuration: 0.8
   m_StatusPopupDelay: 0.5
   m_PostSequenceDelay: 0.5
@@ -4221,12 +4231,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 510657037}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1149, y: -482.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1789989203}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &510657040
 MonoBehaviour:
@@ -5399,7 +5409,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8333598524925732860, guid: 79100821ef085244f990f3710fca897f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 710
+      value: 670
       objectReference: {fileID: 0}
     - target: {fileID: 8333598524925732860, guid: 79100821ef085244f990f3710fca897f, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -5449,6 +5459,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &669856110 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9163516669828843138, guid: 79100821ef085244f990f3710fca897f, type: 3}
+  m_PrefabInstance: {fileID: 669856106}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae278f5576e6ec14dafa42732847d9c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HpBarAnimator
 --- !u!114 &691535972 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1635598621840512514, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
@@ -5909,7 +5930,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8333598524925732860, guid: 076eeb649484f24438d25c4512faa185, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 610
+      value: 570
       objectReference: {fileID: 0}
     - target: {fileID: 8333598524925732860, guid: 076eeb649484f24438d25c4512faa185, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -6492,6 +6513,70 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 870767911}
   m_CullTransparentMesh: 1
+--- !u!1 &883834223
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 883834225}
+  - component: {fileID: 883834224}
+  m_Layer: 5
+  m_Name: TurnBarDisplay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &883834224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883834223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d21fdbc01f5025b4bb949462d6242826, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatTurnBarDisplay
+  m_ActiveTurnBar: {fileID: 1851459251}
+  m_LargeActiveTurnBar: {fileID: 346016801}
+  m_NikkeBarAnchor:
+  - {fileID: 6289146074251616041}
+  - {fileID: 1967805561}
+  - {fileID: 1947298112}
+  - {fileID: 1612101095}
+  m_EnemyBarAnchor:
+  - {fileID: 1859020314}
+  - {fileID: 1023384600}
+  - {fileID: 1773372574}
+  - {fileID: 434525453}
+  m_LargeEnemyBarAnchors:
+  - {fileID: 255785659}
+  - {fileID: 181062193}
+  - {fileID: 37217201}
+--- !u!224 &883834225
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883834223}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2145186757}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &886079439 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3686360814908137852, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
@@ -6818,7 +6903,8 @@ MonoBehaviour:
   m_EffectPrefab: {fileID: 9065342648341615469, guid: 96025655b526be542951fbf59579687b, type: 3}
   m_NikkeDamageOffset: {x: 0.8, y: 2.1, z: 0}
   m_EnemyDamageOffset: {x: -1.4, y: 1, z: 0}
-  m_EffectOffset: {x: 0, y: 1, z: 0}
+  m_NikkeEffectOffset: {x: 0, y: 4, z: 0}
+  m_EnemyEffectOffset: {x: 0, y: 2, z: 0}
   m_DamageInitialSize: 8
   m_EffectInitialSize: 8
 --- !u!4 &954582675
@@ -6829,24 +6915,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 954582673}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1149, y: -482.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1789989203}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &955293403 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1231875513069768822, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
-  m_PrefabInstance: {fileID: 1690548264}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!224 &964667265 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 9196623287724803767, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
@@ -7599,6 +7674,100 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4819711751676585024, guid: 076eeb649484f24438d25c4512faa185, type: 3}
   m_PrefabInstance: {fileID: 13662279}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1031989908
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1031989909}
+  - component: {fileID: 1031989910}
+  m_Layer: 5
+  m_Name: TurnTickerDisplay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1031989909
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1031989908}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2145186757}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1031989910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1031989908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3627564c75a9a34ba58a406c9f1db03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatTurnTickerDisplay
+  m_CombatStateMachine: {fileID: 442149358}
+  m_NikkeTurnTickerGroups:
+  - Tickers:
+    - {fileID: 6289146074251616037}
+    - {fileID: 6289146074251616039}
+    - {fileID: 6289146074251616038}
+  - Tickers:
+    - {fileID: 1690548266}
+    - {fileID: 1690548268}
+    - {fileID: 1690548267}
+  - Tickers:
+    - {fileID: 1279907805}
+    - {fileID: 1279907807}
+    - {fileID: 1279907806}
+  - Tickers:
+    - {fileID: 1395334970}
+    - {fileID: 1395334972}
+    - {fileID: 1395334971}
+  m_EnemyTurnTickerGroups:
+  - Tickers:
+    - {fileID: 428212334}
+    - {fileID: 7573761023556054924}
+  - Tickers:
+    - {fileID: 813279506}
+    - {fileID: 13662281}
+  - Tickers:
+    - {fileID: 2104121016}
+    - {fileID: 780931683}
+  - Tickers:
+    - {fileID: 549700774}
+    - {fileID: 38081482}
+  m_LargeEnemyTickerGroups:
+  - Tickers:
+    - {fileID: 255785658}
+    - {fileID: 255785662}
+    - {fileID: 255785661}
+  - Tickers:
+    - {fileID: 181062192}
+    - {fileID: 181062196}
+    - {fileID: 181062195}
+  - Tickers:
+    - {fileID: 109181289}
+    - {fileID: 669856109}
+    - {fileID: 669856108}
+  m_TickerAnimDuration: 0.5
+  m_RoundBg: {fileID: 927724434}
 --- !u!1 &1037705242
 GameObject:
   m_ObjectHideFlags: 0
@@ -9086,7 +9255,7 @@ Transform:
   m_GameObject: {fileID: 1212480323}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.3, y: -1.4, z: 0}
+  m_LocalPosition: {x: 5.7, y: -1.4, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9254,7 +9423,7 @@ Transform:
   m_GameObject: {fileID: 1213773377}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.9, y: -1.4, z: 0}
+  m_LocalPosition: {x: 3.7, y: -1.4, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9556,7 +9725,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9196623287724803767, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -540
+      value: -550
       objectReference: {fileID: 0}
     - target: {fileID: 9196623287724803767, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -10062,17 +10231,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1387438510}
   m_CullTransparentMesh: 1
---- !u!114 &1390893358 stripped
+--- !u!114 &1390893362 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1231875513069768822, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4905692180298127823, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
   m_PrefabInstance: {fileID: 6289146074251616035}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Script: {fileID: 11500000, guid: ae278f5576e6ec14dafa42732847d9c6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
+  m_EditorClassIdentifier: Assembly-CSharp::HpBarAnimator
 --- !u!1001 &1395334968
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10215,7 +10384,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9196623287724803767, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -715
+      value: -730
       objectReference: {fileID: 0}
     - target: {fileID: 9196623287724803767, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -10469,6 +10638,64 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!1 &1422265907
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1422265908}
+  - component: {fileID: 1422265909}
+  m_Layer: 0
+  m_Name: CombatFocusController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1422265908
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422265907}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1789989203}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1422265909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422265907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b6347ddf0fe7d43bb84da3248abfa8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatFocusController
+  m_FocusScale: 1.55
+  m_FocusOutDuration: 0.3
+  m_NikkeFocusLayoutScale: 1.2
+  m_EnemyFocusLayoutScale: 1.1
+  m_EnemyFocusMinXMargin: 1.8
+  m_NikkeFocusPoint: {fileID: 1567845931}
+  m_EnemyFocusPoint: {fileID: 568675757}
+  m_Camera: {fileID: 51401688}
+  m_FocusFOV: 51
+  m_BlurController: {fileID: 510657040}
+  m_BlurStrength: 3
+  m_FocusSortingOrder: 10
+  m_FieldView: {fileID: 1064561593}
+  m_CombatHUD: {fileID: 335391953}
 --- !u!1 &1433718340
 GameObject:
   m_ObjectHideFlags: 0
@@ -10880,17 +11107,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1433950157}
   m_CullTransparentMesh: 1
---- !u!114 &1441138861 stripped
+--- !u!114 &1441138865 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1231875513069768822, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4905692180298127823, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
   m_PrefabInstance: {fileID: 1395334968}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Script: {fileID: 11500000, guid: ae278f5576e6ec14dafa42732847d9c6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
+  m_EditorClassIdentifier: Assembly-CSharp::HpBarAnimator
 --- !u!1 &1441533815 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6516714566673726475, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
@@ -11754,17 +11981,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
---- !u!114 &1607335284 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4673792297968946451, guid: 076eeb649484f24438d25c4512faa185, type: 3}
-  m_PrefabInstance: {fileID: 38081480}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!224 &1612101095 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5049869108313320212, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
@@ -12090,17 +12306,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1662389804}
   m_CullTransparentMesh: 1
---- !u!114 &1667153994 stripped
+--- !u!114 &1667153997 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4673792297968946451, guid: 076eeb649484f24438d25c4512faa185, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1220383523025864978, guid: 076eeb649484f24438d25c4512faa185, type: 3}
   m_PrefabInstance: {fileID: 780931681}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Script: {fileID: 11500000, guid: ae278f5576e6ec14dafa42732847d9c6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
+  m_EditorClassIdentifier: Assembly-CSharp::HpBarAnimator
 --- !u!1 &1672601962
 GameObject:
   m_ObjectHideFlags: 0
@@ -12364,7 +12580,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9196623287724803767, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -365
+      value: -370
       objectReference: {fileID: 0}
     - target: {fileID: 9196623287724803767, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -12653,8 +12869,8 @@ Transform:
   m_GameObject: {fileID: 1695783087}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.8, z: 100}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 1.8, z: 1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1453125319}
@@ -12898,17 +13114,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
---- !u!114 &1718091591 stripped
+--- !u!114 &1718091595 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1231875513069768822, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4905692180298127823, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
   m_PrefabInstance: {fileID: 1279907803}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Script: {fileID: 11500000, guid: ae278f5576e6ec14dafa42732847d9c6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
+  m_EditorClassIdentifier: Assembly-CSharp::HpBarAnimator
 --- !u!114 &1718276425 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6201390270507030065, guid: 79100821ef085244f990f3710fca897f, type: 3}
@@ -13248,6 +13464,42 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4819711751676585024, guid: 076eeb649484f24438d25c4512faa185, type: 3}
   m_PrefabInstance: {fileID: 780931681}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1789989202
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1789989203}
+  m_Layer: 0
+  m_Name: CombatView
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1789989203
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1789989202}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1149, y: 482.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 510657039}
+  - {fileID: 118473947}
+  - {fileID: 954582675}
+  - {fileID: 1422265908}
+  - {fileID: 313713801}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1791686577
 GameObject:
   m_ObjectHideFlags: 0
@@ -13740,7 +13992,7 @@ GameObject:
   - component: {fileID: 1851459251}
   - component: {fileID: 1851459250}
   m_Layer: 5
-  m_Name: SelectBar_real
+  m_Name: selectBar_s
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13841,6 +14093,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &1864164831 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4905692180298127823, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
+  m_PrefabInstance: {fileID: 1690548264}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae278f5576e6ec14dafa42732847d9c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HpBarAnimator
 --- !u!114 &1868580069 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3863201331219042424, guid: 076eeb649484f24438d25c4512faa185, type: 3}
@@ -15869,17 +16132,17 @@ Transform:
   - {fileID: 349990386}
   m_Father: {fileID: 1064561592}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2068142386 stripped
+--- !u!114 &2068142389 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4673792297968946451, guid: 076eeb649484f24438d25c4512faa185, type: 3}
+  m_CorrespondingSourceObject: {fileID: 1220383523025864978, guid: 076eeb649484f24438d25c4512faa185, type: 3}
   m_PrefabInstance: {fileID: 7573761023556054923}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Script: {fileID: 11500000, guid: ae278f5576e6ec14dafa42732847d9c6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
+  m_EditorClassIdentifier: Assembly-CSharp::HpBarAnimator
 --- !u!114 &2073187863 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8817970950399971983, guid: 79100821ef085244f990f3710fca897f, type: 3}
@@ -16308,6 +16571,8 @@ RectTransform:
   - {fileID: 394946330}
   - {fileID: 1170803351}
   - {fileID: 2020028441}
+  - {fileID: 1031989909}
+  - {fileID: 883834225}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -16569,6 +16834,30 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5769328875677502223, guid: 076eeb649484f24438d25c4512faa185, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5769328875677502223, guid: 076eeb649484f24438d25c4512faa185, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5769328875677502223, guid: 076eeb649484f24438d25c4512faa185, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5769328875677502223, guid: 076eeb649484f24438d25c4512faa185, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5769328875677502223, guid: 076eeb649484f24438d25c4512faa185, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5769328875677502223, guid: 076eeb649484f24438d25c4512faa185, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6917533778977194824, guid: 076eeb649484f24438d25c4512faa185, type: 3}
       propertyPath: m_Name
       value: EnemySlot_0
@@ -16687,6 +16976,4 @@ SceneRoots:
   - {fileID: 1064561592}
   - {fileID: 2145186757}
   - {fileID: 2036833133}
-  - {fileID: 510657039}
-  - {fileID: 118473947}
-  - {fileID: 954582675}
+  - {fileID: 1789989203}

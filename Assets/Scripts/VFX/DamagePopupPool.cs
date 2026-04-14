@@ -38,7 +38,7 @@ public class DamagePopupPool : MonoBehaviour
             m_EffectPool.Add(popup);
         }
     }
-    public void SpawnDamage(Vector3 pos, string text, Color color, bool isNikke, float scale = 1f)
+    public void SpawnDamage(Vector3 pos, bool isNikke, string text, Color color, float scale = 1f)
     {
         Vector3 offset = isNikke ? m_NikkeDamageOffset : m_EnemyDamageOffset;
         DamagePopup popup = GetFromPool(m_DamagePool, m_DamagePrefab);

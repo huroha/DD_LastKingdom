@@ -64,26 +64,7 @@ public class PositionSystem
         }
         return;
     }
-    private CombatUnit[] GetTeamSlots(CombatUnitType team)
-    {
-        if (team == CombatUnitType.Nikke)
-            return m_NikkeSlots;
-        else
-            return m_EnemySlots;
-    }
 
-    private CombatUnit[] GetTargetSlots(CombatUnit user, TargetType targetType)
-    {
-        // 사용자의 기술타입이 Enemy가 들어있으면 true 버프기면 false가 된다
-        bool targetEnemy = targetType == TargetType.EnemySingle || targetType == TargetType.EnemyAll
-                         || targetType == TargetType.EnemyMulti;
-
-        // targetEnemy는 무조건 true 혹은 false니 그게 어떤 타입이 사용했는지만 알면됨
-        if (user.UnitType == CombatUnitType.Nikke)
-            return targetEnemy ? m_EnemySlots : m_NikkeSlots;
-        else
-            return targetEnemy ? m_NikkeSlots : m_EnemySlots;
-    }
 
 
     public void GetCorpses(CombatUnitType team, List<CombatUnit> result)
@@ -350,5 +331,24 @@ public class PositionSystem
         return true;
     }
 
+    private CombatUnit[] GetTeamSlots(CombatUnitType team)
+    {
+        if (team == CombatUnitType.Nikke)
+            return m_NikkeSlots;
+        else
+            return m_EnemySlots;
+    }
 
+    private CombatUnit[] GetTargetSlots(CombatUnit user, TargetType targetType)
+    {
+        // 사용자의 기술타입이 Enemy가 들어있으면 true 버프기면 false가 된다
+        bool targetEnemy = targetType == TargetType.EnemySingle || targetType == TargetType.EnemyAll
+                         || targetType == TargetType.EnemyMulti;
+
+        // targetEnemy는 무조건 true 혹은 false니 그게 어떤 타입이 사용했는지만 알면됨
+        if (user.UnitType == CombatUnitType.Nikke)
+            return targetEnemy ? m_EnemySlots : m_NikkeSlots;
+        else
+            return targetEnemy ? m_NikkeSlots : m_EnemySlots;
+    }
 }

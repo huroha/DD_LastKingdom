@@ -51,7 +51,7 @@ public class EnemyData : ScriptableObject
     [Header("Visuals")]
     [SerializeField] private Sprite m_Sprite;
     [SerializeField] private Sprite m_CorpseSprite;
-    [SerializeField] private Sprite m_Hitsprite;
+    [SerializeField] private Sprite m_HitSprite;
     [SerializeField] private RuntimeAnimatorController m_CombatAnimator;
     [SerializeField] private float m_ScaleOffset;
     public string EnemyName => m_EnemyName;
@@ -64,7 +64,7 @@ public class EnemyData : ScriptableObject
     public int CorpseDecayTurns => m_CorpseDecayTurns;
     public Sprite Sprite => m_Sprite;
     public Sprite CorpseSprite => m_CorpseSprite;
-    public Sprite HitSprite => m_Hitsprite;
+    public Sprite HitSprite => m_HitSprite;
     public int SlotSize => m_SlotSize;
     public int ActionsPerRound => m_ActionsPerRound;
     public RuntimeAnimatorController CombatAnimator => m_CombatAnimator;
