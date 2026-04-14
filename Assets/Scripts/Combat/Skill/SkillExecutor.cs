@@ -104,6 +104,7 @@ public class SkillExecutor
 
                 // [적용]
                 // 힐 스킬이면: target.Heal(healAmount)
+                result[i].PrevisouHp = targets[i].CurrentHp;
                 if (skill.MaxHeal > 0)
                 {
                     UnitState preHealState = targets[i].State;

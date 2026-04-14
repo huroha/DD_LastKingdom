@@ -169,6 +169,7 @@ public class CombatUnit
                         State = UnitState.Corpse;
                         CurrentHp = EnemyData.CorpseHp;
                         CorpseTimer = EnemyData.CorpseDecayTurns;
+                        ClearAllEffects();
                     }
                 }
             }
@@ -304,5 +305,10 @@ public class CombatUnit
                 return;
             }
         }
+    }
+    public void ClearAllEffects()
+    {
+        m_ActiveEffects.Clear();
+        RecalculateStats();
     }
 }

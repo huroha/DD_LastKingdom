@@ -92,6 +92,7 @@ public class CombatFocusController : MonoBehaviour
 
         foreach (CombatUnit unit in m_AllLivingBuffer)
         {
+            m_FieldView.StopPopScale(unit);
             CombatFieldView.UnitView view = m_FieldView.GetView(unit);
             CacheUnitView(unit, view);
         }
@@ -146,8 +147,18 @@ public class CombatFocusController : MonoBehaviour
         int snapCount = 0;
         CombatFieldView.UnitView[] snapViews = new CombatFieldView.UnitView[m_FocusBuffer.Count];
         Vector3[] snapScales = new Vector3[m_FocusBuffer.Count];
-        Vector3[] snapFrom = new Vector3[m_FocusBuffer.Count]; // driftedPos
-        Vector3[] snapTo = new Vector3[m_FocusBuffer.Count]; // targetPos
+        Vector3[] snapFrom = new Vector3[m_FocusBuffer.Count];
+        Vector3[] snapTo = new Vector3[m_FocusBuffer.Count];
+
+        foreach (CombatUnit unit in m_FocusBuffer)
+        {
+            snapViews[snapCount] = m_ViewCache[unit];
+            snapScales[snapCount] = m_OriginalScales[unit];
+            snapFrom[snapCount] = m_DriftedPositions[unit];
+            snapTo[snapCount] = m_OriginalPositions[unit];
+            ++snapCount;
+        }
+
         float elapsed = 0f;
         while (elapsed < m_FocusOutDuration)
         {
@@ -168,9 +179,14 @@ public class CombatFocusController : MonoBehaviour
 
         foreach (CombatUnit unit in m_FocusBuffer)
         {
-            m_ViewCache[unit].Renderer.sortingOrder = m_OriginalSortingOrders[unit];
-            m_ViewCache[unit].Renderer.gameObject.layer = m_DefaultLayer;
+            CombatFieldView.UnitView view = m_ViewCache[unit];
+            view.Renderer.transform.localScale = m_OriginalScales[unit];
+            view.Renderer.transform.position = m_OriginalPositions[unit];
+            view.Renderer.sortingOrder = m_OriginalSortingOrders[unit];
+            view.Renderer.gameObject.layer = m_DefaultLayer;
         }
+
+        m_Camera.fieldOfView = m_OriginalFOV;
         m_BlurController.SetBlurStrength(0f);
         m_CombatHUD.SetHpBarsVisible(true);
     }

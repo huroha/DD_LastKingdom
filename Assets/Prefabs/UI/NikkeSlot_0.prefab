@@ -219,10 +219,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HpBarAnimator
   m_MainSlider: {fileID: 1231875513069768822}
   m_GhostFill: {fileID: 5629344419604896404}
-  m_HoldDuration: 0.4
-  m_DrainDuration: 0.5
+  m_HoldDuration: 0.6
+  m_DrainDuration: 0.3
   m_DamageColor: {r: 1, g: 0.5833333, b: 0, a: 1}
-  m_HealColor: {r: 0, g: 1, b: 0, a: 1}
+  m_HealColor: {r: 0.37333328, g: 0.8, b: 0.16, a: 1}
 --- !u!1 &1062179194957055083
 GameObject:
   m_ObjectHideFlags: 0

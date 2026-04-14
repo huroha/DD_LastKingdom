@@ -665,10 +665,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HpBarAnimator
   m_MainSlider: {fileID: 4673792297968946451}
   m_GhostFill: {fileID: 7963931272563067099}
-  m_HoldDuration: 0.4
-  m_DrainDuration: 0.5
-  m_DamageColor: {r: 1, g: 0.5833334, b: 0, a: 0}
-  m_HealColor: {r: 0, g: 1, b: 0, a: 1}
+  m_HoldDuration: 0.6
+  m_DrainDuration: 0.3
+  m_DamageColor: {r: 1, g: 0.5833334, b: 0, a: 1}
+  m_HealColor: {r: 0.37333328, g: 0.8, b: 0.16, a: 1}
 --- !u!1 &6550915265934967372
 GameObject:
   m_ObjectHideFlags: 0

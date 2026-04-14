@@ -81,8 +81,9 @@ public class CombatHUD : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_TurnOrderText;
 
 
-
-
+    private CombatUnit[] m_CurrentEnemyBarUnits;
+    private CombatUnit[] m_CurrentLargeEnemyBarUnits;
+    private CombatUnit[] m_CurrentNikkeBarUnits;
 
     private CombatUnit m_HoveredUnit;
 
@@ -179,6 +180,7 @@ public class CombatHUD : MonoBehaviour
     {
         m_TickerDisplay.HideOneTicker(e.Unit);
         m_TurnBarDisplay.Snap(e.Unit);
+        m_FieldView.PlayPopScale(e.Unit);
     }
     private void OnUnitMoved(UnitMovedEvent e)
     {
@@ -191,6 +193,9 @@ public class CombatHUD : MonoBehaviour
         m_TickerDisplay.HideAllTickers();
         HideEnemyTargetHighlights();
         HideEnemySkillName();
+        m_CurrentEnemyBarUnits = new CombatUnit[m_EnemyHpBars.Length];
+        m_CurrentLargeEnemyBarUnits = new CombatUnit[m_LargeEnemyHpBars.Length];
+        m_CurrentNikkeBarUnits = new CombatUnit[m_NikkeHpBars.Length];
 
         for (int i = 0; i < m_NikkeStatusIcons.Length; ++i)
             m_NikkeStatusIcons[i].SetTooltip(m_CombatTooltip);
@@ -225,6 +230,7 @@ public class CombatHUD : MonoBehaviour
             m_NikkeEblaBars[i].Root.SetActive(true);
             m_NikkeNames[i].text = e.Nikkes[i].UnitName;
             InitHpBar(e.Nikkes[i]);
+            m_CurrentNikkeBarUnits[i] = e.Nikkes[i];
             int nikkeIndex = i;
             SetupTooltipTrigger(m_NikkeHpBars[i].gameObject, (sb) =>
             {
@@ -239,16 +245,19 @@ public class CombatHUD : MonoBehaviour
         for (int i = 0; i < e.Enemies.Count; ++i)
         {
             CombatUnit enemy = e.Enemies[i];
+            InitHpBar(enemy);
             if (enemy.SlotSize == 2)
             {
                 int largeIndex = enemy.SlotIndex;
                 m_LargeEnemyHpBars[largeIndex].gameObject.SetActive(true);
+                m_CurrentLargeEnemyBarUnits[enemy.SlotIndex] = enemy;
             }
             else
             {
                 m_EnemyHpBars[enemy.SlotIndex].gameObject.SetActive(true);
                 m_EnemyNames[enemy.SlotIndex].gameObject.SetActive(true);
                 m_EnemyNames[enemy.SlotIndex].text = enemy.UnitName;
+                m_CurrentEnemyBarUnits[enemy.SlotIndex] = enemy;
             }
 
             InitHpBar(enemy);
@@ -330,7 +339,7 @@ public class CombatHUD : MonoBehaviour
         {
             HpBarAnimator bar = unit.SlotSize == 2 ? m_LargeEnemyHpBars[unit.SlotIndex] : m_EnemyHpBars[unit.SlotIndex];
             if (unit.State == UnitState.Corpse)
-                bar.SetHp(unit.CurrentHp, Mathf.Max(unit.EnemyData.CorpseHp, 1));
+                bar.InitHp(unit.CurrentHp, Mathf.Max(unit.EnemyData.CorpseHp, 1));
             else
                 bar.SetHp(unit.CurrentHp, unit.MaxHp);
         }
@@ -383,8 +392,14 @@ public class CombatHUD : MonoBehaviour
             }
             else
             {
-                m_NikkeNames[i].text = unit.UnitName;
-                RefreshHpBar(unit);
+                if (m_CurrentNikkeBarUnits[i] != unit)
+                {
+                    m_CurrentNikkeBarUnits[i] = unit;
+                    m_NikkeNames[i].text = unit.UnitName;
+                    InitHpBar(unit);
+                }
+                else
+                    RefreshStatusIcons(unit);
             }
         }
     }
@@ -400,36 +415,50 @@ public class CombatHUD : MonoBehaviour
                 m_EnemyHpBars[i].gameObject.SetActive(false);
                 m_EnemyNames[i].gameObject.SetActive(false);
                 m_EnemyStatusIcons[i].Clear();
+                m_CurrentEnemyBarUnits[i] = null;
             }
             else if (unit.SlotSize == 2)
             {
                 m_EnemyHpBars[i].gameObject.SetActive(false);
                 m_EnemyNames[i].gameObject.SetActive(false);
+                m_CurrentEnemyBarUnits[i] = null;
             }
             else
             {
                 m_EnemyHpBars[i].gameObject.SetActive(true);
                 m_EnemyNames[i].gameObject.SetActive(true);
                 m_EnemyNames[i].text = unit.UnitName;
-                RefreshHpBar(unit);
+                if (m_CurrentEnemyBarUnits[i] != unit)
+                {
+                    m_CurrentEnemyBarUnits[i] = unit;
+                    InitHpBar(unit);
+                }
+                else
+                    RefreshStatusIcons(unit);
             }
         }
-        // Large HP바 갱신
+
         for (int i = 0; i < m_LargeEnemyHpBars.Length; ++i)
         {
             CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Enemy, i);
             if (unit != null && unit.SlotSize == 2 && unit.SlotIndex == i)
             {
                 m_LargeEnemyHpBars[i].gameObject.SetActive(true);
-                RefreshHpBar(unit);
+                if (m_CurrentLargeEnemyBarUnits[i] != unit)
+                {
+                    m_CurrentLargeEnemyBarUnits[i] = unit;
+                    InitHpBar(unit);
+                }
+                else
+                    RefreshStatusIcons(unit);
             }
             else
             {
                 m_LargeEnemyHpBars[i].gameObject.SetActive(false);
                 m_LargeEnemyStatusIcons[i].Clear();
+                m_CurrentLargeEnemyBarUnits[i] = null;
             }
         }
-
     }
 
     private void UpdateEblaBar(int index, int ebla)
@@ -594,5 +623,37 @@ public class CombatHUD : MonoBehaviour
             m_LargeEnemySlotRoots[i].position = m_OriginalLargeEnemySlotPositions[i];
         m_TurnBarDisplay.Refresh();
     }
+    public void PrepareHpGhost(CombatUnit unit, int previousHp)
+    {
+        if (unit.State == UnitState.Dead)   // Corpse 조건 제거
+            return;
+        HpBarAnimator bar = GetHpBarAnimator(unit);
+        if (bar == null)
+            return;
+        int maxHp = unit.State == UnitState.Corpse ? Mathf.Max(unit.EnemyData.CorpseHp, 1) : unit.MaxHp;
+        bar.PrepareGhost(previousHp , unit.CurrentHp, maxHp);
+    }
 
+    public void StartHpGhostDrain(CombatUnit unit)
+    {
+        HpBarAnimator bar = GetHpBarAnimator(unit);
+        if (bar == null)
+            return;
+        if (!bar.gameObject.activeSelf)
+            bar.gameObject.SetActive(true);
+        bar.StartGhostDrain();
+    }
+
+    private HpBarAnimator GetHpBarAnimator(CombatUnit unit)
+    {
+        if (unit.UnitType == CombatUnitType.Nikke)
+            return m_NikkeHpBars[unit.SlotIndex];
+        return unit.SlotSize == 2
+            ? m_LargeEnemyHpBars[unit.SlotIndex]
+            : m_EnemyHpBars[unit.SlotIndex];
+    }
+    public void SnapNikkeHpBarsToSlots()
+    {
+        RefreshNikkeSlots();
+    }
 }

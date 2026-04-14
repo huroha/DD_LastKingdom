@@ -27,7 +27,7 @@ MonoBehaviour:
     defense: 25
     dodge: 10
     deathBlowResist: 67
-    speed: 5
+    speed: 11
     moveRange: 2
     resistance:
       stun: 40

@@ -17,6 +17,7 @@ public struct TargetResult
     public int HealAmount;
     public int EblaDamageDealt;
     public int EblaHealAmount;
+    public int PrevisouHp;
     public UnitState ResultState;
     public StatusEffectData[] AppliedEffects;
     public StatusEffectData[] ResistedEffects;

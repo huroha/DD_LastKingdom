@@ -120,10 +120,26 @@ public class CombatDirector : MonoBehaviour
         if (userView.AnimBridge != null)
             userView.AnimBridge.ClearCallbacks();
 
+        // ghostbar 준비
+        for (int i = 0; i < result.TargetResults.Length; ++i)
+        {
+            TargetResult tr = result.TargetResults[i];
+            if (tr.PreviousState != UnitState.Corpse && tr.Target.State == UnitState.Corpse)
+                continue;   // alive -> corpse만 불통
+            m_CombatHUD.PrepareHpGhost(tr.Target,tr.PrevisouHp);
+        }
+
         // FocusOut
         yield return m_FocusController.FocusOut();
         m_FieldView.SetFocusLock(false);
         m_FieldView.MoveAllToCurrentSlots();
+
+        // bar 등장 직후 적용
+        if (result.TargetResults != null)
+        {
+            for (int i = 0; i < result.TargetResults.Length; ++i)
+                m_CombatHUD.StartHpGhostDrain(result.TargetResults[i].Target);
+        }
 
         // 상태이상 팝업
         if (result.TargetResults != null)

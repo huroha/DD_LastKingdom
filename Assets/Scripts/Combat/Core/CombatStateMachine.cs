@@ -39,7 +39,9 @@ public class CombatStateMachine : MonoBehaviour
     [Header("Status Effects")]
     [SerializeField] private StatusEffectData m_StunResistBuff;
 
-
+    [Header("Turn")]
+    [SerializeField] private float m_BetweenTurnDelay = 0.3f;
+    private WaitForSeconds m_WaitBetweenTurn;
 
 
     // 패널티 에블라 수치
@@ -95,6 +97,11 @@ public class CombatStateMachine : MonoBehaviour
         {
             StartTestBattle();
         }
+    }
+
+    private void Awake()
+    {
+        m_WaitBetweenTurn = new WaitForSeconds(m_BetweenTurnDelay);
     }
 
     // 이벤트 구독
@@ -209,7 +216,7 @@ public class CombatStateMachine : MonoBehaviour
                 SetState(CombatState.TurnEnd);
                 m_StatusEffectManager.ProcessTurnEnd(m_ActiveUnit);
                 m_TurnManager.EndCurrentTurn();
-                yield return null;
+                yield return m_WaitBetweenTurn;
                 continue;
             }
 
@@ -220,7 +227,7 @@ public class CombatStateMachine : MonoBehaviour
                 SetState(CombatState.TurnEnd);
                 m_StatusEffectManager.ProcessTurnEnd(m_ActiveUnit);
                 m_TurnManager.EndCurrentTurn();
-                yield return null;
+                yield return m_WaitBetweenTurn;
                 continue;
             }
 
@@ -234,7 +241,7 @@ public class CombatStateMachine : MonoBehaviour
             m_StatusEffectManager.ProcessTurnEnd(m_ActiveUnit);
             SetState(CombatState.TurnEnd);
             m_TurnManager.EndCurrentTurn();
-            yield return null;
+            yield return m_WaitBetweenTurn;
 
             // 이동 애니메이션 완료 대기
             if (m_FieldView != null)
@@ -333,6 +340,8 @@ public class CombatStateMachine : MonoBehaviour
         {
             SetState(CombatState.ExecuteSkill);
             SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, m_SelectedSkill, m_SelectedTarget);
+            if (m_CombatHUD != null)
+                m_CombatHUD.SnapNikkeHpBarsToSlots();
             List<CombatUnit> targets = ExtractTargets(result);
             yield return m_CombatDirector.PlaySkillSequence(m_ActiveUnit, m_SelectedSkill, targets, result);
             EventBus.Publish(new SkillExecutedEvent(result));
@@ -357,6 +366,8 @@ public class CombatStateMachine : MonoBehaviour
 
             SetState(CombatState.ExecuteSkill);
             SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, action.Skill, action.Target);
+            if (m_CombatHUD != null)
+                m_CombatHUD.SnapNikkeHpBarsToSlots();
             List<CombatUnit> targets = ExtractTargets(result);
             yield return m_CombatDirector.PlaySkillSequence(m_ActiveUnit, action.Skill, targets, result);
             EventBus.Publish(new SkillExecutedEvent(result));

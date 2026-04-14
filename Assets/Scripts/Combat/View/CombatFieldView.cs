@@ -12,6 +12,11 @@ public class CombatFieldView : MonoBehaviour
 
     [SerializeField] private CombatHUD m_CombatHUD;
 
+    [SerializeField] private float m_PopScale = 1.1f;
+    [SerializeField] private float m_PopDuration = 0.2f;
+    private Dictionary<CombatUnit, Coroutine> m_PopCoroutine;
+    private Dictionary<CombatUnit, Vector3> m_PopOriginalScales;
+
     // CombatUnit -> 해당 유닛의 SpriteRenderer 맵핑
     private Dictionary<CombatUnit, UnitView> m_UnitViews;
     // 중복 코루틴 방지용
@@ -32,6 +37,11 @@ public class CombatFieldView : MonoBehaviour
         public UnitAnimBridge AnimBridge;
     }
 
+    private void Awake()
+    {
+        m_PopCoroutine = new Dictionary<CombatUnit, Coroutine>();
+        m_PopOriginalScales = new Dictionary<CombatUnit, Vector3>();
+    }
 
     private void OnEnable()
     {
@@ -104,8 +114,16 @@ public class CombatFieldView : MonoBehaviour
         // 적이고 시체 스프라이트가 있으면 교체, 없으면 제거?
         if(e.Unit.UnitType == CombatUnitType.Enemy && e.Unit.EnemyData.CorpseSprite != null)
         {
-            view.Renderer.sprite = e.Unit.EnemyData.CorpseSprite;
-            m_CorpseViews[e.Unit] = view.Renderer;
+            if (e.Unit.State == UnitState.Corpse && e.Unit.UnitType == CombatUnitType.Enemy && e.Unit.EnemyData.CorpseSprite != null)
+            {
+                view.Renderer.sprite = e.Unit.EnemyData.CorpseSprite;
+                m_CorpseViews[e.Unit] = view.Renderer;
+            }
+            else
+            {
+                Destroy(view.Renderer.gameObject);
+                MoveAllToCurrentSlots();
+            }
         }
         else
         {
@@ -250,5 +268,49 @@ public class CombatFieldView : MonoBehaviour
     public void SetFocusLock(bool locked)
     {
         m_FocusLocked = locked;
+    }
+    public void PlayPopScale(CombatUnit unit)
+    {
+        if (!m_UnitViews.TryGetValue(unit, out UnitView view))
+            return;
+        StopPopScale(unit);
+        Vector3 originalScale = view.Renderer.transform.localScale;
+        m_PopOriginalScales[unit] = originalScale;
+        m_PopCoroutine[unit] = StartCoroutine(PopRoutine(unit, view.Renderer, originalScale));
+    }
+
+    public void StopPopScale(CombatUnit unit)
+    {
+        if (!m_PopCoroutine.ContainsKey(unit))
+            return;
+        StopCoroutine(m_PopCoroutine[unit]);
+        m_PopCoroutine.Remove(unit);
+        if(m_UnitViews.TryGetValue(unit, out UnitView view) && m_PopOriginalScales.ContainsKey(unit))
+            view.Renderer.transform.localScale = m_PopOriginalScales[unit];
+        m_PopOriginalScales.Remove(unit);
+    }
+
+    private IEnumerator PopRoutine(CombatUnit unit, SpriteRenderer renderer, Vector3 originalScale)
+    {
+        Vector3 peakScale = originalScale * m_PopScale;
+        float half = m_PopDuration * 0.5f;
+        float elapsed = 0f;
+        while(elapsed < half)
+        {
+            elapsed += Time.deltaTime;
+            renderer.transform.localScale = Vector3.Lerp(originalScale, peakScale, elapsed / half);
+            yield return null;
+        }
+        elapsed = 0f;
+        while (elapsed < half)
+        {
+            elapsed += Time.deltaTime;
+            renderer.transform.localScale = Vector3.Lerp(peakScale, originalScale, elapsed / half);
+            yield return null;
+        }
+
+        renderer.transform.localScale = originalScale;
+        m_PopCoroutine.Remove(unit);
+        m_PopOriginalScales.Remove(unit);
     }
 }
