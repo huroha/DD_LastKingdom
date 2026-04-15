@@ -21,6 +21,7 @@ public class CombatDirector : MonoBehaviour
     [SerializeField] private float m_HitDuration = 0.15f;
 
 
+
     // 색상 상수
     private static readonly Color COLOR_DAMAGE_RED = new Color(0.75f, 0.07f, 0.07f);
     private static readonly Color COLOR_CRIT = new Color(0.9f, 0.53f, 0.1f);
@@ -124,6 +125,8 @@ public class CombatDirector : MonoBehaviour
         for (int i = 0; i < result.TargetResults.Length; ++i)
         {
             TargetResult tr = result.TargetResults[i];
+            if (!tr.IsHit)
+                continue;
             if (tr.PreviousState != UnitState.Corpse && tr.Target.State == UnitState.Corpse)
                 continue;   // alive -> corpse만 불통
             m_CombatHUD.PrepareHpGhost(tr.Target,tr.PreviousHp);
@@ -138,7 +141,11 @@ public class CombatDirector : MonoBehaviour
         if (result.TargetResults != null)
         {
             for (int i = 0; i < result.TargetResults.Length; ++i)
+            {
+                if (!result.TargetResults[i].IsHit)
+                    continue;
                 m_CombatHUD.StartHpGhostDrain(result.TargetResults[i].Target);
+            }
         }
 
         // 상태이상 팝업
@@ -153,6 +160,8 @@ public class CombatDirector : MonoBehaviour
                 {
                     for (int j = 0; j < tr.AppliedEffects.Length; ++j)
                     {
+                        if (tr.AppliedEffects[j].EffectType == StatusEffectType.Stun)
+                            m_CombatHUD.ShowStunHalo(tr.Target);
                         m_PopupPool.SpawnEffect(pos, isNikke, tr.AppliedEffects[j].EffectName,
                                                 GetEffectColor(tr.AppliedEffects[j].EffectType));
                         yield return m_WaitStatusPopup;
@@ -168,6 +177,7 @@ public class CombatDirector : MonoBehaviour
                 }
                 if (tr.PreviousState == UnitState.Alive && tr.ResultState == UnitState.DeathsDoor)
                 {
+                    m_CombatHUD.PopupDeathsDoorHalo(tr.Target);
                     m_PopupPool.SpawnEffect(pos, isNikke, POPUP_DEATHS_DOOR, COLOR_DEATHDOOR);
                     yield return m_WaitStatusPopup;
                 }

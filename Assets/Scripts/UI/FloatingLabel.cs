@@ -18,7 +18,7 @@ public class FloatingLabel : MonoBehaviour
         m_RectTransform = GetComponent<RectTransform>();
         gameObject.SetActive(false);
     }
-    public void Show(string text, RectTransform anchor)
+    public Coroutine Show(string text, RectTransform anchor)
     {
         m_Text.text = text;
         m_RectTransform.position = anchor.position + new Vector3(m_Offset.x, m_Offset.y, 0f);
@@ -27,6 +27,7 @@ public class FloatingLabel : MonoBehaviour
         if (m_FloatRoutine != null)
             StopCoroutine(m_FloatRoutine);
         m_FloatRoutine = StartCoroutine(FloatUp());
+        return m_FloatRoutine;
     }
 
     public void Hide()

@@ -16,8 +16,8 @@ public class SkillExecutor
     private StatusEffectData m_DeathsDoorDebuff;
     private StatusEffectData m_DeathsDoorRecovery;
 
-    private const int CRIT_EBLA_TO_ENEMY = 15;
-    private const int CRIT_EBLA_PARTY_HEAL = -5;
+    private const int CRIT_EBLA_TO_ENEMY = 5;
+    private const int CRIT_EBLA_PARTY_HEAL = -3;
     private const float CRIT_DAMAGE_MULTI = 1.5f;
 
     // 리스트 버퍼들
@@ -47,7 +47,7 @@ public class SkillExecutor
         // 각성 스킬이면 flase
         if (skill.RequiredState == SkillRequiredState.Awakened)
             return false;
-        m_PositionSystem.GetValidTargets(user, skill,m_TargetsBuffer);
+        m_PositionSystem.GetValidTargets(user, skill, m_TargetsBuffer);
         if (m_TargetsBuffer.Count == 0)
             return false;
 
@@ -272,7 +272,16 @@ public class SkillExecutor
                 if (effect.EffectType.IsDot())
                 {
                     int duration = isCrit ? Mathf.CeilToInt(effect.Duration * 1.5f) : effect.Duration;
-                    target.AddEffect(new ActiveStatusEffect(effect, duration));
+                    ActiveStatusEffect existingDot = target.FindEffectByType(effect.EffectType);
+                    if (existingDot != null)
+                    {
+                        existingDot.AccumulatedTickDamage += effect.TickDamage;
+                        existingDot.RemainingTurns = Mathf.Max(existingDot.RemainingTurns, duration);
+                    }
+                    else
+                    {
+                        target.AddEffect(new ActiveStatusEffect(effect, duration));
+                    }
                 }
                 else
                 {
@@ -338,7 +347,7 @@ public class SkillExecutor
             {
                 m_EblaSystem.ModifyEbla(target, CRIT_EBLA_TO_ENEMY);
                 for (int i = 0; i < allNikkes.Count; ++i)
-                    m_EblaSystem.ModifyEbla(allNikkes[i], 5);
+                    m_EblaSystem.ModifyEbla(allNikkes[i], 3);
             }
         }
 

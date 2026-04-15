@@ -35,12 +35,12 @@ public class StatusEffectManager
                 continue;
 
             UnitState previousState = unit.State;
-            UnitState resultState = unit.TakeDamage(effect.Data.TickDamage, isDot: true);
+            UnitState resultState = unit.TakeDamage(effect.AccumulatedTickDamage, isDot: true);
 
             DotTickResult result;
             result.Unit = unit;
             result.Effect = effect.Data;
-            result.Damage = effect.Data.TickDamage;
+            result.Damage = effect.AccumulatedTickDamage;
             result.PreviousState = previousState;
             result.ResultState = resultState;
             m_DotResultsBuffer.Add(result);

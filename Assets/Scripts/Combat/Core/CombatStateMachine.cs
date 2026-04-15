@@ -56,6 +56,9 @@ public class CombatStateMachine : MonoBehaviour
     private EblaSystem m_EblaSystem;
     private StatusEffectManager m_StatusEffectManager;
 
+    // halo 관련
+    private int m_EblaSnapshotCount;
+    private WaitForSeconds m_WaitEblaHalo;
     // FSM 상태
     private CombatState m_CurrentState;
     private CombatUnit m_ActiveUnit;
@@ -70,6 +73,9 @@ public class CombatStateMachine : MonoBehaviour
 
     // 리스트 버퍼들
     private List<CombatUnit> m_UnitBuffer = new List<CombatUnit>();
+    private int[] m_EblaSnapshot = new int[4];
+    private CombatUnit[] m_EblaSnapshotUnits = new CombatUnit[4];
+    [SerializeField] private float m_EblaHaloWaitDuration = 1.3f;
     private List<CombatUnit> m_CorpseBuffer = new List<CombatUnit>();
     private List<CombatUnit> m_ValidTargetBuffer = new List<CombatUnit>();
     private List<CombatUnit> m_MoveTargetBuffer = new List<CombatUnit>();
@@ -102,6 +108,7 @@ public class CombatStateMachine : MonoBehaviour
     private void Awake()
     {
         m_WaitBetweenTurn = new WaitForSeconds(m_BetweenTurnDelay);
+        m_WaitEblaHalo = new WaitForSeconds(m_EblaHaloWaitDuration);
     }
 
     // 이벤트 구독
@@ -308,12 +315,14 @@ public class CombatStateMachine : MonoBehaviour
             // 패스 선택 시
             if (m_SelectedSkill == null)
             {
-                m_CombatHUD.ShowPassLabel(m_ActiveUnit);
+                yield return m_CombatHUD.ShowPassLabel(m_ActiveUnit);
+                SnapshotNikkeEbla();
                 if (m_EblaSystem.ModifyEbla(m_ActiveUnit, PASS_EBLA_PENALTY))
                 {
                     m_PositionSystem.RemoveUnit(m_ActiveUnit);
                     EventBus.Publish(new UnitDiedEvent(m_ActiveUnit));
                 }
+                yield return StartCoroutine(FlushEblaHalos());
                 turnHandled = true;
                 continue;
             }
@@ -339,11 +348,13 @@ public class CombatStateMachine : MonoBehaviour
         if (m_SelectedSkill != null)
         {
             SetState(CombatState.ExecuteSkill);
+            SnapshotNikkeEbla();
             SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, m_SelectedSkill, m_SelectedTarget);
             if (m_CombatHUD != null)
                 m_CombatHUD.SnapNikkeHpBarsToSlots();
             List<CombatUnit> targets = ExtractTargets(result);
             yield return m_CombatDirector.PlaySkillSequence(m_ActiveUnit, m_SelectedSkill, targets, result);
+            yield return StartCoroutine(FlushEblaHalos());
             EventBus.Publish(new SkillExecutedEvent(result));
             ProcessDeadUnits(result);
         }
@@ -365,11 +376,13 @@ public class CombatStateMachine : MonoBehaviour
             }
 
             SetState(CombatState.ExecuteSkill);
+            SnapshotNikkeEbla();
             SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, action.Skill, action.Target);
             if (m_CombatHUD != null)
                 m_CombatHUD.SnapNikkeHpBarsToSlots();
             List<CombatUnit> targets = ExtractTargets(result);
             yield return m_CombatDirector.PlaySkillSequence(m_ActiveUnit, action.Skill, targets, result);
+            yield return StartCoroutine(FlushEblaHalos());
             EventBus.Publish(new SkillExecutedEvent(result));
             ProcessDeadUnits(result);
         }
@@ -437,7 +450,7 @@ public class CombatStateMachine : MonoBehaviour
         m_PositionSystem.GetAllUnits(CombatUnitType.Nikke, m_UnitBuffer);
         for (int i = m_UnitBuffer.Count - 1; i >= 0; --i)                            //RemoveUnit 호출 시 리스트가 변경되므로 뒤에서부터 순회해야 안전
         {
-            if (m_EblaSystem.ModifyEbla(m_UnitBuffer[i], ALLY_DEATH_EBLA))
+            if (m_EblaSystem.ModifyEbla(m_UnitBuffer[i], amount))
             {
                 m_PositionSystem.RemoveUnit(m_UnitBuffer[i]);
                 EventBus.Publish(new UnitDiedEvent(m_UnitBuffer[i]));
@@ -567,5 +580,32 @@ public class CombatStateMachine : MonoBehaviour
         return m_TargetExtractBuffer;
     }
 
+    private void SnapshotNikkeEbla()
+    {
+        m_PositionSystem.GetAllUnits(CombatUnitType.Nikke, m_UnitBuffer);
+        for (int i = 0; i < m_UnitBuffer.Count; ++i)
+        {
+            m_EblaSnapshotUnits[i] = m_UnitBuffer[i];
+            m_EblaSnapshot[i] = m_UnitBuffer[i].Ebla;
+        }
+        m_EblaSnapshotCount = m_UnitBuffer.Count;
+    }
+
+    private IEnumerator FlushEblaHalos()
+    {
+        bool anyChanged = false;
+        int count = Mathf.Min(m_EblaSnapshot.Length, m_EblaSnapshotCount);
+        for (int i = 0; i < count; ++i)
+        {
+            CombatUnit unit = m_EblaSnapshotUnits[i];
+            if (!unit.IsAlive) continue;
+            int delta = unit.Ebla - m_EblaSnapshot[i];
+            if (delta == 0) continue;
+            anyChanged = true;
+            m_CombatHUD.PopupEblaHalo(unit, delta);
+        }
+        if (anyChanged)
+            yield return m_WaitEblaHalo;
+    }
 
 }

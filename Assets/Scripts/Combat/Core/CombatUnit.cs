@@ -311,5 +311,13 @@ public class CombatUnit
         m_ActiveEffects.Clear();
         RecalculateStats();
     }
-
+    public ActiveStatusEffect FindEffectByType(StatusEffectType type)
+    {
+        for(int i=0; i < m_ActiveEffects.Count; ++i)
+        {
+            if (m_ActiveEffects[i].Data.EffectType == type)
+                return m_ActiveEffects[i];
+        }
+        return null;
+    }
 }

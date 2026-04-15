@@ -96,3 +96,4 @@ public struct PermanentDeathEvent
     public CombatUnit Unit;
     public PermanentDeathEvent(CombatUnit unit) { Unit = unit; }
 }
+

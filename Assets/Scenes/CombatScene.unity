@@ -778,7 +778,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 222873745}
+  m_Father: {fileID: 687137410}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1160,7 +1160,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 222873745}
+  m_Father: {fileID: 687137410}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1436,6 +1436,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &166364003 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3514291213880262653, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
+  m_PrefabInstance: {fileID: 1395334968}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf52e2b2c49ac2042b784b9d5bcb0b77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitHaloDisplay
 --- !u!1001 &181062190
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1658,17 +1669,13 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2139635618}
+  - {fileID: 687137410}
   - {fileID: 1046093009}
   - {fileID: 2091543040}
   - {fileID: 591206326}
-  - {fileID: 108444410}
   - {fileID: 1824672793}
-  - {fileID: 1752516835}
   - {fileID: 421055008}
-  - {fileID: 53791554}
-  - {fileID: 2060847193}
-  - {fileID: 590981768}
+  - {fileID: 2139635618}
   m_Father: {fileID: 1192003310}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -2903,6 +2910,20 @@ MonoBehaviour:
   m_NikkeHpBarRoot: {fileID: 1409718596}
   m_EnemyHpBarRoot: {fileID: 1101408381}
   m_SelectBar: {fileID: 97428158}
+  m_NikkeHalos:
+  - {fileID: 1373273203}
+  - {fileID: 794668197}
+  - {fileID: 933467635}
+  - {fileID: 166364003}
+  m_EnemyHalos:
+  - {fileID: 1490396490}
+  - {fileID: 1932107845}
+  - {fileID: 1299837799}
+  - {fileID: 2032252971}
+  m_LargeEnemyHalos:
+  - {fileID: 1237172005}
+  - {fileID: 1346091820}
+  - {fileID: 797888783}
   m_NikkeHpBars:
   - {fileID: 1390893362}
   - {fileID: 1864164831}
@@ -3907,6 +3928,7 @@ MonoBehaviour:
   m_DeathsDoorRecovery: {fileID: 11400000, guid: d405d3cc03d0a0d489614a8ddcdee426, type: 2}
   m_StunResistBuff: {fileID: 11400000, guid: 55d6a4c0cc9e2474185220726b3d473a, type: 2}
   m_BetweenTurnDelay: 0.3
+  m_EblaHaloWaitDuration: 1.1
 --- !u!4 &442149359
 Transform:
   m_ObjectHideFlags: 0
@@ -4224,6 +4246,8 @@ MonoBehaviour:
   m_StatusPopupDelay: 0.5
   m_PostSequenceDelay: 0.5
   m_HitDuration: 1.2
+  m_EblaUpColor: {r: 0.6886792, g: 0.6886792, b: 0.6886792, a: 1}
+  m_EblaDownColor: {r: 0.49056602, g: 0.49056602, b: 0.49056602, a: 1}
 --- !u!4 &510657039
 Transform:
   m_ObjectHideFlags: 0
@@ -4623,7 +4647,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 222873745}
+  m_Father: {fileID: 687137410}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -5471,6 +5495,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae278f5576e6ec14dafa42732847d9c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HpBarAnimator
+--- !u!1 &687137409
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 687137410}
+  m_Layer: 5
+  m_Name: AliveOnly
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &687137410
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 687137409}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 108444410}
+  - {fileID: 53791554}
+  - {fileID: 2060847193}
+  - {fileID: 590981768}
+  - {fileID: 1752516835}
+  - {fileID: 1711407567}
+  m_Father: {fileID: 222873745}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &691535972 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1635598621840512514, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
@@ -5533,7 +5598,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -6129,6 +6194,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 781502874}
   m_CullTransparentMesh: 1
+--- !u!114 &794668197 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3514291213880262653, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
+  m_PrefabInstance: {fileID: 1690548264}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf52e2b2c49ac2042b784b9d5bcb0b77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitHaloDisplay
 --- !u!1 &795046480
 GameObject:
   m_ObjectHideFlags: 0
@@ -6170,6 +6246,17 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &797888783 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6410444468105523661, guid: 79100821ef085244f990f3710fca897f, type: 3}
+  m_PrefabInstance: {fileID: 669856106}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eca1cad9e1c4f6d49a4c75a8d51a0d44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHaloDisplay
 --- !u!114 &813279506 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5804314131743379113, guid: 076eeb649484f24438d25c4512faa185, type: 3}
@@ -6860,6 +6947,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoundAnimEvent
   m_CombatHUD: {fileID: 335391953}
+--- !u!114 &933467635 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3514291213880262653, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
+  m_PrefabInstance: {fileID: 1279907803}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf52e2b2c49ac2042b784b9d5bcb0b77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitHaloDisplay
 --- !u!114 &936690215 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2535179017121868539, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
@@ -8600,7 +8698,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -9207,6 +9305,7 @@ MonoBehaviour:
   m_DodgeText: {fileID: 421055009}
   m_ResistanceText: {fileID: 53791555}
   m_SkillListText: {fileID: 590981769}
+  m_AliveOnly: {fileID: 687137409}
   m_PreviewRoot: {fileID: 1161200963}
   m_HitChanceText: {fileID: 1212833697}
   m_CritChanceText: {fileID: 1957335291}
@@ -9443,6 +9542,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2447b184501a1e42aec87fc8d205c68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StatusEffectIconDisplay
+--- !u!114 &1237172005 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6410444468105523661, guid: 79100821ef085244f990f3710fca897f, type: 3}
+  m_PrefabInstance: {fileID: 255785656}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eca1cad9e1c4f6d49a4c75a8d51a0d44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHaloDisplay
 --- !u!1 &1256719042
 GameObject:
   m_ObjectHideFlags: 0
@@ -9895,6 +10005,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2447b184501a1e42aec87fc8d205c68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StatusEffectIconDisplay
+--- !u!114 &1299837799 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3647205747799054904, guid: 076eeb649484f24438d25c4512faa185, type: 3}
+  m_PrefabInstance: {fileID: 780931681}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eca1cad9e1c4f6d49a4c75a8d51a0d44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHaloDisplay
 --- !u!1 &1310674352
 GameObject:
   m_ObjectHideFlags: 0
@@ -10038,6 +10159,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &1346091820 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6410444468105523661, guid: 79100821ef085244f990f3710fca897f, type: 3}
+  m_PrefabInstance: {fileID: 181062190}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eca1cad9e1c4f6d49a4c75a8d51a0d44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHaloDisplay
 --- !u!1 &1358835240
 GameObject:
   m_ObjectHideFlags: 0
@@ -10075,6 +10207,17 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1373273203 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3514291213880262653, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
+  m_PrefabInstance: {fileID: 6289146074251616035}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf52e2b2c49ac2042b784b9d5bcb0b77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitHaloDisplay
 --- !u!114 &1376752205 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1242201755373699292, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
@@ -10148,7 +10291,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -10544,7 +10687,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -11255,6 +11398,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &1490396490 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3647205747799054904, guid: 076eeb649484f24438d25c4512faa185, type: 3}
+  m_PrefabInstance: {fileID: 7573761023556054923}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eca1cad9e1c4f6d49a4c75a8d51a0d44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHaloDisplay
 --- !u!114 &1498846703 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2594747449975607259, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
@@ -12919,7 +13073,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2139635618}
+  m_Father: {fileID: 687137410}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -13348,7 +13502,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 222873745}
+  m_Father: {fileID: 687137410}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -14518,6 +14672,17 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1932107845 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3647205747799054904, guid: 076eeb649484f24438d25c4512faa185, type: 3}
+  m_PrefabInstance: {fileID: 13662279}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eca1cad9e1c4f6d49a4c75a8d51a0d44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHaloDisplay
 --- !u!1 &1936659827
 GameObject:
   m_ObjectHideFlags: 0
@@ -15808,6 +15973,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &2032252971 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3647205747799054904, guid: 076eeb649484f24438d25c4512faa185, type: 3}
+  m_PrefabInstance: {fileID: 38081480}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eca1cad9e1c4f6d49a4c75a8d51a0d44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHaloDisplay
 --- !u!1 &2036833130
 GameObject:
   m_ObjectHideFlags: 0
@@ -15993,7 +16169,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1904079206}
-  m_Father: {fileID: 222873745}
+  m_Father: {fileID: 687137410}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -16450,7 +16626,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2139635617}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -16459,7 +16635,6 @@ RectTransform:
   - {fileID: 294506122}
   - {fileID: 1692362616}
   - {fileID: 259421378}
-  - {fileID: 1711407567}
   - {fileID: 567301203}
   m_Father: {fileID: 222873745}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

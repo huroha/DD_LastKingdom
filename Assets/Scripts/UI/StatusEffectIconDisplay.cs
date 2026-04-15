@@ -27,18 +27,22 @@ public class StatusEffectIconDisplay : MonoBehaviour
 
     public void Refresh(IReadOnlyList<ActiveStatusEffect> activeEffect)
     {
-        for(int i=0; i<m_IconPool.Count; ++i)
+        for (int i = 0; i < m_IconPool.Count; ++i)
             m_IconPool[i].gameObject.SetActive(false);
 
         if (activeEffect == null || activeEffect.Count == 0)
             return;
-        int displayCount = Mathf.Min(activeEffect.Count, m_MaxDisplayCount);
-        Image image = null;
-        for (int i=0; i< displayCount; ++i)
+
+        int displayIndex = 0;
+        for (int i = 0; i < activeEffect.Count && displayIndex < m_MaxDisplayCount; ++i)
         {
-            if(i < m_IconPool.Count)
+            if (activeEffect[i].Data.EffectType == StatusEffectType.Stun)
+                continue;
+
+            Image image;
+            if (displayIndex < m_IconPool.Count)
             {
-                image = m_IconPool[i];
+                image = m_IconPool[displayIndex];
             }
             else
             {
@@ -48,14 +52,19 @@ public class StatusEffectIconDisplay : MonoBehaviour
                 TooltipTrigger newTrigger = obj.AddComponent<TooltipTrigger>();
                 m_TriggerPool.Add(newTrigger);
             }
+
             if (activeEffect[i].Data == null || activeEffect[i].Data.Icon == null)
+            {
+                ++displayIndex;
                 continue;
-            // TooltipTrigger 초기화
-            TooltipTrigger trigger = m_TriggerPool[i];
-            ActiveStatusEffect effect = activeEffect[i];  // 클로저용 로컬 변수
+            }
+
+            TooltipTrigger trigger = m_TriggerPool[displayIndex];
+            ActiveStatusEffect effect = activeEffect[i];
             trigger.Initialize(m_Tooltip, (sb) => BuildEffectTooltip(sb, effect), new Vector2(0, -25));
             image.sprite = activeEffect[i].Data.Icon;
             image.gameObject.SetActive(true);
+            ++displayIndex;
         }
     }
     public void Clear()
@@ -77,7 +86,7 @@ public class StatusEffectIconDisplay : MonoBehaviour
         if (effect.Data.TickDamage > 0)
         {
             sb.Append(TooltipHelper.TAG_DEBUFF_OPEN);
-            sb.Append(effect.Data.TickDamage);
+            sb.Append(effect.AccumulatedTickDamage);
             sb.Append(" 피해 (");
             sb.Append(turns);
             sb.Append("차례)");
