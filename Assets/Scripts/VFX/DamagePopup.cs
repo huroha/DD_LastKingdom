@@ -18,10 +18,7 @@ public class DamagePopup : MonoBehaviour
         transform.localScale = Vector3.one * scale;
         gameObject.SetActive(true);
 
-        if(m_FloatRoutine != null )
-            StopCoroutine(m_FloatRoutine);
-        
-        m_FloatRoutine = StartCoroutine(FloatUp());
+        CoroutineHelper.Restart(this, ref m_FloatRoutine, FloatUp());
     }   
     
     private IEnumerator FloatUp()

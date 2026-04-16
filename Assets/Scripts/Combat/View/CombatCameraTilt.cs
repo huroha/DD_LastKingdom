@@ -25,16 +25,12 @@ public class CombatCameraTilt : MonoBehaviour
     {
         if(e.Unit.UnitType == CombatUnitType.Enemy && m_IsTilted == false)
         {
-            if(m_TiltCoroutine != null)
-                StopCoroutine(m_TiltCoroutine);
-            m_TiltCoroutine = StartCoroutine(LerpTilt(m_CurrentTiltY, m_TiltAngle));
+            CoroutineHelper.Restart(this, ref m_TiltCoroutine, LerpTilt(m_CurrentTiltY, m_TiltAngle));
             m_IsTilted = true;
         }
         else if(e.Unit.UnitType == CombatUnitType.Nikke && m_IsTilted)
         {
-            if (m_TiltCoroutine != null)
-                StopCoroutine(m_TiltCoroutine);
-            m_TiltCoroutine = StartCoroutine(LerpTilt(m_CurrentTiltY, 0f));
+            CoroutineHelper.Restart(this, ref m_TiltCoroutine, LerpTilt(m_CurrentTiltY, 0f));
             m_IsTilted = false;
         }
     }

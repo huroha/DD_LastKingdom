@@ -24,9 +24,18 @@ public class CombatFocusController : MonoBehaviour
     [SerializeField] private float m_BlurStrength;
     [SerializeField] private int m_FocusSortingOrder;
 
+    [Header("BG Tilt")]
+    [SerializeField] private Transform m_BgTransform;
+    [SerializeField] private float m_BgTiltAngle;
+    [SerializeField] private float m_BgTiltDuration;
+
     [Header("References")]
     [SerializeField] private CombatFieldView m_FieldView;
     [SerializeField] private CombatHUD m_CombatHUD;
+
+    // BG Tilt
+    private Coroutine m_BgTiltCoroutine;
+    private float m_CurrentBgTiltZ;
 
     // Focus 캐시 (Drift에서도 접근 필요)
     private Dictionary<CombatUnit, Vector3> m_OriginalScales;
@@ -136,10 +145,14 @@ public class CombatFocusController : MonoBehaviour
         m_OriginalFOV = m_Camera.fieldOfView;
         m_Camera.fieldOfView = m_FocusFOV;
 
+        StartBgTilt(m_FocusUser.UnitType);
+
         yield break;
     }
     public IEnumerator FocusOut()
     {
+        StopBgTilt();
+
         m_DriftedPositions.Clear();
         foreach (CombatUnit unit in m_FocusBuffer)
             m_DriftedPositions[unit] = m_ViewCache[unit].Renderer.transform.position;
@@ -231,5 +244,36 @@ public class CombatFocusController : MonoBehaviour
         m_OriginalScales[unit] = view.Renderer.transform.localScale;
         m_OriginalPositions[unit] = view.Renderer.transform.position;
         m_OriginalSortingOrders[unit] = view.Renderer.sortingOrder;
+    }
+
+    // Bg Tilt관련
+    private void StartBgTilt(CombatUnitType attackerType)
+    {
+        float targetAngle = (attackerType == CombatUnitType.Nikke) ? m_BgTiltAngle : -m_BgTiltAngle;
+        CoroutineHelper.Restart(this, ref m_BgTiltCoroutine, BgTiltRoutine(m_CurrentBgTiltZ, targetAngle));
+    }
+
+    private void StopBgTilt()
+    {
+        CoroutineHelper.Restart(this, ref m_BgTiltCoroutine, BgTiltRoutine(m_CurrentBgTiltZ, 0f));
+    }
+
+    private IEnumerator BgTiltRoutine(float from, float to)
+    {
+        float elapsed = 0f;
+        Vector3 euler = m_BgTransform.localEulerAngles;
+        while (elapsed < m_BgTiltDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / m_BgTiltDuration;
+            m_CurrentBgTiltZ = Mathf.Lerp(from, to, t);
+            euler.z = m_CurrentBgTiltZ;
+            m_BgTransform.localEulerAngles = euler;
+            yield return null;
+        }
+        m_CurrentBgTiltZ = to;
+        euler.z = to;
+        m_BgTransform.localEulerAngles = euler;
+        m_BgTiltCoroutine = null;
     }
 }

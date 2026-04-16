@@ -24,9 +24,7 @@ public class FloatingLabel : MonoBehaviour
         m_RectTransform.position = anchor.position + new Vector3(m_Offset.x, m_Offset.y, 0f);
         gameObject.SetActive(true);
 
-        if (m_FloatRoutine != null)
-            StopCoroutine(m_FloatRoutine);
-        m_FloatRoutine = StartCoroutine(FloatUp());
+        CoroutineHelper.Restart(this, ref m_FloatRoutine, FloatUp());
         return m_FloatRoutine;
     }
 

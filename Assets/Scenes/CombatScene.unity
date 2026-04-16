@@ -1313,6 +1313,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatFeedback
   m_HitStopDuration: 0.05
+  m_ShakeTarget: {fileID: 51401689}
+  m_ShakeIntensity: 0.04
+  m_ShakeDuration: 0.2
 --- !u!4 &118473947
 Transform:
   m_ObjectHideFlags: 0
@@ -4246,8 +4249,6 @@ MonoBehaviour:
   m_StatusPopupDelay: 0.5
   m_PostSequenceDelay: 0.5
   m_HitDuration: 1.2
-  m_EblaUpColor: {r: 0.6886792, g: 0.6886792, b: 0.6886792, a: 1}
-  m_EblaDownColor: {r: 0.49056602, g: 0.49056602, b: 0.49056602, a: 1}
 --- !u!4 &510657039
 Transform:
   m_ObjectHideFlags: 0
@@ -8310,7 +8311,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1064561591}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -8319,7 +8320,7 @@ Transform:
   - {fileID: 1310674353}
   - {fileID: 1567845931}
   - {fileID: 568675757}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1453125319}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1064561593
 MonoBehaviour:
@@ -10840,6 +10841,9 @@ MonoBehaviour:
   m_BlurController: {fileID: 510657040}
   m_BlurStrength: 3
   m_FocusSortingOrder: 10
+  m_BgTransform: {fileID: 1453125319}
+  m_BgTiltAngle: 1.5
+  m_BgTiltDuration: 0.3
   m_FieldView: {fileID: 1064561593}
   m_CombatHUD: {fileID: 335391953}
 --- !u!1 &1433718340
@@ -11299,6 +11303,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1695783089}
+  - {fileID: 1064561592}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1466933741
@@ -17151,7 +17156,6 @@ SceneRoots:
   - {fileID: 51401689}
   - {fileID: 442149359}
   - {fileID: 1453125319}
-  - {fileID: 1064561592}
   - {fileID: 2145186757}
   - {fileID: 2036833133}
   - {fileID: 1789989203}

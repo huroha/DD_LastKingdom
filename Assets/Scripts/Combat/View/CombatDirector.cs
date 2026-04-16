@@ -76,7 +76,7 @@ public class CombatDirector : MonoBehaviour
         m_FieldView.SetFocusLock(true);
         // 2. Focus In
         yield return m_FocusController.FocusIn();
-        m_DriftController.StartDrift(user,skill);
+        m_DriftController.StartDrift(user, skill);
 
         // 3. 공격 모션
         if (result.TargetResults != null && result.TargetResults.Length > 0)
@@ -94,10 +94,6 @@ public class CombatDirector : MonoBehaviour
                 userView.Animator.enabled = false;
             userView.Renderer.sprite = user.NikkeData.AttackSprite;
             yield return m_WaitPopup;
-            if (userView.Animator != null)
-                userView.Animator.enabled = true;
-            else
-                userView.Renderer.sprite = user.NikkeData.CombatIdleSprite;
         }
         else if (userView.Animator != null && HasParameter(userView.Animator, TRIGGER_ATTACK))
         {
@@ -110,6 +106,7 @@ public class CombatDirector : MonoBehaviour
             userView.Animator.SetTrigger(TRIGGER_ATTACK);
             yield return m_WaitPopup;
             while (!m_AttackEndReceived) yield return null;
+            userView.Animator.enabled = false;
         }
         else
         {
@@ -129,7 +126,7 @@ public class CombatDirector : MonoBehaviour
                 continue;
             if (tr.PreviousState != UnitState.Corpse && tr.Target.State == UnitState.Corpse)
                 continue;   // alive -> corpse만 불통
-            m_CombatHUD.PrepareHpGhost(tr.Target,tr.PreviousHp);
+            m_CombatHUD.PrepareHpGhost(tr.Target, tr.PreviousHp);
         }
 
         // FocusOut
@@ -147,6 +144,9 @@ public class CombatDirector : MonoBehaviour
                 m_CombatHUD.StartHpGhostDrain(result.TargetResults[i].Target);
             }
         }
+        // 복귀
+        yield return m_WaitPostSequence;
+        RestoreSprites(user, userView, result.TargetResults);
 
         // 상태이상 팝업
         if (result.TargetResults != null)
@@ -183,6 +183,7 @@ public class CombatDirector : MonoBehaviour
                 }
             }
         }
+
         // 10. 후딜레이
         yield return m_WaitPostSequence;
     }
@@ -190,16 +191,26 @@ public class CombatDirector : MonoBehaviour
     private void ProcessSingleHit(TargetResult targetResult, SkillData skill)
     {
         ProcessOneTarget(targetResult, skill);
+        if (targetResult.IsHit)
+            m_Feedback.PlayCameraShake();
         m_Feedback.PlayHitStop(targetResult.IsCrit);
     }
     private void ProcessHitBatch(TargetResult[] results, SkillData skill)
     {
         bool anyCrit = false;
+        bool anyHit = false;
         for (int i = 0; i < results.Length; ++i)
         {
             ProcessOneTarget(results[i], skill);
-            if (results[i].IsHit && results[i].IsCrit) anyCrit = true;
+            if (results[i].IsHit)
+            {
+                if (results[i].IsCrit)
+                    anyCrit = true;
+                anyHit = true;
+            }
         }
+        if (anyHit)
+            m_Feedback.PlayCameraShake();
         m_Feedback.PlayHitStop(anyCrit);
     }
     private void SpawnDamagePopup(CombatUnit target, TargetResult result, SkillData skill)
@@ -263,61 +274,17 @@ public class CombatDirector : MonoBehaviour
         CombatFieldView.UnitView targetView = m_FieldView.GetView(result.Target);
         if (result.IsHit)
         {
-            if (targetView.Animator != null && HasParameter(targetView.Animator, TRIGGER_HIT))
-            {
-                targetView.Animator.SetTrigger(TRIGGER_HIT);
-                if (result.ResultState == UnitState.Dead || result.ResultState == UnitState.Corpse)
-                    targetView.Animator.SetTrigger(TRIGGER_DEATH);
-            }
-            else
-            {
-                StartCoroutine(HitSpriteRoutine(result.Target, targetView , result.PreviousState));
-            }
+            SetHitSprite(result.Target, targetView, result.PreviousState);
             SpawnDamagePopup(result.Target, result, skill);
         }
         else
         {
-            StartCoroutine(HitSpriteRoutine(result.Target, targetView, result.PreviousState));
+            SetHitSprite(result.Target, targetView, result.PreviousState);
             bool isNikke = result.Target.UnitType == CombatUnitType.Nikke;
             m_PopupPool.SpawnEffect(m_FieldView.GetSlotPosition(result.Target), isNikke, POPUP_DODGE, COLOR_MISS);
         }
     }
-    private IEnumerator HitSpriteRoutine(CombatUnit unit, CombatFieldView.UnitView view, UnitState previousState)
-    {
-        Sprite hitSprite = null;
-        Sprite idleSprite = null;
 
-        if (unit.UnitType == CombatUnitType.Nikke)
-        {
-            hitSprite = unit.NikkeData.HitSprite;
-            idleSprite = unit.NikkeData.CombatIdleSprite;
-        }
-        else
-        {
-            if (previousState == UnitState.Corpse)
-            {
-                hitSprite = unit.EnemyData.CorpseSprite;
-                idleSprite = unit.EnemyData.CorpseSprite;
-            }
-            else
-            {
-                hitSprite = unit.EnemyData.HitSprite;
-                idleSprite = unit.EnemyData.Sprite;
-            }
-        }
-
-        if (hitSprite != null)
-        {
-            if (view.Animator != null)
-                view.Animator.enabled = false;
-            view.Renderer.sprite = hitSprite;
-            yield return m_WaitHit;
-            if (view.Animator != null)
-                view.Animator.enabled = true;
-            else
-                view.Renderer.sprite = idleSprite;
-        }
-    }
     private bool HasParameter(Animator animator, string paramName)
     {
         AnimatorControllerParameter[] parameters = animator.parameters;
@@ -329,4 +296,56 @@ public class CombatDirector : MonoBehaviour
         return false;
     }
 
+    private void SetHitSprite(CombatUnit unit, CombatFieldView.UnitView view, UnitState previousState)
+    {
+        Sprite hitSprite = null;
+
+        if (unit.UnitType == CombatUnitType.Nikke)
+            hitSprite = unit.NikkeData.HitSprite;
+        else
+        {
+            if (previousState == UnitState.Corpse)
+                hitSprite = unit.EnemyData.CorpseSprite;
+            else
+                hitSprite = unit.EnemyData.HitSprite;
+        }
+        if (hitSprite != null)
+        {
+            if (view.Animator != null)
+                view.Animator.enabled = false;
+            view.Renderer.sprite = hitSprite;
+        }
+    }
+    private void RestoreSprites(CombatUnit user, CombatFieldView.UnitView userView, TargetResult[] results)
+    {
+        // 공격자 복귀
+        if (userView.Animator != null)
+            userView.Animator.enabled = true;
+        else if (user.UnitType == CombatUnitType.Nikke)
+            userView.Renderer.sprite = user.NikkeData.CombatIdleSprite;
+        // 피격자 복귀
+        for (int i = 0; i < results.Length; ++i)
+        {
+            CombatFieldView.UnitView targetView = m_FieldView.GetView(results[i].Target);
+            if (targetView.Animator != null)
+            {
+                targetView.Animator.enabled = true;
+                if (results[i].IsHit
+              && (results[i].ResultState == UnitState.Dead || results[i].ResultState == UnitState.Corpse)
+              && HasParameter(targetView.Animator, TRIGGER_DEATH))
+                {
+                    targetView.Animator.SetTrigger(TRIGGER_DEATH);
+                }
+            }
+            else if (results[i].Target.UnitType == CombatUnitType.Nikke)
+                targetView.Renderer.sprite = results[i].Target.NikkeData.CombatIdleSprite;
+            else
+            {
+                if (results[i].Target.State == UnitState.Corpse)
+                    targetView.Renderer.sprite = results[i].Target.EnemyData.CorpseSprite;
+                else
+                    targetView.Renderer.sprite = results[i].Target.EnemyData.Sprite;
+            }
+        }
+    }
 }

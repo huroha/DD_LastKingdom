@@ -50,23 +50,19 @@ public class UnitHaloDisplay : MonoBehaviour, IStunHaloDisplay
     public void PopupDeathsDoor()
     {
         if (m_DeathsDoorHalo == null) return;
-        if (m_DeathsDoorRoutine != null)
-            StopCoroutine(m_DeathsDoorRoutine);
-        m_DeathsDoorRoutine = StartCoroutine(DoPopup(m_DeathsDoorHalo));
+        CoroutineHelper.Restart(this, ref m_DeathsDoorRoutine, DoPopup(m_DeathsDoorHalo));
     }
     public void PopupEblaUp(int delta)
     {
         if (m_EblaUpHalo == null) return;
         if (m_EblaUpText != null) m_EblaUpText.text = delta.ToString();
-        if (m_EblaUpRoutine != null) StopCoroutine(m_EblaUpRoutine);
-        m_EblaUpRoutine = StartCoroutine(DoPopup(m_EblaUpHalo));
+        CoroutineHelper.Restart(this, ref m_EblaUpRoutine, DoPopup(m_EblaUpHalo));
     }
     public void PopupEblaDown(int delta)
     {
         if (m_EblaDownHalo == null) return;
         if (m_EblaDownText != null) m_EblaDownText.text = delta.ToString();
-        if (m_EblaDownRoutine != null) StopCoroutine(m_EblaDownRoutine);
-        m_EblaDownRoutine = StartCoroutine(DoPopup(m_EblaDownHalo));
+        CoroutineHelper.Restart(this, ref m_EblaDownRoutine, DoPopup(m_EblaDownHalo));
     }
     private IEnumerator DoPopup(CanvasGroup group)
     {
