@@ -664,8 +664,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4288741376
-  m_fontColor: {r: 0, g: 0, b: 0.6320754, a: 1}
+    rgba: 4284416000
+  m_fontColor: {r: 0, g: 0, b: 0.3735848, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -688,7 +688,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -2303,7 +2303,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4884715987957152698
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2661,8 +2661,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967040
-  m_fontColor: {r: 0, g: 1, b: 1, a: 1}
+    rgba: 4294967220
+  m_fontColor: {r: 0.7075472, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2685,7 +2685,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -2996,6 +2996,14 @@ MonoBehaviour:
   m_EblaDownText: {fileID: 4871272686362362695}
   m_HoldDuration: 0.8
   m_FadeDuration: 0.3
+  m_PulseSpeed: 2
+  m_PulseMin: 0.1
+  m_PulseOffset: 0.25
+  m_PulseTargets:
+  - {fileID: 6881566864974439768}
+  - {fileID: 8828272995295660433}
+  - {fileID: 6732189871352391752}
+  - {fileID: 7148738428066607080}
 --- !u!1 &7503651110860324239
 GameObject:
   m_ObjectHideFlags: 0

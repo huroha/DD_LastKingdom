@@ -231,8 +231,10 @@ public class CombatStateMachine : MonoBehaviour
             if (m_ActiveUnit.IsStunned)
             {
                 m_StatusEffectManager.RemoveStun(m_ActiveUnit);
+                yield return m_CombatDirector.PlayStunRecovery(m_ActiveUnit, m_StunResistBuff);
                 SetState(CombatState.TurnEnd);
                 m_StatusEffectManager.ProcessTurnEnd(m_ActiveUnit);
+                m_CombatHUD.RefreshUnit(m_ActiveUnit);
                 m_TurnManager.EndCurrentTurn();
                 yield return m_WaitBetweenTurn;
                 continue;
@@ -246,6 +248,7 @@ public class CombatStateMachine : MonoBehaviour
                 yield return StartCoroutine(HandleEnemyTurn());
 
             m_StatusEffectManager.ProcessTurnEnd(m_ActiveUnit);
+            m_CombatHUD.RefreshUnit(m_ActiveUnit);
             SetState(CombatState.TurnEnd);
             m_TurnManager.EndCurrentTurn();
             yield return m_WaitBetweenTurn;

@@ -8,7 +8,7 @@
 - [⏭️] Skipped
 
 ## Progress Summary
-26 / 69 tasks complete (38%)
+30 / 69 tasks complete (43%)
 
 ---
 
@@ -186,7 +186,7 @@
 > **Goal**: 마을↔던전↔전투 풀 루프 구현
 
 ### 2.1 에블라 & 상태이상
-- [ ] EblaSystem 구현
+- [✅] EblaSystem 구현
   - File: `Assets/Scripts/Systems/EblaSystem.cs`
   - Details: 유닛별 에블라 수치(0~200). 0~100: 정상 구간. 100 도달: Affliction(기본)/Virtue(canVirtue 영웅) 발동 → 디버프 or 버프+일러스트 변경+특수 스킬. 100~200: 위험 구간(Affliction 디버프 유지). 200 도달: **영구 사망 발동**
   - Acceptance: 에블라 100 → Affliction 스탯 디버프 적용 / Virtue 영웅은 일러스트 변경 + 특수 스킬. 에블라 200 → 해당 영웅 즉시 사망 + 세이브에서 영구 제거
@@ -199,10 +199,10 @@
   - Update: BaseApplyRate 필드 추가 (기본 100%, 스킬 레벨업 시 증가 가능). 저항 판정 공식: effectiveResist = Max(0, resistance - (BaseApplyRate - 100))
   - Size: M
 
-- [ ] StatusEffectManager 구현
+- [✅] StatusEffectManager 구현
   - File: `Assets/Scripts/Combat/StatusEffectManager.cs`
-  - Details: 유닛별 효과 리스트, 턴 종료 시 틱 처리, 만료 제거, 스택 관리
-  - Acceptance: 독(DOT) 3턴 부여 → 매 턴 종료 데미지 → 3턴 후 제거
+  - Details: 유닛별 효과 리스트, 턴 시작 시 DOT 틱 처리, 턴 종료 시 비DOT 만료 제거, 스택 관리. DOT 독립 인스턴스 모델 (DD 원작 방식). 스턴 제거 시 Guard 해제 + 스턴저항 버프 부여
+  - Acceptance: 독(DOT) 3턴 부여 → 매 턴 시작 데미지 → 3턴 후 제거
   - Size: L
   - Dependencies: StatusEffectData, CombatUnit
 
@@ -352,10 +352,10 @@
   - Size: XL
   - Dependencies: 아트 에셋 준비
 
-- [ ] CombatFeedback 연출 시스템
+- [✅] CombatFeedback 연출 시스템
   - File: `Assets/Scripts/VFX/CombatFeedback.cs`
-  - Details: 히트스탑(Time.timeScale 조절), 카메라 흔들림(Cinemachine Impulse 또는 커스텀), 피격 플래시(SpriteRenderer color)
-  - Acceptance: 공격 시 화면 흔들림 + 히트스탑 체감
+  - Details: 히트스탑(Time.timeScale 조절), 카메라 흔들림(커스텀 Transform shake), BG Tilt(Z축 회전). CombatDirector 코루틴 시퀀스 기반 연출, DamagePopup/Pool, UnitAnimBridge, CombatFocusController(Focus Movement + Drift), CombatDriftController
+  - Acceptance: 공격 시 화면 흔들림 + 히트스탑 + 포커스 줌인/아웃 + BG 기울기 체감
   - Size: L
   - Dependencies: 전투 시스템
 
@@ -384,8 +384,8 @@
   - Size: L
   - Dependencies: DungeonNavigator, DetectionSystem
 
-- [ ] 전투 HUD 완성
-  - Details: 에블라 바 추가, 상태이상 아이콘 표시, 데미지 숫자 팝업, 버프/디버프 표시
+- [✅] 전투 HUD 완성
+  - Details: 에블라 바(10칸 이미지), 상태이상 아이콘 표시(StatusEffectIconDisplay + 툴팁), 데미지 숫자 팝업(DamagePopupPool), 버프/디버프 스탯 색상 표시(NikkeInfoPanel/EnemyInfoPanel), Ebla Halo 시스템, DeathsDoor Halo, 스턴 Halo, 턴 티커, 라운드 UI
   - Size: L
   - Dependencies: EblaSystem, StatusEffectManager
 

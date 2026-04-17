@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using TMPro;
+using UnityEngine.UI;
 
 public class UnitHaloDisplay : MonoBehaviour, IStunHaloDisplay
 {
@@ -19,6 +20,14 @@ public class UnitHaloDisplay : MonoBehaviour, IStunHaloDisplay
     private Coroutine m_DeathsDoorRoutine;
     private Coroutine m_EblaUpRoutine;
     private Coroutine m_EblaDownRoutine;
+    private Coroutine m_StunPulseRoutine;
+
+    [Header("Stun Effect")]
+    [SerializeField] private float m_PulseSpeed;
+    [SerializeField] private float m_PulseMin;
+    [SerializeField] private float m_PulseOffset;
+    [SerializeField] private Image[] m_PulseTargets;
+    private bool m_IsPulsing;
 
     private WaitForSeconds m_WaitHold;
 
@@ -39,11 +48,16 @@ public class UnitHaloDisplay : MonoBehaviour, IStunHaloDisplay
     }
     public void ShowStunHalo()
     {
+        m_IsPulsing = true;
         m_StunHalo.gameObject.SetActive(true);
         m_StunHalo.alpha = 1;
+        CoroutineHelper.Restart(this, ref m_StunPulseRoutine, CoroutineHelper.PulseAlpha(m_PulseTargets, m_PulseSpeed, m_PulseMin, m_PulseOffset));
+
     }
     public void HideStunHalo()
     {
+        m_IsPulsing = false;
+        CoroutineHelper.Stop(this, ref m_StunPulseRoutine);
         m_StunHalo.alpha = 0;
         m_StunHalo.gameObject.SetActive(false);
     }
@@ -82,5 +96,9 @@ public class UnitHaloDisplay : MonoBehaviour, IStunHaloDisplay
         group.alpha = 0f;
         group.gameObject.SetActive(false);
     }
-
+    private void OnEnable()
+    {
+        if (m_IsPulsing)
+            CoroutineHelper.Restart(this, ref m_StunPulseRoutine, CoroutineHelper.PulseAlpha(m_PulseTargets, m_PulseSpeed, m_PulseMin, m_PulseOffset));
+    }
 }

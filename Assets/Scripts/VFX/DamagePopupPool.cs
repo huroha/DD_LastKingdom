@@ -45,11 +45,11 @@ public class DamagePopupPool : MonoBehaviour
         popup.Show(pos, offset, text, color, scale);
     }
 
-    public void SpawnEffect(Vector3 pos, bool isNikke, string text, Color color)
+    public void SpawnEffect(Vector3 pos, bool isNikke, string text, Color color, Sprite icon = null)
     {
         Vector3 offset = isNikke ? m_NikkeEffectOffset : m_EnemyEffectOffset;
         DamagePopup popup = GetFromPool(m_EffectPool, m_EffectPrefab);
-        popup.Show(pos, offset, text, color);
+        popup.Show(pos, offset, text, color,1f,icon);
     }
 
     private DamagePopup GetFromPool(List<DamagePopup> pool, DamagePopup prefab)

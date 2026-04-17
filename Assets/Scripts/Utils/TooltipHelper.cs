@@ -24,6 +24,13 @@ public static class TooltipHelper
     public const string STAT_DODGE = "회피";
     public const string STAT_SPEED = "속도";
 
+    public const string STAT_RES_STUN = "기절 저항";
+    public const string STAT_RES_MOVE = "이동 저항";
+    public const string STAT_RES_POISON = "중독 저항";
+    public const string STAT_RES_DISEASE = "질병 저항";
+    public const string STAT_RES_BLEED = "출혈 저항";
+    public const string STAT_RES_DEBUFF = "디버프 저항";
+
 
     public static void ClampToScreen(RectTransform rectTransform)
     {
@@ -103,5 +110,18 @@ public static class TooltipHelper
             AppendStat(sb, STAT_SPEED, mod.speed, turns);
         if (mod.critChance != 0f)
             AppendStat(sb, STAT_CRIT, (int)mod.critChance, turns);
+
+        if (mod.resistance.stun != 0)
+            AppendStatPercent(sb, STAT_RES_STUN, (int)mod.resistance.stun, turns);
+        if (mod.resistance.move != 0)
+            AppendStatPercent(sb, STAT_RES_MOVE, (int)mod.resistance.move, turns);
+        if (mod.resistance.poison != 0)
+            AppendStatPercent(sb, STAT_RES_POISON, (int)mod.resistance.poison, turns);
+        if (mod.resistance.disease != 0)
+            AppendStatPercent(sb, STAT_RES_DISEASE, (int)mod.resistance.disease, turns);
+        if (mod.resistance.bleed != 0)
+            AppendStatPercent(sb, STAT_RES_BLEED, (int)mod.resistance.bleed, turns);
+        if (mod.resistance.debuff != 0)
+            AppendStatPercent(sb, STAT_RES_DEBUFF, (int)mod.resistance.debuff, turns);
     }
 }

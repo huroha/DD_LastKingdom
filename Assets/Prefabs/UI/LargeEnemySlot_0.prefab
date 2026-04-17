@@ -986,6 +986,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHaloDisplay
   m_StunHalo: {fileID: 2743806600969116152}
+  m_PulseSpeed: 2
+  m_PulseMin: 0.1
+  m_PulseOffset: 0.25
+  m_PulseTargets:
+  - {fileID: 8021191058272009735}
+  - {fileID: 6601435128424084715}
+  - {fileID: 8307103858081821194}
+  - {fileID: 4842322497842055686}
 --- !u!1 &6255007763486569438
 GameObject:
   m_ObjectHideFlags: 0

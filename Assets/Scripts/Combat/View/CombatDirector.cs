@@ -30,6 +30,7 @@ public class CombatDirector : MonoBehaviour
     private static readonly Color COLOR_POISON = new Color(0.73f, 0.75f, 0.25f);
     private static readonly Color COLOR_STUN = new Color(0.8f, 0.64f, 0.32f);
     private static readonly Color COLOR_DEBUFF = new Color(0.75f, 0.38f, 0.06f);
+    private static readonly Color COLOR_BUFF = new Color(0f, 1f, 1f);
     private static readonly Color COLOR_RESIST = new Color(0.7f, 0.7f, 0.7f);
     private static readonly Color COLOR_DEATHDOOR = new Color(0.6f, 0f, 0f);
 
@@ -75,7 +76,7 @@ public class CombatDirector : MonoBehaviour
         m_FocusController.SetupFocus(user, targets);
         m_FieldView.SetFocusLock(true);
         // 2. Focus In
-        yield return m_FocusController.FocusIn();
+        yield return m_FocusController.FocusIn(skill.IsAllyTargeting);
         m_DriftController.StartDrift(user, skill);
 
         // 3. 공격 모션
@@ -163,7 +164,7 @@ public class CombatDirector : MonoBehaviour
                         if (tr.AppliedEffects[j].EffectType == StatusEffectType.Stun)
                             m_CombatHUD.ShowStunHalo(tr.Target);
                         m_PopupPool.SpawnEffect(pos, isNikke, tr.AppliedEffects[j].EffectName,
-                                                GetEffectColor(tr.AppliedEffects[j].EffectType));
+                                                GetEffectColor(tr.AppliedEffects[j].EffectType), tr.AppliedEffects[j].Icon);
                         yield return m_WaitStatusPopup;
                     }
                 }
@@ -171,7 +172,7 @@ public class CombatDirector : MonoBehaviour
                 {
                     for (int j = 0; j < tr.ResistedEffects.Length; ++j)
                     {
-                        m_PopupPool.SpawnEffect(pos, isNikke, POPUP_RESIST, COLOR_RESIST);
+                        m_PopupPool.SpawnEffect(pos, isNikke, POPUP_RESIST, COLOR_RESIST, tr.ResistedEffects[j].Icon);
                         yield return m_WaitStatusPopup;
                     }
                 }
@@ -191,9 +192,10 @@ public class CombatDirector : MonoBehaviour
     private void ProcessSingleHit(TargetResult targetResult, SkillData skill)
     {
         ProcessOneTarget(targetResult, skill);
-        if (targetResult.IsHit)
+        if (targetResult.IsHit && !skill.IsAllyTargeting)
             m_Feedback.PlayCameraShake();
-        m_Feedback.PlayHitStop(targetResult.IsCrit);
+        if(!skill.IsAllyTargeting)
+            m_Feedback.PlayHitStop(targetResult.IsCrit);
     }
     private void ProcessHitBatch(TargetResult[] results, SkillData skill)
     {
@@ -209,9 +211,10 @@ public class CombatDirector : MonoBehaviour
                 anyHit = true;
             }
         }
-        if (anyHit)
+        if (anyHit && !skill.IsAllyTargeting)
             m_Feedback.PlayCameraShake();
-        m_Feedback.PlayHitStop(anyCrit);
+        if(!skill.IsAllyTargeting)
+            m_Feedback.PlayHitStop(anyCrit);
     }
     private void SpawnDamagePopup(CombatUnit target, TargetResult result, SkillData skill)
     {
@@ -223,7 +226,7 @@ public class CombatDirector : MonoBehaviour
         {
             m_PopupPool.SpawnDamage(pos, isNikke, result.HealAmount.ToString(), COLOR_HEAL);
         }
-        else
+        else if(result.DamageDealt > 0)
         {
             m_PopupTextBuilder.Clear();
             if (result.IsCrit)
@@ -245,6 +248,8 @@ public class CombatDirector : MonoBehaviour
                 return COLOR_POISON;
             case StatusEffectType.Stun:
                 return COLOR_STUN;
+            case StatusEffectType.Buff:
+                return COLOR_BUFF;
             default:
                 return COLOR_DEBUFF;
         }
@@ -260,8 +265,11 @@ public class CombatDirector : MonoBehaviour
         bool isNikke = unit.UnitType == CombatUnitType.Nikke;
         if (view.Renderer == null)
             yield break;
+
+        SetHitSprite(unit, view, unit.State);
         m_PopupPool.SpawnEffect(m_FieldView.GetSlotPosition(unit), isNikke, damage.ToString(), GetEffectColor(type));
         yield return m_WaitPopup;
+        RestoreSingleSprite(unit, view);
     }
 
     private void OnAttackEnd()
@@ -274,7 +282,8 @@ public class CombatDirector : MonoBehaviour
         CombatFieldView.UnitView targetView = m_FieldView.GetView(result.Target);
         if (result.IsHit)
         {
-            SetHitSprite(result.Target, targetView, result.PreviousState);
+            if(!skill.IsAllyTargeting)
+                SetHitSprite(result.Target, targetView, result.PreviousState);
             SpawnDamagePopup(result.Target, result, skill);
         }
         else
@@ -319,33 +328,49 @@ public class CombatDirector : MonoBehaviour
     private void RestoreSprites(CombatUnit user, CombatFieldView.UnitView userView, TargetResult[] results)
     {
         // 공격자 복귀
-        if (userView.Animator != null)
-            userView.Animator.enabled = true;
-        else if (user.UnitType == CombatUnitType.Nikke)
-            userView.Renderer.sprite = user.NikkeData.CombatIdleSprite;
+        RestoreSingleSprite(user, userView);
         // 피격자 복귀
         for (int i = 0; i < results.Length; ++i)
         {
             CombatFieldView.UnitView targetView = m_FieldView.GetView(results[i].Target);
-            if (targetView.Animator != null)
+            RestoreSingleSprite(results[i].Target, targetView);
+
+            // Death 트리거는 별도 처리
+            if (targetView.Animator != null
+                && results[i].IsHit
+                && (results[i].ResultState == UnitState.Dead || results[i].ResultState == UnitState.Corpse)
+                && HasParameter(targetView.Animator, TRIGGER_DEATH))
             {
-                targetView.Animator.enabled = true;
-                if (results[i].IsHit
-              && (results[i].ResultState == UnitState.Dead || results[i].ResultState == UnitState.Corpse)
-              && HasParameter(targetView.Animator, TRIGGER_DEATH))
-                {
-                    targetView.Animator.SetTrigger(TRIGGER_DEATH);
-                }
-            }
-            else if (results[i].Target.UnitType == CombatUnitType.Nikke)
-                targetView.Renderer.sprite = results[i].Target.NikkeData.CombatIdleSprite;
-            else
-            {
-                if (results[i].Target.State == UnitState.Corpse)
-                    targetView.Renderer.sprite = results[i].Target.EnemyData.CorpseSprite;
-                else
-                    targetView.Renderer.sprite = results[i].Target.EnemyData.Sprite;
+                targetView.Animator.SetTrigger(TRIGGER_DEATH);
             }
         }
+    }
+    private void RestoreSingleSprite(CombatUnit unit, CombatFieldView.UnitView view)
+    {
+        if (view.Animator != null)
+            view.Animator.enabled = true;
+        else if (unit.UnitType == CombatUnitType.Nikke)
+            view.Renderer.sprite = unit.NikkeData.CombatIdleSprite;
+        else
+        {
+            if (unit.State == UnitState.Corpse)
+                view.Renderer.sprite = unit.EnemyData.CorpseSprite;
+            else
+                view.Renderer.sprite = unit.EnemyData.Sprite;
+        }
+    }
+
+    // Stun관련
+    public Coroutine PlayStunRecovery(CombatUnit unit, StatusEffectData stunResistBuff)
+    {
+        return StartCoroutine(StunRecoveryRoutine(unit, stunResistBuff));
+    }
+    private IEnumerator StunRecoveryRoutine(CombatUnit unit, StatusEffectData stunResistBuff)
+    {
+        m_CombatHUD.HideStunHalo(unit);
+        Vector3 pos = m_FieldView.GetSlotPosition(unit);
+        bool isNikke = unit.UnitType == CombatUnitType.Nikke;
+        m_PopupPool.SpawnEffect(pos, isNikke, stunResistBuff.EffectName, GetEffectColor(stunResistBuff.EffectType), stunResistBuff.Icon);
+        yield return m_WaitStatusPopup;
     }
 }

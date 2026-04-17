@@ -82,8 +82,6 @@ public class CombatHUD : MonoBehaviour
 
     [SerializeField] private Image[] m_NTargetHighlights;  // 4개
 
-    [Header("Turn Order")]
-    [SerializeField] private TextMeshProUGUI m_TurnOrderText;
 
 
     private CombatUnit[] m_CurrentEnemyBarUnits;
@@ -285,7 +283,7 @@ public class CombatHUD : MonoBehaviour
                 sb.Append("남은 행동:").Append(count);
             },new Vector2(0, 0));
         }
-        RefreshTurnOrder();
+
         m_TickerDisplay.ShowAllTickersAnimated();
         m_TurnBarDisplay.Hide();
     }
@@ -308,7 +306,6 @@ public class CombatHUD : MonoBehaviour
         if (hasEnemyTarget)
             RefreshEnemySlots();
 
-        RefreshTurnOrder();
     }
 
     private void OnRoundStarted(RoundStartedEvent e)
@@ -368,17 +365,7 @@ public class CombatHUD : MonoBehaviour
         }
         RefreshStatusIcons(unit);
     }
-    private void RefreshTurnOrder()
-    {
-        if (m_CombatStateMachine.TurnOrder == null) return;
-        m_TurnOrderBuilder.Clear();
-        for (int i = 0; i < m_CombatStateMachine.TurnOrder.Count; ++i)
-        {
-            m_TurnOrderBuilder.Append(m_CombatStateMachine.TurnOrder[i].UnitName);
-            m_TurnOrderBuilder.Append(" -> ");
-        }
-        m_TurnOrderText.SetText(m_TurnOrderBuilder);
-    }
+
 
 
 
@@ -578,6 +565,7 @@ public class CombatHUD : MonoBehaviour
     public void RefreshUnit(CombatUnit unit)
     {
         RefreshHpBar(unit);
+        RefreshStatusIcons(unit);
     }
 
     public void UpdateSlotPositionsForTilt()

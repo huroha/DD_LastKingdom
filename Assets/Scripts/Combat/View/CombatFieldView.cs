@@ -161,6 +161,7 @@ public class CombatFieldView : MonoBehaviour
                 () => m_CombatHUD.ShowEnemyInfo(captured),
                 () => m_CombatHUD.HideEnemyInfo());
         }
+        go.transform.SetParent(transform);
         go.transform.position = pos;
         float scaleOffset =  unit.UnitType == CombatUnitType.Nikke ? unit.NikkeData.ScaleOffset : unit.EnemyData.ScaleOffset;
         go.transform.localScale = Vector3.one * scale * scaleOffset;

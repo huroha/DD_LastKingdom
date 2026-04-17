@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c585489809c0344097809140fb04d25, type: 3}
   m_Name: StunResist_buff
   m_EditorClassIdentifier: Assembly-CSharp::StatusEffectData
-  m_EffectName: StunResist_Buff
+  m_EffectName: "\uCD95\uBCF5"
   m_Icon: {fileID: 21300000, guid: ccf986bfecef7b0459fa76cee2beeb0b, type: 3}
   m_EffectType: 4
-  m_Duration: 1
+  m_Description: "\uAE30\uC808 \uC800"
+  m_ShowName: 0
+  m_Duration: 2
   m_TickDamage: 0
   m_StatModifier:
     maxHp: 0
@@ -40,3 +42,4 @@ MonoBehaviour:
     eblaMultiplier: 0
   m_IsStackable: 1
   m_MaxStack: 10
+  m_BaseApplyRate: 100

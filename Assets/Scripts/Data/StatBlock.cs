@@ -8,13 +8,13 @@ using UnityEngine;
 [System.Serializable]
 public struct ResistanceBlock
 {
-    [Range(0f, 500f)] public float stun;        // 기절 저항
-    [Range(0f, 500f)] public float move;        // 이동 저항
-    [Range(0f, 500f)] public float poison;      // 중독 저항
-    [Range(0f, 500f)] public float disease;     // 질병 저항
-    [Range(0f, 500f)] public float bleed;       // 출혈 저항
-    [Range(0f, 500f)] public float debuff;      // 디버프 저항
-    [Range(0f, 100f)] public float trap;        // 함정 해제율
+    [Range(-100f, 500f)] public float stun;        // 기절 저항
+    [Range(-100f, 500f)] public float move;        // 이동 저항
+    [Range(-100f, 500f)] public float poison;      // 중독 저항
+    [Range(-100f, 500f)] public float disease;     // 질병 저항
+    [Range(-100f, 500f)] public float bleed;       // 출혈 저항
+    [Range(-100f, 500f)] public float debuff;      // 디버프 저항
+    [Range( 0f, 100f)] public float trap;        // 함정 해제율
 }
 
 [System.Serializable]

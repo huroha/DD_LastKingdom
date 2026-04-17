@@ -23,6 +23,10 @@ public class EnemyInfoPanel : MonoBehaviour
 
     private const string CORPSE = "시체";
 
+    private static readonly Color COLOR_NORMAL = new Color(0.8f, 0.8f, 0.8f, 1f);
+    private static readonly Color COLOR_BUFF = new Color(0.8f, 0.76f, 0.56f, 1f);
+    private static readonly Color COLOR_DEBUFF = new Color(0.75f, 0.1f, 0.1f, 1f);
+
     // Resistance 표기용
     private System.Text.StringBuilder m_Sb = new System.Text.StringBuilder(128);
 
@@ -43,13 +47,17 @@ public class EnemyInfoPanel : MonoBehaviour
         }
         else
         {
+            StatBlock baseStats = unit.BaseStats;
             m_NameText.text = unit.UnitName;
             m_HpText.SetText("{0} / {1}", unit.CurrentHp, unit.MaxHp);
             m_TypeText.text = unit.EnemyData.EnemyType.ToString();
             m_ElementText.text = unit.EnemyData.Element.ToString();
             m_ProtText.SetText("{0}%", unit.CurrentStats.defense);
+            m_ProtText.color = GetStatColor(unit.CurrentStats.defense, baseStats.defense);
             m_SpeedText.SetText("{0}", unit.CurrentStats.speed);
+            m_SpeedText.color = GetStatColor(unit.CurrentStats.speed, baseStats.speed);
             m_DodgeText.SetText("{0}", unit.CurrentStats.dodge);
+            m_DodgeText.color = GetStatColor(unit.CurrentStats.dodge, baseStats.dodge);
             ResistanceBlock res = unit.CurrentStats.resistance;
             m_Sb.Append(Mathf.RoundToInt(res.stun)).Append('%').AppendLine();
             m_Sb.Append(Mathf.RoundToInt(res.poison)).Append('%').AppendLine();
@@ -84,4 +92,12 @@ public class EnemyInfoPanel : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
+    
+    private static Color GetStatColor(float current, float baseValue)
+    {
+        if (current > baseValue) return COLOR_BUFF;
+        if (current < baseValue) return COLOR_DEBUFF;
+        return COLOR_NORMAL;
+    }
+
 }

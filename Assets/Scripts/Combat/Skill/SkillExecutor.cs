@@ -306,6 +306,8 @@ public class SkillExecutor
                 applied.Add(effect);
             }
         }
+        if (applied.Count > 0)
+            target.RecalculateStats();
     }
 
     // Buff/Guard/Mark -> 0 반환 (항상 적용), 나머지 -> resistance 블록 필드 반환

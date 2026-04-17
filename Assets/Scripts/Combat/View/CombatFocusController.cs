@@ -89,7 +89,7 @@ public class CombatFocusController : MonoBehaviour
         m_FocusUser = user;
     }
 
-    public IEnumerator FocusIn()
+    public IEnumerator FocusIn(bool skipTilt = false)
     {
         m_CombatHUD.SetHpBarsVisible(false);
         m_FieldView.GetAllLivingUnits(m_AllLivingBuffer);
@@ -98,6 +98,9 @@ public class CombatFocusController : MonoBehaviour
         m_OriginalPositions.Clear();
         m_OriginalSortingOrders.Clear();
         m_ViewCache.Clear();
+
+        if (!skipTilt)
+            StartBgTilt(m_FocusUser.UnitType);
 
         foreach (CombatUnit unit in m_AllLivingBuffer)
         {
@@ -145,7 +148,7 @@ public class CombatFocusController : MonoBehaviour
         m_OriginalFOV = m_Camera.fieldOfView;
         m_Camera.fieldOfView = m_FocusFOV;
 
-        StartBgTilt(m_FocusUser.UnitType);
+
 
         yield break;
     }
@@ -232,7 +235,7 @@ public class CombatFocusController : MonoBehaviour
             Vector3 slotOffset = slotPositions[i] - layoutCenter;
             Vector3 pos = focusCenter + slotOffset * layoutScale;
             pos.x += xShift;
-            view.Renderer.transform.position = pos;
+            view.Renderer.transform.localPosition = m_BgTransform.InverseTransformPoint(pos);
             view.Renderer.transform.localScale = m_OriginalScales[unit] * m_FocusScale;
             view.Renderer.sortingOrder = m_FocusSortingOrder;
             view.Renderer.gameObject.layer = m_FocusLayer;
@@ -249,7 +252,7 @@ public class CombatFocusController : MonoBehaviour
     // Bg Tilt°ü·Ã
     private void StartBgTilt(CombatUnitType attackerType)
     {
-        float targetAngle = (attackerType == CombatUnitType.Nikke) ? m_BgTiltAngle : -m_BgTiltAngle;
+        float targetAngle = (attackerType == CombatUnitType.Nikke) ? -m_BgTiltAngle : m_BgTiltAngle;
         CoroutineHelper.Restart(this, ref m_BgTiltCoroutine, BgTiltRoutine(m_CurrentBgTiltZ, targetAngle));
     }
 
