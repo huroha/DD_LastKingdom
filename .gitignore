@@ -1,3 +1,13 @@
+# Art & binary assets
+Assets/Art/
+Assets/Audio/
+Assets/Font/
+Assets/TextMesh Pro/
+
+# Dev & docs
+dev/
+docs/
+
 # Unity generated
 [Ll]ibrary/
 [Tt]emp/
