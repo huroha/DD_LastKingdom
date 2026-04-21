@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c585489809c0344097809140fb04d25, type: 3}
-  m_Name: StunResist_buff
+  m_Name: Virtue_Buff
   m_EditorClassIdentifier: Assembly-CSharp::StatusEffectData
-  m_EffectName: "\uCD95\uBCF5"
-  m_Icon: {fileID: 21300000, guid: ccf986bfecef7b0459fa76cee2beeb0b, type: 3}
+  m_EffectName: "\uAE30\uC0C1"
+  m_Icon: {fileID: 7240651153990450116, guid: 0adb12f5a3daa874a8bafa134248723b, type: 3}
   m_EffectType: 4
   m_Description: 
   m_ShowName: 0
-  m_Duration: 2
+  m_Duration: -1
   m_TickDamage: 0
   m_StatModifier:
     maxHp: 0
@@ -25,13 +25,13 @@ MonoBehaviour:
     maxDamage: 0
     accuracyMod: 0
     critChance: 0
-    defense: 0
-    dodge: 0
-    deathBlowResist: 0
+    defense: 5
+    dodge: 5
+    deathBlowResist: 10
     speed: 0
     moveRange: 0
     resistance:
-      stun: 50
+      stun: 0
       move: 0
       poison: 0
       disease: 0
@@ -40,6 +40,6 @@ MonoBehaviour:
       trap: 0
     damageMultiplier: 0
     eblaMultiplier: 0
-  m_IsStackable: 1
-  m_MaxStack: 10
+  m_IsStackable: 0
+  m_MaxStack: 1
   m_BaseApplyRate: 100

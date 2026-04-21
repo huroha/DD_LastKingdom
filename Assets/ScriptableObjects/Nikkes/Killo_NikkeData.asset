@@ -72,10 +72,12 @@ MonoBehaviour:
   - {fileID: 0}
   m_PortraitSprite: {fileID: -5197925854481112785, guid: daf0b4e1adeffe048a4274472aca4a8b, type: 3}
   m_CombatIdleSprite: {fileID: 6582780264575104500, guid: 857d5a24a377eff42a7bc1089f75b6f2, type: 3}
-  m_CombatPrefab: {fileID: 0}
+  m_CombatPrefab: {fileID: 3765984293602194747, guid: 269ce3a9937c0124ea4ecdcc07c3b873, type: 3}
   m_AttackSprite: {fileID: 21300000, guid: 28139720df2571045a1a19c1323b8974, type: 3}
   m_HitSprite: {fileID: 21300000, guid: 6782c0508881db34ab1bae04024b8e2f, type: 3}
-  m_ScaleOffset: 1
-  m_VirtuePortraitSprite: {fileID: 0}
+  m_ScaleOffset: 0.95
+  m_AfflictionArt: {fileID: -6588068384970952648, guid: 3823511af5a8044439cb87857f74ee3c, type: 3}
+  m_VirtueArt: {fileID: 0}
+  m_ForcedAfflictionType: {fileID: 0}
   m_OnCritSelfEffects: []
   m_OnReceiveCritSelfEffects: []

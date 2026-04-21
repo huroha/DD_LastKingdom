@@ -82,6 +82,9 @@ public class CombatHUD : MonoBehaviour
 
     [SerializeField] private Image[] m_NTargetHighlights;  // 4°³
 
+    [Header("Ebla Resolution")]
+    [SerializeField] private AfflictionNarrationPanel m_NarrationPanel;
+
 
 
     private CombatUnit[] m_CurrentEnemyBarUnits;
@@ -556,6 +559,12 @@ public class CombatHUD : MonoBehaviour
         return StartCoroutine(EnemySkillAnnounceRoutine(skillName));
     }
 
+    public IEnumerator PlayNarration(PendingEblaResolution pending)
+    {
+        if (m_NarrationPanel == null)
+            yield break;
+        yield return m_NarrationPanel.Play(pending);
+    }
     private IEnumerator EnemySkillAnnounceRoutine(string skillName)
     {
         ShowEnemySkillName(skillName);

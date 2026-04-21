@@ -19,7 +19,12 @@ public enum EblaState
 {
     Normal,
     Afflicted,
-    // 추후 Virtuous 추가예정
+    Virtuous,
+}
+public enum EblaResolutionType
+{
+    Afflicted,
+    Virtuous,
 }
 public class CombatUnit
 {
@@ -63,6 +68,17 @@ public class CombatUnit
     public void SetEblaState(EblaState state)
     {
         EblaState = state;
+    }
+    public AfflictionTypeData CurrentAfflictionType { get; private set; }
+    public VirtueTypeData CurrentVirtueType { get; private set; }
+
+    public void SetCurrentAfflictionType(AfflictionTypeData type)
+    {
+        CurrentAfflictionType = type;
+    }
+    public void SetCurrentVirtueType(VirtueTypeData type)
+    {
+        CurrentVirtueType = type;
     }
 
     // 적용중인 상태이상

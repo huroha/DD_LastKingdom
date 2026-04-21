@@ -56,11 +56,17 @@ public class NikkeData : ScriptableObject
     [SerializeField] private GameObject m_CombatPrefab;
     [SerializeField] private Sprite m_AttackSprite;
     [SerializeField] private Sprite m_HitSprite;
-
     [SerializeField] private float m_ScaleOffset;
 
+    [Header("Ebla Resolution Visuals")]
+    [SerializeField] private Sprite m_AfflictionArt;    // affiction 전용
+    [SerializeField] private Sprite m_VirtueArt;     // 각성 전용
 
-    [SerializeField] private Sprite m_VirtuePortraitSprite;     // 각성 영웅만 사용
+    [Header("Ebla Resolution -Forced Type")]
+    [SerializeField] private AfflictionTypeData m_ForcedAfflictionType;
+
+
+
 
     [Header("Passive : Critical")]
     [SerializeField] private StatusEffectData[] m_OnCritSelfEffects;
@@ -85,8 +91,9 @@ public class NikkeData : ScriptableObject
     public Sprite AttackSprite => m_AttackSprite;
     public Sprite HitSprite => m_HitSprite;
     public float ScaleOffset => m_ScaleOffset;
-    public Sprite VirtuePortraitSprite      => m_VirtuePortraitSprite;
-
+    public Sprite AfflictionArt => m_AfflictionArt;
+    public Sprite VirtueArt      => m_VirtueArt;
+    public AfflictionTypeData ForcedAfflictionType => m_ForcedAfflictionType;
     public IReadOnlyList<StatusEffectData> OnCritSelfEffects => m_OnCritSelfEffects;
     public IReadOnlyList<StatusEffectData> OnReceiveCritSelfEffects => m_OnReceiveCritSelfEffects;
 }

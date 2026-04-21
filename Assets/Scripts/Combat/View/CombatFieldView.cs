@@ -116,6 +116,10 @@ public class CombatFieldView : MonoBehaviour
         {
             if (e.Unit.State == UnitState.Corpse)
             {
+                if (view.Animator != null)
+                    view.Animator.enabled = false;
+                if (view.AnimBridge != null)
+                    view.AnimBridge.ClearCallbacks();
                 view.Renderer.sprite = e.Unit.EnemyData.CorpseSprite;
                 m_CorpseViews[e.Unit] = view.Renderer;
             }

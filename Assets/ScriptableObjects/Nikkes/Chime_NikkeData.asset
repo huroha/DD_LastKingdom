@@ -10,24 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cead30f8b213ad443a5387d8789ed940, type: 3}
-  m_Name: Crown_NikkeData2
+  m_Name: Chime_NikkeData
   m_EditorClassIdentifier: Assembly-CSharp::NikkeData
-  m_NikkeName: Crown2
-  m_NikkeClass: 2
-  m_CanVirtue: 1
+  m_NikkeName: "\uCC28\uC784"
+  m_NikkeClass: 1
+  m_CanVirtue: 0
   m_Manufacturer: 0
   m_Element: 3
   m_Squad: {fileID: 11400000, guid: b63fa638ddcdedb4086548dbba25858f, type: 2}
   m_BaseStats:
-    maxHp: 280
-    minDamage: 35
-    maxDamage: 55
-    accuracyMod: 100
-    critChance: 0
-    defense: 25
-    dodge: 10
+    maxHp: 220
+    minDamage: 40
+    maxDamage: 50
+    accuracyMod: 90
+    critChance: 30
+    defense: 0
+    dodge: 15
     deathBlowResist: 67
-    speed: 11
+    speed: 7
     moveRange: 2
     resistance:
       stun: 40
@@ -36,18 +36,18 @@ MonoBehaviour:
       disease: 40
       bleed: 40
       debuff: 40
-      trap: 40
+      trap: 67
     damageMultiplier: 0
     eblaMultiplier: 0
   m_MaxLevel: 6
-  m_ExpThresholds: 00000000640000002c01000058020000e8030000dc050000
+  m_ExpThresholds: 
   m_StatGrowthPerLevel:
-    maxHp: 18
+    maxHp: 0
     minDamage: 0
     maxDamage: 0
     accuracyMod: 0
     critChance: 0
-    defense: 1
+    defense: 0
     dodge: 0
     deathBlowResist: 0
     speed: 0
@@ -70,12 +70,14 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  m_PortraitSprite: {fileID: 1032635755590463704, guid: 08cba6c78a218644fb5b9da39711e2f3, type: 3}
-  m_CombatIdleSprite: {fileID: -3371497870711704084, guid: 75423a9606906084da699dd74e450735, type: 3}
-  m_CombatPrefab: {fileID: 2262194569955279401, guid: 0d6bf606bd529b84eb31c4abd92361cb, type: 3}
-  m_AttackSprite: {fileID: 21300000, guid: d198cae91083e4a4f80103d22684304c, type: 3}
-  m_HitSprite: {fileID: 21300000, guid: 50d5fd7b2b3034447b1db29f559ad585, type: 3}
-  m_ScaleOffset: 0.9
-  m_VirtuePortraitSprite: {fileID: 0}
+  m_PortraitSprite: {fileID: -2074837423565974494, guid: c8fcdb590e18cc2489172aa60c4767f1, type: 3}
+  m_CombatIdleSprite: {fileID: 4238309404821430613, guid: 4b0865831e1abaf4f99430ff173efca7, type: 3}
+  m_CombatPrefab: {fileID: 774155546767078002, guid: 880aa97467d14b44b90caa242fbb28c3, type: 3}
+  m_AttackSprite: {fileID: 21300000, guid: e3740f2838824ca40819b25f0d9d84c5, type: 3}
+  m_HitSprite: {fileID: 21300000, guid: 3dafd70758ab26b46a2f12e6f96a0ef2, type: 3}
+  m_ScaleOffset: 0.95
+  m_AfflictionArt: {fileID: -4671751794011454632, guid: 9c1b460489ee64b4c9c62bd401d2b23a, type: 3}
+  m_VirtueArt: {fileID: 0}
+  m_ForcedAfflictionType: {fileID: 0}
   m_OnCritSelfEffects: []
   m_OnReceiveCritSelfEffects: []

@@ -32,7 +32,10 @@ public class CombatStateMachine : MonoBehaviour
     [SerializeField] private CombatHUD m_CombatHUD;
 
     [Header("Ebla System")]
-    [SerializeField] private StatusEffectData m_AfflictionDebuff;
+    [SerializeField] private AfflictionTypeData[] m_AfflictionTypes;
+    [SerializeField] private VirtueTypeData[] m_VirtueTypes;
+    [Range(0f, 1f)]
+    [SerializeField] private float m_VirtueChance = 0.25f;
     [SerializeField] private StatusEffectData m_DeathsDoorDebuff;
     [SerializeField] private StatusEffectData m_DeathsDoorRecovery;
 
@@ -168,7 +171,7 @@ public class CombatStateMachine : MonoBehaviour
         // 시스템 인스턴스 생성
         m_PositionSystem = new PositionSystem();
         m_TurnManager = new TurnManager();
-        m_EblaSystem = new EblaSystem(m_AfflictionDebuff);
+        m_EblaSystem = new EblaSystem(m_AfflictionTypes, m_VirtueTypes, m_VirtueChance);
         m_SkillExecutor = new SkillExecutor(m_PositionSystem, m_EblaSystem, m_DeathsDoorDebuff, m_DeathsDoorRecovery);
         m_EnemyAI = new EnemyAI(m_PositionSystem, m_SkillExecutor);
         m_StatusEffectManager = new StatusEffectManager(m_StunResistBuff);
@@ -263,6 +266,7 @@ public class CombatStateMachine : MonoBehaviour
             if (m_UnitBuffer.Count == 0)
             {
                 ApplyPostBattleEbla();
+                yield return StartCoroutine(FlushPendingResolutions());
                 SetState(CombatState.Victory);
                 EventBus.Publish(new BattleEndedEvent(true));
                 yield break;
@@ -326,6 +330,7 @@ public class CombatStateMachine : MonoBehaviour
                     EventBus.Publish(new UnitDiedEvent(m_ActiveUnit));
                 }
                 yield return StartCoroutine(FlushEblaHalos());
+                yield return StartCoroutine(FlushPendingResolutions());
                 turnHandled = true;
                 continue;
             }
@@ -358,6 +363,7 @@ public class CombatStateMachine : MonoBehaviour
             List<CombatUnit> targets = ExtractTargets(result);
             yield return m_CombatDirector.PlaySkillSequence(m_ActiveUnit, m_SelectedSkill, targets, result);
             yield return StartCoroutine(FlushEblaHalos());
+            yield return StartCoroutine(FlushPendingResolutions());
             EventBus.Publish(new SkillExecutedEvent(result));
             ProcessDeadUnits(result);
         }
@@ -386,6 +392,7 @@ public class CombatStateMachine : MonoBehaviour
             List<CombatUnit> targets = ExtractTargets(result);
             yield return m_CombatDirector.PlaySkillSequence(m_ActiveUnit, action.Skill, targets, result);
             yield return StartCoroutine(FlushEblaHalos());
+            yield return StartCoroutine(FlushPendingResolutions());
             EventBus.Publish(new SkillExecutedEvent(result));
             ProcessDeadUnits(result);
         }
@@ -571,6 +578,7 @@ public class CombatStateMachine : MonoBehaviour
 
             yield return m_CombatDirector.PlayDotTick(tr.Unit, tr.Damage, tr.Effect.EffectType);
         }
+        yield return StartCoroutine(FlushPendingResolutions());
     }
 
     private List<CombatUnit> ExtractTargets(SkillResult result)
@@ -611,4 +619,23 @@ public class CombatStateMachine : MonoBehaviour
             yield return m_WaitEblaHalo;
     }
 
+    private IEnumerator FlushPendingResolutions()
+    {
+        if (m_EblaSystem.PendingCount == 0)
+            yield break;
+        IReadOnlyList<PendingEblaResolution> pendings = m_EblaSystem.DrainPending();
+        for (int i=0; i <pendings.Count; ++i)
+        {
+            PendingEblaResolution p = pendings[i];
+            if (!p.Unit.IsAlive)
+                continue;
+            if (m_CombatHUD != null)
+                yield return m_CombatHUD.PlayNarration(p);
+
+            m_EblaSystem.ApplyResolutionEffect(p);
+
+            if (m_CombatHUD != null)
+                m_CombatHUD.RefreshUnit(p.Unit);
+        }
+    }
 }
