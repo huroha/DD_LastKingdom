@@ -192,6 +192,7 @@ public class CombatHUD : MonoBehaviour
     private void OnUnitMoved(UnitMovedEvent e)
     {
         RefreshNikkeSlots();
+        RefreshEnemySlots();
         m_TickerDisplay.RefreshTurnTickers();
     }
     private void OnBattleStarted(BattleStartedEvent e)
@@ -296,19 +297,15 @@ public class CombatHUD : MonoBehaviour
         if (e.Result.TargetResults == null)
             return;
 
-        bool hasEnemyTarget = false;
         for (int i = 0; i < e.Result.TargetResults.Length; ++i)
         {
             TargetResult result = e.Result.TargetResults[i];
             if (result.Target.UnitType == CombatUnitType.Nikke)
                 RefreshHpBar(result.Target);
-            else
-                hasEnemyTarget = true;
         }
-
-        if (hasEnemyTarget)
-            RefreshEnemySlots();
-
+        // 스킬이 MoveUserAmount / MoveTargetAmount로 양 진영 모두를 이동시킬수 있음. 둘다 새로고침
+        RefreshNikkeSlots();
+        RefreshEnemySlots();
     }
 
     private void OnRoundStarted(RoundStartedEvent e)
@@ -416,6 +413,7 @@ public class CombatHUD : MonoBehaviour
             {
                 m_EnemyHpBars[i].gameObject.SetActive(false);
                 m_EnemyNames[i].gameObject.SetActive(false);
+                m_EnemyStatusIcons[i].Clear();
                 m_CurrentEnemyBarUnits[i] = null;
             }
             else

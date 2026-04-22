@@ -15,8 +15,10 @@ MonoBehaviour:
   m_EffectName: "\uCD9C\uD608"
   m_Icon: {fileID: 8592474136457853735, guid: aaa834e80c30c814b8d68ee38e33ec84, type: 3}
   m_EffectType: 0
+  m_Description: 
+  m_ShowName: 0
   m_Duration: 3
-  m_TickDamage: 3
+  m_TickDamage: 20
   m_StatModifier:
     maxHp: 0
     minDamage: 0
@@ -40,3 +42,4 @@ MonoBehaviour:
     eblaMultiplier: 0
   m_IsStackable: 1
   m_MaxStack: 2
+  m_BaseApplyRate: 100

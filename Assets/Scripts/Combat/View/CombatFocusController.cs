@@ -57,8 +57,7 @@ public class CombatFocusController : MonoBehaviour
     public Transform NikkeFocusPoint => m_NikkeFocusPoint;
     public Transform EnemyFocusPoint => m_EnemyFocusPoint;
     public Camera FocusCamera => m_Camera;
-
-
+    public float FocusOutDuration => m_FocusOutDuration;
     private void Awake()
     {
         m_OriginalScales = new Dictionary<CombatUnit, Vector3>();
@@ -200,6 +199,11 @@ public class CombatFocusController : MonoBehaviour
             view.Renderer.transform.position = m_OriginalPositions[unit];
             view.Renderer.sortingOrder = m_OriginalSortingOrders[unit];
             view.Renderer.gameObject.layer = m_DefaultLayer;
+            if (view.DeathOverlay != null)
+            {
+                view.DeathOverlay.sortingOrder = m_OriginalSortingOrders[unit] + 1;
+                view.DeathOverlay.gameObject.layer = m_DefaultLayer;
+            }
         }
 
         m_Camera.fieldOfView = m_OriginalFOV;
@@ -239,6 +243,11 @@ public class CombatFocusController : MonoBehaviour
             view.Renderer.transform.localScale = m_OriginalScales[unit] * m_FocusScale;
             view.Renderer.sortingOrder = m_FocusSortingOrder;
             view.Renderer.gameObject.layer = m_FocusLayer;
+            if (view.DeathOverlay != null)
+            {
+                view.DeathOverlay.sortingOrder = m_FocusSortingOrder + 1;
+                view.DeathOverlay.gameObject.layer = m_FocusLayer;
+            }
         }
     }
     private void CacheUnitView(CombatUnit unit, CombatFieldView.UnitView view)

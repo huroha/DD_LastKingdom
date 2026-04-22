@@ -76,7 +76,7 @@ MonoBehaviour:
   m_AttackSprite: {fileID: 21300000, guid: 7082b3ed386bfba4fb9cf17cc7042c40, type: 3}
   m_HitSprite: {fileID: 21300000, guid: 83bee85d30f206f428ccc0fb7fce03cb, type: 3}
   m_ScaleOffset: 1.05
-  m_AfflictionArt: {fileID: -4749725474202102399, guid: 7e982ea5cf30de545a9ad6380ca5f197, type: 3}
+  m_AfflictionArt: {fileID: 21300000, guid: 4fb24118a70a41348a0782ecdf7b5b31, type: 3}
   m_VirtueArt: {fileID: 0}
   m_ForcedAfflictionType: {fileID: 0}
   m_OnCritSelfEffects: []

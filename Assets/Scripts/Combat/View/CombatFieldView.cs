@@ -35,6 +35,7 @@ public class CombatFieldView : MonoBehaviour
         public SpriteRenderer Renderer;
         public Animator Animator;
         public UnitAnimBridge AnimBridge;
+        public SpriteRenderer DeathOverlay;
     }
 
     private void Awake()
@@ -187,10 +188,25 @@ public class CombatFieldView : MonoBehaviour
         if (animBridge == null && animator != null)
             animBridge = go.AddComponent<UnitAnimBridge>();
 
+        //DeathOverlay 자식 Go 생성
+        GameObject overlayGo = new GameObject("DeathOverlay");
+        overlayGo.transform.SetParent(sr.transform, false);
+        overlayGo.transform.localPosition = new Vector3(0f, 3f, 0f);
+        overlayGo.transform.localRotation = Quaternion.identity;
+        overlayGo.transform.localScale = Vector3.one * 1.5f;
+
+        SpriteRenderer overlaySr = overlayGo.AddComponent<SpriteRenderer>();
+        overlaySr.sortingLayerID = sr.sortingLayerID;
+        overlaySr.sortingOrder = sr.sortingOrder + 1;
+        overlaySr.sprite = null;
+        overlaySr.color = new Color(1f, 1f, 1f, 0f);
+
         UnitView view;
         view.Renderer = sr;
         view.Animator = animator;
         view.AnimBridge = animBridge;
+        view.DeathOverlay = overlaySr;
+
         return view;
     }
     private Transform[] GetSlots(CombatUnitType type)
@@ -259,6 +275,7 @@ public class CombatFieldView : MonoBehaviour
             corpseView.Renderer = sr;
             corpseView.Animator = null;
             corpseView.AnimBridge = null;
+            corpseView.DeathOverlay = null;
             return corpseView;
         }
         return default(UnitView);

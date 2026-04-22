@@ -147,7 +147,7 @@ public class CombatStateMachine : MonoBehaviour
             NikkeData data = m_TestNikkes[i];
             if (data == null)
                 continue;//data.BaseStats.maxHp
-            nikkes.Add(new CombatUnit(data, i, 10, 90, null));
+            nikkes.Add(new CombatUnit(data, i, data.BaseStats.maxHp, 95, null));
         }
 
         // 적 순환하면서 데이터 채우기
@@ -571,12 +571,15 @@ public class CombatStateMachine : MonoBehaviour
             if (tr.ResultState == UnitState.Dead)
             {
                 m_PositionSystem.RemoveUnit(tr.Unit);
-                EventBus.Publish(new UnitDiedEvent(tr.Unit));
                 if (tr.Unit.UnitType == CombatUnitType.Nikke)
                     ApplyAllyDeathEbla();
             }
 
-            yield return m_CombatDirector.PlayDotTick(tr.Unit, tr.Damage, tr.Effect.EffectType);
+            yield return m_CombatDirector.PlayDotTick(tr.Unit, tr.Damage, tr.Effect.EffectType, tr.PreviousState, tr.ResultState);
+
+            // DeathVFX 완료 후 view 정리
+            if (tr.ResultState == UnitState.Dead)
+                EventBus.Publish(new UnitDiedEvent(tr.Unit));
         }
         yield return StartCoroutine(FlushPendingResolutions());
     }

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NikkeData
   m_NikkeName: Crown
   m_NikkeClass: 2
-  m_CanVirtue: 1
+  m_CanVirtue: 0
   m_Manufacturer: 0
   m_Element: 3
   m_Squad: {fileID: 11400000, guid: b63fa638ddcdedb4086548dbba25858f, type: 2}
@@ -76,7 +76,7 @@ MonoBehaviour:
   m_AttackSprite: {fileID: 21300000, guid: d198cae91083e4a4f80103d22684304c, type: 3}
   m_HitSprite: {fileID: 21300000, guid: 50d5fd7b2b3034447b1db29f559ad585, type: 3}
   m_ScaleOffset: 0.9
-  m_AfflictionArt: {fileID: 6842837919363395526, guid: fa6c6be69ef4dd54caf802dd00e4bc72, type: 3}
+  m_AfflictionArt: {fileID: 21300000, guid: 0a3a1e809efde564bba88ee7efc11a82, type: 3}
   m_VirtueArt: {fileID: 0}
   m_ForcedAfflictionType: {fileID: 0}
   m_OnCritSelfEffects: []

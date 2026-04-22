@@ -4265,10 +4265,20 @@ MonoBehaviour:
   m_CombatHUD: {fileID: 335391953}
   m_FocusController: {fileID: 1422265909}
   m_DriftController: {fileID: 313713802}
-  m_PopupDuration: 0.8
+  m_PopupDuration: 1
   m_StatusPopupDelay: 0.5
   m_PostSequenceDelay: 0.5
   m_HitDuration: 1.2
+  m_DeathOverlaySprite: {fileID: 21300000, guid: 9c8f1bc6e377b484f925fb51646e4cc6, type: 3}
+  m_DeathOverlayScale: 1
+  m_DeathOverlayScaleLarge: 1.5
+  m_DeathPopStartMultiplier: 2
+  m_DeathPopDuration: 0.2
+  m_NikkeOverlayFlipX: 0
+  m_EnemyOverlayFlipX: 1
+  m_DeathFadeInDuration: 0.4
+  m_DeathHoldDuration: 0.4
+  m_DotDeathFadeOutDuration: 0.2
 --- !u!4 &510657039
 Transform:
   m_ObjectHideFlags: 0
@@ -16619,13 +16629,45 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2145186757}
     m_Modifications:
+    - target: {fileID: 636558955800525564, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 640
+      objectReference: {fileID: 0}
+    - target: {fileID: 636558955800525564, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 640
+      objectReference: {fileID: 0}
+    - target: {fileID: 636558955800525564, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 180
+      objectReference: {fileID: 0}
     - target: {fileID: 1403293499076341800, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
       propertyPath: m_Color.a
       value: 0.39215687
       objectReference: {fileID: 0}
+    - target: {fileID: 1448507872666148147, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 768
+      objectReference: {fileID: 0}
+    - target: {fileID: 1448507872666148147, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 768
+      objectReference: {fileID: 0}
     - target: {fileID: 1750520368745832447, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
       propertyPath: m_FrameOverlay
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1750520368745832447, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
+      propertyPath: m_ArtHoldDuration
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1750520368745832447, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
+      propertyPath: m_FadeOutDuration
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1750520368745832447, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
+      propertyPath: m_TransitionDuration
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 1750520368745832447, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
       propertyPath: m_VirtueFrameColor.a
@@ -16647,6 +16689,10 @@ PrefabInstance:
       propertyPath: m_AfflictionFrameColor.a
       value: 0.47058824
       objectReference: {fileID: 0}
+    - target: {fileID: 4407336398396062940, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: e221adba39e4ce946bb47b81ebe0967d, type: 3}
     - target: {fileID: 6399549724801870288, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
       propertyPath: m_LocalScale.x
       value: 20
@@ -16678,6 +16724,14 @@ PrefabInstance:
     - target: {fileID: 6615337232800327648, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 184
+      objectReference: {fileID: 0}
+    - target: {fileID: 6838073079822332210, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 768
+      objectReference: {fileID: 0}
+    - target: {fileID: 6838073079822332210, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 768
       objectReference: {fileID: 0}
     - target: {fileID: 7788881212279951217, guid: 1f0003044ba3ff94899f2d64d5521dbb, type: 3}
       propertyPath: m_Pivot.x
@@ -16782,7 +16836,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2491448880966125839, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
       propertyPath: m_Color.a
-      value: 0.078431375
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2491448880966125839, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
       propertyPath: m_Color.b

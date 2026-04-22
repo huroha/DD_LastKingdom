@@ -20,7 +20,19 @@ public class CombatDirector : MonoBehaviour
     [SerializeField] private float m_PostSequenceDelay = 0.2f;
     [SerializeField] private float m_HitDuration = 0.15f;
 
+    [Header("Death Overlay")]
+    [SerializeField] private Sprite m_DeathOverlaySprite;
+    [SerializeField] private float m_DeathOverlayScale = 1f;        // SlotSize=1 기본 크기
+    [SerializeField] private float m_DeathOverlayScaleLarge = 1.5f;
+    [SerializeField] private float m_DeathPopStartMultiplier = 2f;  // 팝인 시작 배수
+    [SerializeField] private float m_DeathPopDuration = 0.2f;       // 팝인 시간
+    [SerializeField] private bool m_NikkeOverlayFlipX = false;
+    [SerializeField] private bool m_EnemyOverlayFlipX = true;
+    [SerializeField] private float m_DeathFadeInDuration = 0.25f;   // 기존 유지
+    [SerializeField] private float m_DeathHoldDuration = 0.15f;     // 기존 유지
+    [SerializeField] private float m_DotDeathFadeOutDuration = 0.25f;
 
+    private HashSet<CombatUnit> m_DyingUnits;
 
     // 색상 상수
     private static readonly Color COLOR_DAMAGE_RED = new Color(0.75f, 0.07f, 0.07f);
@@ -65,7 +77,14 @@ public class CombatDirector : MonoBehaviour
         m_WaitStatusPopup = new WaitForSecondsRealtime(m_StatusPopupDelay);
         m_WaitPostSequence = new WaitForSecondsRealtime(m_PostSequenceDelay);
         m_WaitHit = new WaitForSecondsRealtime(m_HitDuration);
+        m_DyingUnits = new HashSet<CombatUnit>();
+    }
 
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+        if (m_DyingUnits != null)
+            m_DyingUnits.Clear();
     }
     public Coroutine PlaySkillSequence(CombatUnit user, SkillData skill, List<CombatUnit> targets, SkillResult result)
     {
@@ -87,8 +106,18 @@ public class CombatDirector : MonoBehaviour
             else
                 ProcessSingleHit(result.TargetResults[0], skill);
         }
-        CombatFieldView.UnitView userView = m_FieldView.GetView(user);
 
+        // 사망 overlay 동작
+        if (result.TargetResults != null)
+        {
+            for (int i = 0; i < result.TargetResults.Length; ++i)
+            {
+                TargetResult tr = result.TargetResults[i];
+                if (ShouldPlayDeathVfx(tr.Target, tr.PreviousState, tr.ResultState, tr.IsHit))
+                    StartCoroutine(DeathVfxRoutine(tr.Target, m_FocusController.FocusOutDuration));
+            }
+        }
+        CombatFieldView.UnitView userView = m_FieldView.GetView(user);
         if (user.UnitType == CombatUnitType.Nikke && user.NikkeData.AttackSprite != null)
         {
             if (userView.Animator != null)
@@ -255,21 +284,33 @@ public class CombatDirector : MonoBehaviour
         }
     }
 
-    public Coroutine PlayDotTick(CombatUnit unit, int damage, StatusEffectType type)
+    public Coroutine PlayDotTick(CombatUnit unit, int damage, StatusEffectType type, UnitState previousState, UnitState resultState)
     {
-        return StartCoroutine(DotTickRoutine(unit, damage, type));
+        return StartCoroutine(DotTickRoutine(unit, damage, type, previousState, resultState));
     }
-    private IEnumerator DotTickRoutine(CombatUnit unit, int damage, StatusEffectType type)
+    private IEnumerator DotTickRoutine(CombatUnit unit, int damage, StatusEffectType type, UnitState previousState, UnitState resultState)
     {
         CombatFieldView.UnitView view = m_FieldView.GetView(unit);
         bool isNikke = unit.UnitType == CombatUnitType.Nikke;
         if (view.Renderer == null)
             yield break;
 
-        SetHitSprite(unit, view, unit.State);
+        SetHitSprite(unit, view, previousState);
+
+        // Death VFX 판정과 시작
+        Coroutine deathCo = null;
+        if (ShouldPlayDeathVfx(unit, previousState, resultState, true))
+        {
+            deathCo = StartCoroutine(DeathVfxRoutine(unit, m_DotDeathFadeOutDuration));
+        }
+
         m_PopupPool.SpawnEffect(m_FieldView.GetSlotPosition(unit), isNikke, damage.ToString(), GetEffectColor(type));
         yield return m_WaitPopup;
         RestoreSingleSprite(unit, view);
+
+        // DeathVfx가 팝업보다 길면 완료까지 대기
+        if (deathCo != null)
+            yield return deathCo;
     }
 
     private void OnAttackEnd()
@@ -347,17 +388,16 @@ public class CombatDirector : MonoBehaviour
     }
     private void RestoreSingleSprite(CombatUnit unit, CombatFieldView.UnitView view)
     {
+        // 시체 pop in에서 재등장 예정
+        if (unit.State == UnitState.Dead || unit.State == UnitState.Corpse)
+            return;
+
         if (view.Animator != null)
             view.Animator.enabled = true;
         else if (unit.UnitType == CombatUnitType.Nikke)
             view.Renderer.sprite = unit.NikkeData.CombatIdleSprite;
         else
-        {
-            if (unit.State == UnitState.Corpse)
-                view.Renderer.sprite = unit.EnemyData.CorpseSprite;
-            else
-                view.Renderer.sprite = unit.EnemyData.Sprite;
-        }
+            view.Renderer.sprite = unit.EnemyData.Sprite;
     }
 
     // Stun관련
@@ -372,5 +412,90 @@ public class CombatDirector : MonoBehaviour
         bool isNikke = unit.UnitType == CombatUnitType.Nikke;
         m_PopupPool.SpawnEffect(pos, isNikke, stunResistBuff.EffectName, GetEffectColor(stunResistBuff.EffectType), stunResistBuff.Icon);
         yield return m_WaitStatusPopup;
+    }
+    private static bool ShouldPlayDeathVfx(CombatUnit target, UnitState previousState, UnitState resultState, bool isHit)
+    {
+        if (!isHit)
+            return false;
+        if (target.UnitType == CombatUnitType.Nikke)
+            return previousState == UnitState.DeathsDoor && resultState == UnitState.Dead;
+        else
+            return previousState == UnitState.Alive && (resultState == UnitState.Corpse || resultState == UnitState.Dead);
+    }
+    private IEnumerator DeathVfxRoutine(CombatUnit unit, float fadeOutDuration)
+    {
+        if (m_DyingUnits.Contains(unit)) yield break;
+        m_DyingUnits.Add(unit);
+
+        CombatFieldView.UnitView view = m_FieldView.GetView(unit);
+        if (view.Renderer == null || view.DeathOverlay == null)
+        {
+            m_DyingUnits.Remove(unit);
+            yield break;
+        }
+
+        // 기본 설정
+        bool isNikke = unit.UnitType == CombatUnitType.Nikke;
+        float baseScale = unit.SlotSize >= 2 ? m_DeathOverlayScaleLarge : m_DeathOverlayScale;
+        bool flipX = isNikke ? m_NikkeOverlayFlipX : m_EnemyOverlayFlipX;
+
+        view.DeathOverlay.sprite = m_DeathOverlaySprite;
+        view.DeathOverlay.flipX = flipX;
+        view.DeathOverlay.color = Color.white;   // alpha=1 즉시
+
+        // Phase 0: Pop-in (큰 scale → base scale)
+        Vector3 startScale = Vector3.one * baseScale * m_DeathPopStartMultiplier;
+        Vector3 endScale = Vector3.one * 1.5f;
+        view.DeathOverlay.transform.localScale = startScale;
+
+        float t0 = 0f;
+        while (t0 < m_DeathPopDuration)
+        {
+            t0 += Time.deltaTime;
+            float k = t0 / m_DeathPopDuration;
+            // EaseOut 느낌 (1 - (1-k)^2)
+            float eased = 1f - (1f - k) * (1f - k);
+            view.DeathOverlay.transform.localScale = Vector3.Lerp(startScale, endScale, eased);
+            yield return null;
+        }
+        view.DeathOverlay.transform.localScale = endScale;
+
+        // Phase 1: 메인 white → black (overlay는 유지)
+        float t = 0f;
+        while (t < m_DeathFadeInDuration)
+        {
+            t += Time.deltaTime;
+            float k = t / m_DeathFadeInDuration;
+            Color mainC = Color.Lerp(Color.white, Color.black, k);
+            float mainAlpha = view.Renderer.color.a;
+            view.Renderer.color = new Color(mainC.r, mainC.g, mainC.b, mainAlpha);
+            yield return null;
+        }
+        float finalMainAlpha = view.Renderer.color.a;
+        view.Renderer.color = new Color(0f, 0f, 0f, finalMainAlpha);
+
+        // Phase 2: Hold
+        yield return new WaitForSeconds(m_DeathHoldDuration);
+
+        // Phase 3: 양쪽 alpha 1 → 0 (기존과 동일)
+        Color mainStart = view.Renderer.color;
+        float t2 = 0f;
+        while (t2 < fadeOutDuration)
+        {
+            t2 += Time.deltaTime;
+            float k = 1f - (t2 / fadeOutDuration);
+            view.Renderer.color = new Color(mainStart.r, mainStart.g, mainStart.b, mainStart.a * k);
+            view.DeathOverlay.color = new Color(1f, 1f, 1f, k);
+            yield return null;
+        }
+
+        // 최종 상태 + 재사용 대비 원복
+        view.Renderer.color = new Color(0f, 0f, 0f, 0f);
+        view.DeathOverlay.color = new Color(1f, 1f, 1f, 0f);
+        view.DeathOverlay.sprite = null;
+        view.DeathOverlay.transform.localScale = Vector3.one;
+        view.DeathOverlay.flipX = false;
+
+        m_DyingUnits.Remove(unit);
     }
 }
