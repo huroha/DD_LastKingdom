@@ -390,6 +390,68 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &20627589
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 20627590}
+  - component: {fileID: 20627591}
+  m_Layer: 5
+  m_Name: StatusIconController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &20627590
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 20627589}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 418994766}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &20627591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 20627589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f062e1b622763c742bb886c422a8438b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatStatusIconController
+  m_NikkeIcons:
+  - {fileID: 1214123008}
+  - {fileID: 2086754630}
+  - {fileID: 889591594}
+  - {fileID: 1288469101}
+  m_EnemyIcons:
+  - {fileID: 1991792226}
+  - {fileID: 815736380}
+  - {fileID: 13582223}
+  - {fileID: 1160772642}
+  m_LargeEnemyIcons:
+  - {fileID: 1038051296}
+  - {fileID: 1718276425}
+  - {fileID: 1943457400}
 --- !u!224 &37217201 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4819711751676585024, guid: 79100821ef085244f990f3710fca897f, type: 3}
@@ -746,6 +808,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CombatCameraTilt
   m_Camera: {fileID: 51401688}
   m_CombatHUD: {fileID: 335391953}
+  m_SlotPositionController: {fileID: 0}
   m_TiltAngle: -2
   m_TiltDuration: 0.3
 --- !u!1 &53791553
@@ -2867,6 +2930,7 @@ RectTransform:
   - {fileID: 1409718597}
   - {fileID: 1101408382}
   - {fileID: 17856543}
+  - {fileID: 418994766}
   m_Father: {fileID: 2145186757}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -2888,49 +2952,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CombatHUD
   m_CombatStateMachine: {fileID: 442149358}
   m_FieldView: {fileID: 1064561593}
-  m_Camera: {fileID: 51401688}
   m_TickerDisplay: {fileID: 1031989910}
   m_TurnBarDisplay: {fileID: 883834224}
+  m_HaloController: {fileID: 1686950629}
+  m_StatusIconController: {fileID: 20627591}
+  m_HpBarController: {fileID: 1976432143}
   m_CombatTooltip: {fileID: 394946333}
   m_FloatingLabel: {fileID: 2020028444}
   m_RoundText: {fileID: 285528909}
   m_PendingRound: 0
-  m_NikkeStatusIcons:
-  - {fileID: 1214123008}
-  - {fileID: 2086754630}
-  - {fileID: 889591594}
-  - {fileID: 1288469101}
-  m_EnemyStatusIcons:
-  - {fileID: 1991792226}
-  - {fileID: 815736380}
-  - {fileID: 13582223}
-  - {fileID: 1160772642}
-  m_LargeEnemyStatusIcons:
-  - {fileID: 1038051296}
-  - {fileID: 1718276425}
-  - {fileID: 1943457400}
   m_NikkeHpBarRoot: {fileID: 1409718596}
   m_EnemyHpBarRoot: {fileID: 1101408381}
   m_SelectBar: {fileID: 97428158}
-  m_NikkeHalos:
-  - {fileID: 1373273203}
-  - {fileID: 794668197}
-  - {fileID: 933467635}
-  - {fileID: 166364003}
-  m_EnemyHalos:
-  - {fileID: 1490396490}
-  - {fileID: 1932107845}
-  - {fileID: 1299837799}
-  - {fileID: 2032252971}
-  m_LargeEnemyHalos:
-  - {fileID: 1237172005}
-  - {fileID: 1346091820}
-  - {fileID: 797888783}
-  m_NikkeHpBars:
-  - {fileID: 1390893362}
-  - {fileID: 1864164831}
-  - {fileID: 1718091595}
-  - {fileID: 1441138865}
   m_NikkeEblaBars:
   - Root: {fileID: 1441533815}
     Cells:
@@ -2988,34 +3021,6 @@ MonoBehaviour:
   m_EblaEmptySprite: {fileID: 2800096476159140463, guid: 6ba11d2fabf44af4bbf14df79ab1f6e8, type: 3}
   m_EblaPhase1Sprite: {fileID: -6837850060274427411, guid: 5fb234ba583a2524e8079502a3f8559c, type: 3}
   m_EblaPhase2Sprite: {fileID: -6455478296969171888, guid: 8b3e17bee08e40f4f9e55fba1a2fbb85, type: 3}
-  m_EnemyHpBars:
-  - {fileID: 2068142389}
-  - {fileID: 13662284}
-  - {fileID: 1667153997}
-  - {fileID: 38081485}
-  m_EnemyNames:
-  - {fileID: 1868580069}
-  - {fileID: 13662282}
-  - {fileID: 780931684}
-  - {fileID: 38081483}
-  m_LargeEnemyHpBars:
-  - {fileID: 439709207}
-  - {fileID: 246524258}
-  - {fileID: 669856110}
-  m_NikkeSlotRoots:
-  - {fileID: 54826163}
-  - {fileID: 2098843266}
-  - {fileID: 964667265}
-  - {fileID: 1926262203}
-  m_EnemySlotRoots:
-  - {fileID: 115552583}
-  - {fileID: 13662280}
-  - {fileID: 780931682}
-  - {fileID: 38081481}
-  m_LargeEnemySlotRoots:
-  - {fileID: 255785657}
-  - {fileID: 181062191}
-  - {fileID: 669856107}
   m_AnnounceDisplayDuration: 1.2
   m_EnemySkillPanel: {fileID: 17856542}
   m_EnemySkillNameText: {fileID: 1546824371}
@@ -3685,6 +3690,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!1 &418994765
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 418994766}
+  m_Layer: 5
+  m_Name: Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &418994766
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 418994765}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1686950628}
+  - {fileID: 1620039172}
+  - {fileID: 20627590}
+  - {fileID: 1976432142}
+  m_Father: {fileID: 335391952}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &421055007
 GameObject:
   m_ObjectHideFlags: 0
@@ -3922,10 +3966,11 @@ MonoBehaviour:
   m_SkillSelectPanel: {fileID: 1281108709}
   m_TargetSelectPanel: {fileID: 1148400936}
   m_CombatDirector: {fileID: 510657038}
-  m_EblaFreeRounds: 4
-  m_EblaRoundMultiplier: 1
   m_FieldView: {fileID: 1064561593}
   m_CombatHUD: {fileID: 335391953}
+  m_HaloController: {fileID: 1686950629}
+  m_EblaFreeRounds: 4
+  m_EblaRoundMultiplier: 1
   m_AfflictionTypes:
   - {fileID: 11400000, guid: d8109a3e22abc6447aa96f243d671c9d, type: 2}
   m_VirtueTypes:
@@ -4265,19 +4310,13 @@ MonoBehaviour:
   m_CombatHUD: {fileID: 335391953}
   m_FocusController: {fileID: 1422265909}
   m_DriftController: {fileID: 313713802}
+  m_HaloController: {fileID: 1686950629}
+  m_DeathVfxPlayer: {fileID: 1447598961}
+  m_HpBarController: {fileID: 1976432143}
   m_PopupDuration: 1
   m_StatusPopupDelay: 0.5
   m_PostSequenceDelay: 0.5
   m_HitDuration: 1.2
-  m_DeathOverlaySprite: {fileID: 21300000, guid: 9c8f1bc6e377b484f925fb51646e4cc6, type: 3}
-  m_DeathOverlayScale: 1
-  m_DeathOverlayScaleLarge: 1.5
-  m_DeathPopStartMultiplier: 2
-  m_DeathPopDuration: 0.2
-  m_NikkeOverlayFlipX: 0
-  m_EnemyOverlayFlipX: 1
-  m_DeathFadeInDuration: 0.4
-  m_DeathHoldDuration: 0.4
   m_DotDeathFadeOutDuration: 0.2
 --- !u!4 &510657039
 Transform:
@@ -8243,6 +8282,8 @@ MonoBehaviour:
   m_CombatHUD: {fileID: 335391953}
   m_PopScale: 1.05
   m_PopDuration: 0.5
+  m_CorpsePopStartMultiplier: 0.1
+  m_CorpsePopDuration: 0.3
 --- !u!114 &1075459464 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7125260554414354830, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
@@ -11166,6 +11207,66 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6516714566673726475, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
   m_PrefabInstance: {fileID: 6289146074251616035}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1447598959
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1447598960}
+  - component: {fileID: 1447598961}
+  m_Layer: 0
+  m_Name: CombatDeathVFX
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1447598960
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1447598959}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1789989203}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1447598961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1447598959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0273b0556b8fd34b899c42250620274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatDeathVfxPlayer
+  m_FieldView: {fileID: 1064561593}
+  m_CombatHUD: {fileID: 335391953}
+  m_HpBarController: {fileID: 1976432143}
+  m_DeathOverlaySprite: {fileID: 21300000, guid: 9c8f1bc6e377b484f925fb51646e4cc6, type: 3}
+  m_DeathOverlayScale: 1
+  m_DeathOverlayScaleLarge: 1.5
+  m_DeathPopStartMultiplier: 2
+  m_DeathPopDuration: 0.2
+  m_NikkeOverlayFlipX: 0
+  m_EnemyOverlayFlipX: 1
+  m_DeathFadeInDuration: 0.4
+  m_DeathHoldDuration: 0.4
+  m_CorpseVfxSprite: {fileID: -2797813961376317909, guid: edce16d75ac866742aef210faf1b3fe5, type: 3}
+  m_CorpseVfxScale: 3.5
+  m_CorpseVfxScaleLarge: 4
+  m_CorpseVfxStartMultiplier: 0.9
 --- !u!1 &1453125318
 GameObject:
   m_ObjectHideFlags: 0
@@ -12052,6 +12153,72 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!1 &1620039171
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1620039172}
+  - component: {fileID: 1620039173}
+  m_Layer: 5
+  m_Name: PositionController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1620039172
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620039171}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 418994766}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1620039173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620039171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea83019bc32f33c48878cc53f29e4e9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatSlotPositionController
+  m_CombatStateMachine: {fileID: 442149358}
+  m_FieldView: {fileID: 1064561593}
+  m_Camera: {fileID: 51401688}
+  m_TurnBarDisplay: {fileID: 883834224}
+  m_NikkeSlotRoots:
+  - {fileID: 54826163}
+  - {fileID: 2098843266}
+  - {fileID: 964667265}
+  - {fileID: 1926262203}
+  m_EnemySlotRoots:
+  - {fileID: 115552583}
+  - {fileID: 13662280}
+  - {fileID: 780931682}
+  - {fileID: 38081481}
+  m_LargeEnemySlotRoots:
+  - {fileID: 255785657}
+  - {fileID: 181062191}
+  - {fileID: 669856107}
 --- !u!114 &1624197226 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1720100222203148246, guid: 79100821ef085244f990f3710fca897f, type: 3}
@@ -12493,6 +12660,68 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1672601962}
   m_CullTransparentMesh: 1
+--- !u!1 &1686950627
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1686950628}
+  - component: {fileID: 1686950629}
+  m_Layer: 5
+  m_Name: HaloController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1686950628
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1686950627}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 418994766}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1686950629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1686950627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64851e14f322d3040abed7ea0906747a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatHaloController
+  m_NikkeHalos:
+  - {fileID: 1373273203}
+  - {fileID: 794668197}
+  - {fileID: 933467635}
+  - {fileID: 166364003}
+  m_EnemyHalos:
+  - {fileID: 1490396490}
+  - {fileID: 1932107845}
+  - {fileID: 1299837799}
+  - {fileID: 2032252971}
+  m_LargeEnemyHalos:
+  - {fileID: 1237172005}
+  - {fileID: 1346091820}
+  - {fileID: 797888783}
 --- !u!1001 &1690548264
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13553,6 +13782,7 @@ Transform:
   - {fileID: 954582675}
   - {fileID: 1422265908}
   - {fileID: 313713801}
+  - {fileID: 1447598960}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1791686577
@@ -15219,6 +15449,69 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!1 &1976432141
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1976432142}
+  - component: {fileID: 1976432143}
+  m_Layer: 5
+  m_Name: HpbarController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1976432142
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1976432141}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 418994766}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1976432143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1976432141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16e06d72468eaae40b494498f50e566d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatHpBarController
+  m_StatusIconController: {fileID: 20627591}
+  m_NikkeHpBars:
+  - {fileID: 1390893362}
+  - {fileID: 1864164831}
+  - {fileID: 1718091595}
+  - {fileID: 1441138865}
+  m_EnemyHpBars:
+  - {fileID: 2068142389}
+  - {fileID: 13662284}
+  - {fileID: 1667153997}
+  - {fileID: 38081485}
+  m_LargeEnemyHpBars:
+  - {fileID: 439709207}
+  - {fileID: 246524258}
+  - {fileID: 669856110}
 --- !u!114 &1985495975 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8817970950399971983, guid: 076eeb649484f24438d25c4512faa185, type: 3}

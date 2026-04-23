@@ -14,8 +14,16 @@ public class CombatFieldView : MonoBehaviour
 
     [SerializeField] private float m_PopScale = 1.1f;
     [SerializeField] private float m_PopDuration = 0.2f;
+
+    [Header("Corpse Popin")]
+    [SerializeField] private float m_CorpsePopStartMultiplier = 0.1f;
+    [SerializeField] private float m_CorpsePopDuration = 0.3f;
+
+
     private Dictionary<CombatUnit, Coroutine> m_PopCoroutine;
     private Dictionary<CombatUnit, Vector3> m_PopOriginalScales;
+    private Dictionary<CombatUnit, Coroutine> m_CorpsePopCoroutines;
+
 
     // CombatUnit -> 해당 유닛의 SpriteRenderer 맵핑
     private Dictionary<CombatUnit, UnitView> m_UnitViews;
@@ -70,6 +78,7 @@ public class CombatFieldView : MonoBehaviour
         m_UnitViews = new Dictionary<CombatUnit, UnitView>();
         m_MoveCoroutines = new Dictionary<CombatUnit, Coroutine>();
         m_CorpseViews = new Dictionary<CombatUnit, SpriteRenderer>();
+        m_CorpsePopCoroutines = new Dictionary<CombatUnit, Coroutine>();
 
         for (int i=0; i<e.Nikkes.Count; ++i)
         {
@@ -102,6 +111,11 @@ public class CombatFieldView : MonoBehaviour
         // Corpse -> Dead : 시체 제거
         if(m_CorpseViews.ContainsKey(e.Unit))
         {
+            if(m_CorpsePopCoroutines.ContainsKey(e.Unit))
+            {
+                StopCoroutine(m_CorpsePopCoroutines[e.Unit]);
+                m_CorpsePopCoroutines.Remove(e.Unit);
+            }
             Destroy(m_CorpseViews[e.Unit].gameObject);
             m_CorpseViews.Remove(e.Unit);
             MoveAllToCurrentSlots();
@@ -123,6 +137,10 @@ public class CombatFieldView : MonoBehaviour
                     view.AnimBridge.ClearCallbacks();
                 view.Renderer.sprite = e.Unit.EnemyData.CorpseSprite;
                 m_CorpseViews[e.Unit] = view.Renderer;
+
+                if (m_CorpsePopCoroutines.ContainsKey(e.Unit))
+                    StopCoroutine(m_CorpsePopCoroutines[e.Unit]);
+                m_CorpsePopCoroutines[(e.Unit)] = StartCoroutine(CorpsePopInRoutine(e.Unit, view.Renderer));
             }
             else
             {
@@ -135,6 +153,29 @@ public class CombatFieldView : MonoBehaviour
             Destroy(view.Renderer.gameObject);
             MoveAllToCurrentSlots();
         }
+    }
+    private IEnumerator CorpsePopInRoutine(CombatUnit unit, SpriteRenderer sr)
+    {
+        Vector3 baseScale = sr.transform.localScale;
+        Vector3 startScale = baseScale * m_CorpsePopStartMultiplier;
+
+        sr.transform.localScale = startScale;
+        sr.color = new Color(1f, 1f, 1f, 0f);
+        float t = 0;
+        while(t < m_CorpsePopDuration)
+        {
+            t += Time.deltaTime;
+            float k = Mathf.Clamp01(t / m_CorpsePopDuration);
+            float eased = 1f - (1f - k) * (1f - k);
+            sr.transform.localScale = Vector3.Lerp(startScale, baseScale, eased);
+            sr.color = new Color(1f, 1f, 1f, k);
+            yield return null;
+        }
+
+        sr.transform.localScale = baseScale;
+        sr.color = Color.white;
+        m_CorpsePopCoroutines.Remove(unit);
+        m_CombatHUD.ShowHpBarForCorpse(unit);
     }
 
     private UnitView CreateUnitView(CombatUnit unit, Vector3 pos)

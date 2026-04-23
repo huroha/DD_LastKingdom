@@ -24,12 +24,12 @@ public class CombatStateMachine : MonoBehaviour
     [SerializeField] private SkillSelectPanel m_SkillSelectPanel;
     [SerializeField] private TargetSelectPanel m_TargetSelectPanel;
     [SerializeField] private CombatDirector m_CombatDirector;
+    [SerializeField] private CombatFieldView m_FieldView;
+    [SerializeField] private CombatHUD m_CombatHUD;
+    [SerializeField] private CombatHaloController m_HaloController;
 
     [SerializeField] private int m_EblaFreeRounds = 4;
     [SerializeField] private int m_EblaRoundMultiplier = 1;
-
-    [SerializeField] private CombatFieldView m_FieldView;
-    [SerializeField] private CombatHUD m_CombatHUD;
 
     [Header("Ebla System")]
     [SerializeField] private AfflictionTypeData[] m_AfflictionTypes;
@@ -616,7 +616,7 @@ public class CombatStateMachine : MonoBehaviour
             int delta = unit.Ebla - m_EblaSnapshot[i];
             if (delta == 0) continue;
             anyChanged = true;
-            m_CombatHUD.PopupEblaHalo(unit, delta);
+            m_HaloController.PopupEblaHalo(unit, delta);
         }
         if (anyChanged)
             yield return m_WaitEblaHalo;

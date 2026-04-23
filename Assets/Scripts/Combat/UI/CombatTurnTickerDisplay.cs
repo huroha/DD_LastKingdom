@@ -194,5 +194,12 @@ public class CombatTurnTickerDisplay : MonoBehaviour
         else
             return m_EnemyTurnTickerGroups[unit.SlotIndex];
     }
-
+    public void HideUnitTickers(CombatUnit unit)
+    {
+        TickerGroup group = GetTickerGroup(unit);
+        for (int i = 0; i < group.Tickers.Length; ++i)
+        {
+            group.Tickers[i].gameObject.SetActive(false);
+        }
+    }
 }

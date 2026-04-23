@@ -3,8 +3,12 @@ using System.Collections;
 
 public class CombatCameraTilt : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] private Camera m_Camera;
     [SerializeField] private CombatHUD m_CombatHUD;
+    [SerializeField] private CombatSlotPositionController m_SlotPositionController;
+
+    [Header("Option")]
     [SerializeField] private float m_TiltAngle = 3f;
     [SerializeField] private float m_TiltDuration = 0.3f;
 
@@ -47,7 +51,7 @@ public class CombatCameraTilt : MonoBehaviour
             m_CurrentTiltY = Mathf.Lerp(from, to, t);
             euler.y = m_CurrentTiltY;
             m_Camera.transform.eulerAngles = euler;
-            m_CombatHUD.UpdateSlotPositionsForTilt();
+            m_SlotPositionController.UpdateSlotPositionsForTilt();
             yield return null;
         }
 
@@ -56,9 +60,9 @@ public class CombatCameraTilt : MonoBehaviour
         m_Camera.transform.eulerAngles = euler;
 
         if (to == 0f)
-            m_CombatHUD.ResetSlotPositions();
+            m_SlotPositionController.ResetSlotPositions();
         else
-            m_CombatHUD.UpdateSlotPositionsForTilt();
+            m_SlotPositionController.UpdateSlotPositionsForTilt();
 
         m_TiltCoroutine = null;
     }
