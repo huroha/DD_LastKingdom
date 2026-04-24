@@ -15,6 +15,7 @@ public class CombatDirector : MonoBehaviour
     [SerializeField] private CombatHaloController m_HaloController;
     [SerializeField] private CombatDeathVfxPlayer m_DeathVfxPlayer;
     [SerializeField] private CombatHpBarController m_HpBarController;
+    [SerializeField] private BgAttackOverlay m_BgAttackOverlay;
 
     [Header("Timing")]
     [SerializeField] private float m_PopupDuration = 0.6f;
@@ -85,6 +86,26 @@ public class CombatDirector : MonoBehaviour
         yield return m_FocusController.FocusIn(skill.IsAllyTargeting);
         m_DriftController.StartDrift(user, skill);
 
+        if (!skill.IsAllyTargeting && result.TargetResults != null)
+        {
+            bool anyDamageHit = false;
+            bool anyCrit = false;
+            for (int i = 0; i < result.TargetResults.Length; ++i)
+            {
+                TargetResult tr = result.TargetResults[i];
+                if (tr.IsHit && tr.DamageDealt > 0)
+                {
+                    anyDamageHit = true;
+                    if (tr.IsCrit)
+                        anyCrit = true;
+                }
+            }
+            if (anyDamageHit)
+            {
+                bool targetIsNikke = user.UnitType == CombatUnitType.Enemy;
+                m_BgAttackOverlay.Show(anyCrit, targetIsNikke);
+            }
+        }
         // 3. 공격 모션
         if (result.TargetResults != null && result.TargetResults.Length > 0)
         {

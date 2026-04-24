@@ -8,6 +8,7 @@ public class DamagePopup : MonoBehaviour
     [SerializeField] private float m_FloatSpeed = 1f;
     [SerializeField] private float m_Duration = 0.8f;
     [SerializeField] private SpriteRenderer m_IconRenderer;
+    [SerializeField] private int m_SortingOrder = 20;
 
     private Coroutine m_FloatRoutine;
 
@@ -17,11 +18,13 @@ public class DamagePopup : MonoBehaviour
         m_Text.color = color;
         transform.position = worldPosition + offset;
         transform.localScale = Vector3.one * scale;
-        if(m_IconRenderer != null)
+        m_Text.sortingOrder = m_SortingOrder;
+        if (m_IconRenderer != null)
         {
             if (icon != null)
             {
                 m_IconRenderer.sprite = icon;
+                m_IconRenderer.sortingOrder = m_SortingOrder;
                 m_IconRenderer.enabled = true;
             }
             else
