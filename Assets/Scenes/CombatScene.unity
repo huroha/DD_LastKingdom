@@ -4314,6 +4314,9 @@ MonoBehaviour:
   m_DeathVfxPlayer: {fileID: 1447598961}
   m_HpBarController: {fileID: 1976432143}
   m_BgAttackOverlay: {fileID: 1496988762}
+  m_SharedMeleeHit: {fileID: 11400000, guid: 1f0e70335cdaead418d0c3f13bd08c8c, type: 2}
+  m_SharedEblaHit: {fileID: 0}
+  m_EffectPool: {fileID: 824591905}
   m_PopupDuration: 1
   m_StatusPopupDelay: 0.5
   m_PostSequenceDelay: 0.5
@@ -6350,6 +6353,53 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2447b184501a1e42aec87fc8d205c68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StatusEffectIconDisplay
+--- !u!1 &824591904
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 824591906}
+  - component: {fileID: 824591905}
+  m_Layer: 0
+  m_Name: CombatEffectPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &824591905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 824591904}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8bddaf91edb2ee47b5501cdf1ada3f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatEffectPool
+  m_WorldRoot: {fileID: 1093621612}
+  m_InitialSpriteCount: 16
+--- !u!4 &824591906
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 824591904}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1093621612}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &838931970
 GameObject:
   m_ObjectHideFlags: 0
@@ -8382,6 +8432,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!1 &1093621611
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1093621612}
+  m_Layer: 0
+  m_Name: WorldRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1093621612
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1093621611}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 824591906}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1101408381
 GameObject:
   m_ObjectHideFlags: 0
@@ -11298,8 +11379,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1695783089}
-  - {fileID: 1496988761}
   - {fileID: 1064561592}
+  - {fileID: 1496988761}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1466933741
@@ -11460,9 +11541,10 @@ MonoBehaviour:
   m_CritSprite: {fileID: 21300000, guid: 83ab7912589461d408b79b45602afb23, type: 3}
   m_NikkeTargetFlipX: 1
   m_EnemyTargetFlipX: 0
-  m_FadeInDuration: 0.1
-  m_HoldDuration: 0.3
+  m_FadeInDuration: 0.01
+  m_HoldDuration: 0.6
   m_FadeOutDuration: 0.2
+  m_Scale: 1.5
 --- !u!212 &1496988763
 SpriteRenderer:
   serializedVersion: 2
@@ -17621,3 +17703,4 @@ SceneRoots:
   - {fileID: 2145186757}
   - {fileID: 2036833133}
   - {fileID: 1789989203}
+  - {fileID: 824591906}

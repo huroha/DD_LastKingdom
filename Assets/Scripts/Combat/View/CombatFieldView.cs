@@ -238,7 +238,7 @@ public class CombatFieldView : MonoBehaviour
 
         SpriteRenderer overlaySr = overlayGo.AddComponent<SpriteRenderer>();
         overlaySr.sortingLayerID = sr.sortingLayerID;
-        overlaySr.sortingOrder = sr.sortingOrder + 1;
+        overlaySr.sortingOrder = sr.sortingOrder + 5;
         overlaySr.sprite = null;
         overlaySr.color = new Color(1f, 1f, 1f, 0f);
 

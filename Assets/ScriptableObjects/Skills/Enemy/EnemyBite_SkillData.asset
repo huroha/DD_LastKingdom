@@ -34,3 +34,8 @@ MonoBehaviour:
   m_MarkDamageBonus: 0
   m_OnHitEffects:
   - {fileID: 11400000, guid: 9dcf7895691dda146a2afdb6459c5a35, type: 2}
+  m_AttackEffect: {fileID: 0}
+  m_AttackMovement: 0
+  m_ProjectileSpeed: 20
+  m_HitEffect: {fileID: 11400000, guid: 14162abe57e5ca044b27f3302e69e083, type: 2}
+  m_SharedHitCategory: 1

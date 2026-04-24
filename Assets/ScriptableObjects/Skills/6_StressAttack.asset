@@ -23,7 +23,8 @@ MonoBehaviour:
   m_DamageMultiplier: 0.5
   m_AccuracyMod: 0
   m_CritMod: 0
-  m_HealAmount: 0
+  m_MinHeal: 0
+  m_MaxHeal: 0
   m_EblaDamage: 25
   m_EblaHealAmount: 0
   m_MoveUserAmount: 0
@@ -32,3 +33,8 @@ MonoBehaviour:
   m_IsMark: 0
   m_MarkDamageBonus: 0
   m_OnHitEffects: []
+  m_AttackEffect: {fileID: 0}
+  m_AttackMovement: 0
+  m_ProjectileSpeed: 20
+  m_HitEffect: {fileID: 11400000, guid: c7ae45651ff4f4d46bd02b14439ba5cb, type: 2}
+  m_SharedHitCategory: 2

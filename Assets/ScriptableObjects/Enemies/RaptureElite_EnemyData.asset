@@ -40,6 +40,7 @@ MonoBehaviour:
     eblaMultiplier: 0
   m_Skills:
   - {fileID: 11400000, guid: aa0bba7d332e50e46b083318c321aeb2, type: 2}
+  - {fileID: 11400000, guid: 32784ae15fe6233499914810f0b889db, type: 2}
   m_DropTable:
     MinGold: 0
     MaxGold: 0

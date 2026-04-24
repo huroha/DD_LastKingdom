@@ -94,7 +94,7 @@ public class CombatDeathVfxPlayer : MonoBehaviour
             overlay.color = new Color(1f, 1f, 1f, k);
             if (trackOverlayLayer)
             {
-                overlay.sortingOrder = view.Renderer.sortingOrder + 1;
+                overlay.sortingOrder = view.Renderer.sortingOrder + 5;
                 overlay.gameObject.layer = view.Renderer.gameObject.layer;
             }
             yield return null;
@@ -123,6 +123,7 @@ public class CombatDeathVfxPlayer : MonoBehaviour
         bool flipX = isNikke ? m_NikkeOverlayFlipX : m_EnemyOverlayFlipX;
 
         view.DeathOverlay.sprite = m_DeathOverlaySprite;
+        view.DeathOverlay.gameObject.layer = view.Renderer.gameObject.layer;
         view.DeathOverlay.flipX = flipX;
         view.DeathOverlay.color = Color.white;
 
@@ -180,7 +181,7 @@ public class CombatDeathVfxPlayer : MonoBehaviour
         SpriteRenderer overlay = overlayGo.AddComponent<SpriteRenderer>();
         overlay.sprite = m_CorpseVfxSprite;
         overlay.sortingLayerID = view.Renderer.sortingLayerID;
-        overlay.sortingOrder = view.Renderer.sortingOrder + 1;
+        overlay.sortingOrder = view.Renderer.sortingOrder + 5;
         overlay.gameObject.layer = view.Renderer.gameObject.layer;
         overlay.color = Color.white;
 

@@ -17,6 +17,11 @@ public class CombatDirector : MonoBehaviour
     [SerializeField] private CombatHpBarController m_HpBarController;
     [SerializeField] private BgAttackOverlay m_BgAttackOverlay;
 
+    [Header("References - Shared HitEffect")]
+    [SerializeField] private CombatEffectData m_SharedMeleeHit;
+    [SerializeField] private CombatEffectData m_SharedEblaHit;
+    [SerializeField] private CombatEffectPool m_EffectPool;
+
     [Header("Timing")]
     [SerializeField] private float m_PopupDuration = 0.6f;
     [SerializeField] private float m_StatusPopupDelay = 0.3f;
@@ -82,9 +87,6 @@ public class CombatDirector : MonoBehaviour
     {
         m_FocusController.SetupFocus(user, targets);
         m_FieldView.SetFocusLock(true);
-        // 2. Focus In
-        yield return m_FocusController.FocusIn(skill.IsAllyTargeting);
-        m_DriftController.StartDrift(user, skill);
 
         if (!skill.IsAllyTargeting && result.TargetResults != null)
         {
@@ -106,9 +108,19 @@ public class CombatDirector : MonoBehaviour
                 m_BgAttackOverlay.Show(anyCrit, targetIsNikke);
             }
         }
+        // 2. Focus In
+        yield return m_FocusController.FocusIn(skill.IsAllyTargeting);
+        m_DriftController.StartDrift(user, skill);
+
         // 3. 공격 모션
         if (result.TargetResults != null && result.TargetResults.Length > 0)
         {
+            PlayAttackEffect(user, skill, targets);
+            for (int i = 0; i < result.TargetResults.Length; ++i)
+            {
+                if (result.TargetResults[i].IsHit)
+                    PlayHitEffect(result.TargetResults[i].Target, skill);
+            }
             if (targets.Count > 1)
                 ProcessHitBatch(result.TargetResults, skill);
             else
@@ -416,6 +428,82 @@ public class CombatDirector : MonoBehaviour
         m_PopupPool.SpawnEffect(pos, isNikke, stunResistBuff.EffectName, GetEffectColor(stunResistBuff.EffectType), stunResistBuff.Icon);
         yield return m_WaitStatusPopup;
     }
+    // Effect 관련
+    private bool ResolveFlipX(CombatEffectData effect, CombatUnit target)
+    {
+        if (target.UnitType == CombatUnitType.Nikke)
+            return effect.FlipXOnNikkeTarget;
+        else
+            return effect.FlipXOnEnemyTarget;
+    }
+    private CombatEffectData ResolveHitEffect(SkillData skill)
+    {
+        if (skill.HitEffect != null)
+            return skill.HitEffect;
+        else if (skill.SharedHitCategory == SharedHitCategory.Melee)
+            return m_SharedMeleeHit;
+        else if (skill.SharedHitCategory == SharedHitCategory.Ebla)
+            return m_SharedEblaHit;
+        else
+            return null;
+    }
+    private IEnumerator ReturnAfter(Coroutine co, GameObject go, CombatEffectData effect)
+    {
+        yield return co;
+        m_EffectPool.Return(go, effect);
+    }
+    private void PlayAttackEffect(CombatUnit user, SkillData skill, List<CombatUnit> targets)
+    {
+        CombatEffectData effect = skill.AttackEffect;
+        if (effect == null)
+            return;
+        CombatUnit refTarget = targets[0];
+        CombatFieldView.UnitView userView = m_FieldView.GetView(user);
+        int order = userView.Renderer.sortingOrder + 2;
+        bool flipX = ResolveFlipX(effect, refTarget);
 
+        GameObject go = m_EffectPool.Borrow(effect);
+        if (skill.AttackMovement == EffectMovement.Static)
+        {
+            Coroutine co = effect.Play(this, go, userView.Renderer.transform, order, flipX);
+            StartCoroutine(ReturnAfter(co, go, effect));
+        }
+        else if (skill.AttackMovement == EffectMovement.Projectile)
+        {
+            Vector3 from = userView.Renderer.transform.position;
+            Vector3 to = m_FieldView.GetView(refTarget).Renderer.transform.position;
+            Coroutine playCo = effect.Play(this, go, m_EffectPool.WorldRoot, order, flipX);
+            StartCoroutine(ProjectileMove(go, from, to, skill.ProjectileSpeed, playCo, effect));
+        }
+    }
+    private void PlayHitEffect(CombatUnit target, SkillData skill)
+    {
+        CombatEffectData effect = ResolveHitEffect(skill);
+        if (effect == null)
+            return;
+        CombatFieldView.UnitView view = m_FieldView.GetView(target);
+        int order = view.Renderer.sortingOrder + 2;
+        bool flipX = ResolveFlipX(effect, target);
 
+        GameObject go = m_EffectPool.Borrow(effect);
+        Coroutine co = effect.Play(this, go, view.Renderer.transform, order, flipX);
+        StartCoroutine(ReturnAfter(co, go, effect));
+    }
+    private IEnumerator ProjectileMove(GameObject go, Vector3 from, Vector3 to, float speed, Coroutine playCo, CombatEffectData effect)
+    {
+        float dist = Vector3.Distance(from, to);
+        if (speed <= 0f) speed = 1f;
+        float duration = dist / speed;
+        float t = 0f;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float k = t / duration;
+            go.transform.position = Vector3.Lerp(from, to, k);
+            yield return null;
+        }
+        go.transform.position = to;
+        yield return playCo;
+        m_EffectPool.Return(go, effect);
+    }
 }

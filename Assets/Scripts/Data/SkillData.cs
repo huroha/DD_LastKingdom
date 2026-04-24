@@ -26,6 +26,18 @@ public enum TargetType
     Self
 }
 
+public enum EffectMovement
+{
+    Static,
+    Projectile,
+}
+public enum SharedHitCategory
+{
+    None,
+    Melee,
+    Ebla
+}
+
 [CreateAssetMenu(fileName = "New Skill", menuName = "LastKingdom/Skill Data")]
 public class SkillData : ScriptableObject
 {
@@ -67,6 +79,12 @@ public class SkillData : ScriptableObject
     [Header("Effects")]
     [SerializeField] private StatusEffectData[] m_OnHitEffects;     // 적중 시 타겟에 적용
 
+    [Header("Combat Effects")]
+    [SerializeField] private CombatEffectData m_AttackEffect;
+    [SerializeField] private EffectMovement m_AttackMovement;
+    [SerializeField] private float m_ProjectileSpeed = 20f;
+    [SerializeField] private CombatEffectData m_HitEffect;
+    [SerializeField] SharedHitCategory m_SharedHitCategory;
 
     public bool IsEnemyTargeting => m_TargetType == TargetType.EnemySingle
                                   || m_TargetType == TargetType.EnemyMulti
@@ -94,7 +112,11 @@ public class SkillData : ScriptableObject
     public bool IsGuard => m_IsGuard;
     public bool IsMark => m_IsMark;
     public float MarkDamageBonus => m_MarkDamageBonus;
-
-
     public IReadOnlyList<StatusEffectData> OnHitEffects => m_OnHitEffects;
+    public CombatEffectData AttackEffect => m_AttackEffect;
+    public EffectMovement AttackMovement => m_AttackMovement;
+    public float ProjectileSpeed => m_ProjectileSpeed;
+    public CombatEffectData HitEffect => m_HitEffect;
+    public SharedHitCategory SharedHitCategory => m_SharedHitCategory;
+
 }
