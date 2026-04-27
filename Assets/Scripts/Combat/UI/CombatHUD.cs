@@ -53,6 +53,9 @@ public class CombatHUD : MonoBehaviour
 
     [SerializeField] private Image[] m_NTargetHighlights;  // 4°³
 
+    [Header("Nikke Detail Panel")]
+    [SerializeField] private NikkeDetailPanel m_NikkeDetailPanel;
+
     [Header("Ebla Resolution")]
     [SerializeField] private AfflictionNarrationPanel m_NarrationPanel;
 
@@ -173,6 +176,7 @@ public class CombatHUD : MonoBehaviour
 
         m_StatusIconController.SetupTooltips(m_CombatTooltip);
 
+
         m_HpBarController.HideAllBars();
         for (int i = 0; i < m_NikkeNames.Length; ++i)
         {
@@ -277,6 +281,7 @@ public class CombatHUD : MonoBehaviour
             trigger = target.AddComponent<TooltipTrigger>();
         trigger.Initialize(m_CombatTooltip, contentBuilder, offset);
     }
+
     private void RefreshHpBar(CombatUnit unit)
     {
         m_HpBarController.RefreshBar(unit);
@@ -526,5 +531,9 @@ public class CombatHUD : MonoBehaviour
     {
         RefreshNikkeSlots();
     }
-
+    public void ShowNikkeDetail(CombatUnit unit)
+    {
+        if (m_NikkeDetailPanel == null) return;
+        m_NikkeDetailPanel.Show(unit);
+    }
 }

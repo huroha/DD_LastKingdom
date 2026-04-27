@@ -1,7 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using NUnit.Framework.Constraints;
-
 public class BgAttackOverlay : MonoBehaviour
 {
     [Header("Sprites")]
@@ -39,27 +37,11 @@ public class BgAttackOverlay : MonoBehaviour
 
     private IEnumerator PlayRoutine()
     {
-        float elapsed = 0f;
-        while (elapsed < m_FadeInDuration)
-        {
-            elapsed += Time.deltaTime;
-            float alpha = elapsed / m_FadeInDuration;
-            m_Renderer.color = new Color(1f, 1f, 1f, alpha);
-            yield return null;
-        }
-        m_Renderer.color = new Color(1f, 1f, 1f, 1f);
+        yield return CoroutineHelper.FadeAlpha(m_Renderer, 0f, 1f, m_FadeInDuration);
 
         yield return new WaitForSeconds(m_HoldDuration);
 
-        elapsed = 0f;
-        while (elapsed < m_FadeOutDuration)
-        {
-            elapsed += Time.deltaTime;
-            float alpha = 1f - (elapsed / m_FadeOutDuration);
-            m_Renderer.color = new Color(1f, 1f, 1f, alpha);
-            yield return null;
-        }
-        m_Renderer.color = new Color(1f, 1f, 1f, 0f);
+        yield return CoroutineHelper.FadeAlpha(m_Renderer, 1f, 0f, m_FadeOutDuration);
     }
     private void OnDisable()
     {

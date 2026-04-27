@@ -1,6 +1,101 @@
-﻿* text=auto eol=lf
-*.cs text eol=lf
-*.json text eol=lf
-*.md text eol=lf
-*.shader text eol=lf
-*.hlsl text eol=lf
+# 기본 — 텍스트 자동 감지 + LF 통일
+* text=auto eol=lf
+
+# 코드 / 텍스트
+*.cs        text eol=lf
+*.shader    text eol=lf
+*.cginc     text eol=lf
+*.hlsl      text eol=lf
+*.compute   text eol=lf
+*.json      text eol=lf
+*.md        text eol=lf
+*.txt       text eol=lf
+*.xml       text eol=lf
+*.yaml      text eol=lf
+*.yml       text eol=lf
+*.uxml      text eol=lf
+*.uss       text eol=lf
+
+# Unity YAML 자산
+*.unity         text eol=lf
+*.prefab        text eol=lf
+*.asset         text eol=lf
+*.meta          text eol=lf
+*.mat           text eol=lf
+*.anim          text eol=lf
+*.controller    text eol=lf
+*.overrideController text eol=lf
+*.physicsMaterial    text eol=lf
+*.physicsMaterial2D  text eol=lf
+*.playable      text eol=lf
+*.mask          text eol=lf
+*.brush         text eol=lf
+*.flare         text eol=lf
+*.fontsettings  text eol=lf
+*.guiskin       text eol=lf
+*.giparams      text eol=lf
+*.lighting      text eol=lf
+*.preset        text eol=lf
+*.spriteatlas   text eol=lf
+*.terrainlayer  text eol=lf
+*.mixer         text eol=lf
+*.shadervariants text eol=lf
+*.asmdef        text eol=lf
+*.asmref        text eol=lf
+*.inputactions  text eol=lf
+
+# 이미지
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.bmp       binary
+*.tga       binary
+*.tif       binary
+*.tiff      binary
+*.psd       binary
+*.exr       binary
+*.hdr       binary
+*.pict      binary
+*.iff       binary
+*.pic       binary
+
+# 오디오
+*.wav       binary
+*.mp3       binary
+*.ogg       binary
+*.aif       binary
+*.aiff      binary
+*.flac      binary
+
+# 3D
+*.fbx       binary
+*.obj       binary
+*.blend     binary
+*.dae       binary
+*.3ds       binary
+*.dxf       binary
+*.max       binary
+*.mb        binary
+*.ma        binary
+
+# 비디오
+*.mp4       binary
+*.mov       binary
+*.avi       binary
+*.webm      binary
+
+# 폰트
+*.ttf       binary
+*.otf       binary
+
+# 바이너리 / 라이브러리
+*.dll       binary
+*.pdb       binary
+*.so        binary
+*.dylib     binary
+*.exe       binary
+*.unitypackage binary
+*.zip       binary
+*.7z        binary
+*.rar       binary

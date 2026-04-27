@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEditor.ShaderGraph.Internal;
 
 
 public enum SkillType
@@ -30,12 +29,6 @@ public enum EffectMovement
 {
     Static,
     Projectile,
-}
-public enum SharedHitCategory
-{
-    None,
-    Melee,
-    Ebla
 }
 
 [CreateAssetMenu(fileName = "New Skill", menuName = "LastKingdom/Skill Data")]
@@ -71,20 +64,24 @@ public class SkillData : ScriptableObject
 
     [Header("Special")]
     [SerializeField] private bool m_IsGuard;                    // 호위 스킬 여부
-    [SerializeField] private bool m_IsMark;                     // 마크 부여 여부
+    [SerializeField] private bool m_IsForceGuard;               // 호위 강제 스킬
+    [SerializeField] private int m_GuardDuration;
+    [SerializeField] private bool m_MarkBonus;                  // 마크 추가 피해 여부
     [Range(0f, 2f)]
     [SerializeField] private float m_MarkDamageBonus;        // 마크 대상 추가피해 배율 
+    [SerializeField] private bool m_BypassGuard;
+
 
 
     [Header("Effects")]
     [SerializeField] private StatusEffectData[] m_OnHitEffects;     // 적중 시 타겟에 적용
+    [SerializeField] private StatusEffectData[] m_OnSelfEffects;    // 자기 자신에게 적용
 
     [Header("Combat Effects")]
     [SerializeField] private CombatEffectData m_AttackEffect;
     [SerializeField] private EffectMovement m_AttackMovement;
     [SerializeField] private float m_ProjectileSpeed = 20f;
     [SerializeField] private CombatEffectData m_HitEffect;
-    [SerializeField] SharedHitCategory m_SharedHitCategory;
 
     public bool IsEnemyTargeting => m_TargetType == TargetType.EnemySingle
                                   || m_TargetType == TargetType.EnemyMulti
@@ -110,13 +107,22 @@ public class SkillData : ScriptableObject
     public int MoveUserAmount => m_MoveUserAmount;
     public int MoveTargetAmount => m_MoveTargetAmount;
     public bool IsGuard => m_IsGuard;
-    public bool IsMark => m_IsMark;
+    public bool IsForceGuard => m_IsForceGuard;
+    public int GuardDuration => m_GuardDuration;
+    public bool MarkBonus => m_MarkBonus;
     public float MarkDamageBonus => m_MarkDamageBonus;
+    public bool BypassGuard => m_BypassGuard;
     public IReadOnlyList<StatusEffectData> OnHitEffects => m_OnHitEffects;
+    public IReadOnlyList<StatusEffectData> OnSelfEffects => m_OnSelfEffects;
     public CombatEffectData AttackEffect => m_AttackEffect;
     public EffectMovement AttackMovement => m_AttackMovement;
     public float ProjectileSpeed => m_ProjectileSpeed;
     public CombatEffectData HitEffect => m_HitEffect;
-    public SharedHitCategory SharedHitCategory => m_SharedHitCategory;
+
+    private void OnValidate()
+    {
+        if (m_IsGuard && m_IsForceGuard)
+            Debug.LogWarning($"{name}: IsGuard와 IsForceGuard는 동시에 설정 불가");
+    }
 
 }

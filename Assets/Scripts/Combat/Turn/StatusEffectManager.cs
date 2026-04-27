@@ -94,8 +94,11 @@ public class StatusEffectManager
         }
 
         // Guard 해제
-        RemoveEffectByType(unit, StatusEffectType.Guard);
-
+        if (unit.Protecting != null)
+        {
+            unit.Protecting.SetGuardedBy(null, 0);
+            unit.SetProtecting(null);
+        }
         // 스턴 저항 버프 부여
         ActiveStatusEffect existing = unit.FindEffect(m_StunResistBuff);
         if (existing == null)

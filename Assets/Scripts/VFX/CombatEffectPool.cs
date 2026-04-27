@@ -31,6 +31,7 @@ public class CombatEffectPool : MonoBehaviour
         }
         else if (effect is AnimatorCombatEffect animEffect)
         {
+            if (animEffect.Prefab == null) return null;
             int id = animEffect.Prefab.GetInstanceID();
             if (m_AnimatorQueues.TryGetValue(id, out Queue<GameObject> q) && q.Count > 0)
                 return q.Dequeue();
@@ -49,9 +50,14 @@ public class CombatEffectPool : MonoBehaviour
         instance.transform.SetParent(transform, false);
         if (effect is SpriteCombatEffect)
         {
+            SpriteSlotCache cache = instance.GetComponent<SpriteSlotCache>();
+            if (cache != null) { cache.StopEntries(); cache.HideExtra(); }
             SpriteRenderer sr = instance.GetComponent<SpriteRenderer>();
-            sr.sprite = null;
-            sr.color = Color.white;
+            if (sr != null)
+            {
+                sr.sprite = null;
+                sr.color = Color.white;
+            }
             m_SpriteQueue.Enqueue(instance);
         }
         else if (effect is AnimatorCombatEffect)

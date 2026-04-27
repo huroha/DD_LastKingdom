@@ -39,7 +39,7 @@ public class SkillTooltip : MonoBehaviour
         // 기본 스탯
         if(skill.AccuracyMod != 0)
             m_SB.Append("명중 보정: ").Append(skill.AccuracyMod).Append("\n");
-        if(skill.DamageMultiplier != 0)
+        if(skill.DamageMultiplier != 1 && skill.DamageMultiplier != 0)
             m_SB.Append("피해 보정: ").Append((int)(skill.DamageMultiplier * 100f) - 100).Append("%").Append("\n");
         if (skill.MaxHeal != 0)
             m_SB.Append(skill.MinHeal).Append("-").Append(skill.MaxHeal).Append(TooltipHelper.TAG_HEAL).Append(" 회복\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
@@ -48,6 +48,8 @@ public class SkillTooltip : MonoBehaviour
 
         if (skill.CritMod != 0)
             m_SB.Append("치명타 보정: ").Append((int)skill.CritMod).Append("%\n");
+        if (skill.MarkBonus)
+            m_SB.Append(TooltipHelper.TAG_NORMAL_OPEN).Append("표식 추가 데미지: +").Append((int)(skill.MarkDamageBonus * 100f)).Append("%\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
 
         // OnHitEffects
         if (skill.OnHitEffects != null && skill.OnHitEffects.Count > 0)
@@ -57,6 +59,7 @@ public class SkillTooltip : MonoBehaviour
                 BuildEffectText(m_SB, skill.OnHitEffects[i]);
         }
 
+ 
         m_TooltipText.SetText(m_SB);
 
         m_RectTransform.sizeDelta = Vector2.zero;

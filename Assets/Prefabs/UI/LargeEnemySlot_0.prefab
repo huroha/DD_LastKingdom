@@ -1662,6 +1662,7 @@ MonoBehaviour:
   m_IconContainer: {fileID: 3122304702300125530}
   m_IconPrefab: {fileID: 4115287895712046507, guid: 5afba1b197354cb449b77bf36b72485b, type: 3}
   m_MaxDisplayCount: 8
+  m_GuardedIcon: {fileID: 21300000, guid: 02f3b8e80221d674c84c393335b739ce, type: 3}
 --- !u!1 &8511469667147367680
 GameObject:
   m_ObjectHideFlags: 0

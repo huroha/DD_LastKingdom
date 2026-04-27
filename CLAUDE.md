@@ -114,10 +114,10 @@ public class HeroData : ScriptableObject
 
 #### Ebla System (에블라)
 - 범위: 0~200
-- 100 도달: Affliction (기본) 또는 Virtue (canVirtue 영웅만)
+- 100 도달: Affliction 또는 Virtue (canVirtue 영웅들)
 - Affliction: 스탯 디버프, 부정적 행동 트리거
-- Virtue: 일러스트 변경 + 특수 스킬 전용 + 버프
-- 200 도달: **영구 사망** (세이브에서 완전 제거)
+- Virtue: 버프 , 특수한 경우에 사용가능한 스킬 해금
+- 200 도달: **영구 사망** (사망 데이터는 보존)
 
 #### Detection System (위험발각)
 - 범위: 0~100, 25 단위 4단계

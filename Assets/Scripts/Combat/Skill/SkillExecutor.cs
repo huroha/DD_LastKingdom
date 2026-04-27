@@ -25,7 +25,7 @@ public class SkillExecutor
     private List<CombatUnit> m_AllNikkesBuffer = new List<CombatUnit>();
     private List<StatusEffectData> m_AppliedBuffer = new List<StatusEffectData>();
     private List<StatusEffectData> m_ResistedBuffer = new List<StatusEffectData>();
-
+    private List<CombatUnit> m_ActualTargetBuffer = new List<CombatUnit>();
 
     public SkillExecutor(PositionSystem positionSystem, EblaSystem eblaSystem, StatusEffectData deathsDoorDebuff, StatusEffectData deathsDoorRecovery)
     {
@@ -67,8 +67,16 @@ public class SkillExecutor
 
         // 크리티컬 파티 에블라용
         bool allNikkesFetched = false;
+
+        m_ActualTargetBuffer.Clear();
+        for (int i = 0; i < targets.Count; ++i)
+        {
+            CombatUnit actual = ResolveGuardTarget(targets[i], skill, targets);
+            if (!m_ActualTargetBuffer.Contains(actual))
+                m_ActualTargetBuffer.Add(actual);
+        }
         // TargetResult 배열 선언 (targets.Count 크기)
-        TargetResult[] result = new TargetResult[targets.Count];
+        TargetResult[] result = new TargetResult[m_ActualTargetBuffer.Count];
 
 
         // for 루프: 각 타겟에 대해
@@ -77,11 +85,13 @@ public class SkillExecutor
             m_AppliedBuffer.Clear();
             m_ResistedBuffer.Clear();
 
+            CombatUnit actualTarget = m_ActualTargetBuffer[i];
+
             // [명중 판정]
-            result[i].IsHit = skill.IsAllyTargeting || RollHit(user, targets[i], skill);
+            result[i].IsHit = skill.IsAllyTargeting || RollHit(user, actualTarget, skill);
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Debug.Log($"[Skill] {user.UnitName} → {targets[i].UnitName} | Hit:{result[i].IsHit}");
+            Debug.Log($"[Skill] {user.UnitName} → {actualTarget.UnitName} | Hit:{result[i].IsHit}");
 #endif
             // [명중 성공 시]
             if (result[i].IsHit)
@@ -91,7 +101,7 @@ public class SkillExecutor
                 if (skill.MaxHeal > 0)
                     result[i].HealAmount = Random.Range(skill.MinHeal, skill.MaxHeal + 1);
                 else
-                    damage = CalcDamage(user, targets[i], skill);
+                    damage = CalcDamage(user, actualTarget, skill);
 
                 // [크리티컬 판정] RollCrit 호출
                 result[i].IsCrit = RollCrit(user, skill);
@@ -104,39 +114,39 @@ public class SkillExecutor
 
                 // [적용]
                 // 힐 스킬이면: target.Heal(healAmount)
-                result[i].PreviousHp = targets[i].CurrentHp;
+                result[i].PreviousHp = actualTarget.CurrentHp;
                 if (skill.MaxHeal > 0)
                 {
-                    UnitState preHealState = targets[i].State;
-                    targets[i].Heal(result[i].HealAmount);
-                    if (preHealState == UnitState.DeathsDoor && targets[i].State == UnitState.Alive)
-                        ApplyDeathsDoorRecovery(targets[i]);
+                    UnitState preHealState = actualTarget.State;
+                    actualTarget.Heal(result[i].HealAmount);
+                    if (preHealState == UnitState.DeathsDoor && actualTarget.State == UnitState.Alive)
+                        ApplyDeathsDoorRecovery(actualTarget);
                 }
                 // 아니면: target.TakeDamage(damage)
                 else
                 {
-                    result[i].PreviousState = targets[i].State;
-                    targets[i].TakeDamage(damage);
+                    result[i].PreviousState = actualTarget.State;
+                    actualTarget.TakeDamage(damage, isCrit: result[i].IsCrit);
                     result[i].DamageDealt = damage;
 
-                    if (result[i].PreviousState == UnitState.Alive && targets[i].State == UnitState.DeathsDoor)
+                    if (result[i].PreviousState == UnitState.Alive && actualTarget.State == UnitState.DeathsDoor)
                     {
-                        m_EblaSystem.ModifyEbla(targets[i], CombatUnit.DEATHS_DOOR_EBLA);
-                        ApplyDeathsDoorDebuff(targets[i]);
+                        m_EblaSystem.ModifyEbla(actualTarget, CombatUnit.DEATHS_DOOR_EBLA);
+                        ApplyDeathsDoorDebuff(actualTarget);
                     }
                 }
                 // [에블라]
                 // skill.EblaDamage > 0 이면: target.AddEbla(skill.EblaDamage)
                 if (skill.EblaDamage > 0)
-                    m_EblaSystem.ModifyEbla(targets[i], skill.EblaDamage);
+                    m_EblaSystem.ModifyEbla(actualTarget, skill.EblaDamage);
                 // skill.EblaHealAmount > 0 이면: target.AddEbla(-skill.EblaHealAmount)
                 if (skill.EblaHealAmount > 0)
-                    m_EblaSystem.ModifyEbla(targets[i], -skill.EblaHealAmount);
+                    m_EblaSystem.ModifyEbla(actualTarget, -skill.EblaHealAmount);
 
 
                 // 상태이상 타겟이 살아있을때만 적용
-                if (targets[i].IsAlive)
-                    ApplyOnHitEffects(targets[i], skill, m_AppliedBuffer, m_ResistedBuffer, result[i].IsCrit);
+                if (actualTarget.IsAlive)
+                    ApplyOnHitEffects(actualTarget, skill, m_AppliedBuffer, m_ResistedBuffer, result[i].IsCrit);
 
                 // [크리티컬 추가 효과] 크리티컬이면 ApplyCritEffects 호출
                 if (result[i].IsCrit)
@@ -146,16 +156,29 @@ public class SkillExecutor
                         m_PositionSystem.GetAllUnits(CombatUnitType.Nikke, m_AllNikkesBuffer);
                         allNikkesFetched = true;
                     }
-                    ApplyCritEffects(user, targets[i], m_AllNikkesBuffer);
+                    ApplyCritEffects(user, actualTarget, m_AllNikkesBuffer);
+                }
+
+                if (skill.IsGuard)
+                {
+                    user.Protecting?.SetGuardedBy(null, 0);
+                    user.SetProtecting(actualTarget);
+                    actualTarget.SetGuardedBy(user, skill.GuardDuration);
+                }
+                else if (skill.IsForceGuard)
+                {
+                    actualTarget.Protecting?.SetGuardedBy(null, 0);
+                    actualTarget.SetProtecting(user);
+                    user.SetGuardedBy(actualTarget, skill.GuardDuration);
                 }
             }
 
             // [위치 이동] ApplyPositionMove 호출 (명중 여부 무관)
-            ApplyPositionMove(user, skill, targets[i], result[i].IsHit);
+            ApplyPositionMove(user, skill, actualTarget, result[i].IsHit);
 
             // TargetResult 채우기
-            result[i].Target = targets[i];
-            result[i].ResultState = targets[i].State;
+            result[i].Target = actualTarget;
+            result[i].ResultState = actualTarget.State;
             result[i].AppliedEffects = new StatusEffectData[m_AppliedBuffer.Count];
             for (int j = 0; j < m_AppliedBuffer.Count; ++j)
                 result[i].AppliedEffects[j] = m_AppliedBuffer[j];
@@ -163,6 +186,24 @@ public class SkillExecutor
             for (int j = 0; j < m_ResistedBuffer.Count; ++j)
                 result[i].ResistedEffects[j] = m_ResistedBuffer[j];
         }
+
+        IReadOnlyList<StatusEffectData> selfEffects = skill.OnSelfEffects;
+        for (int i = 0; i < selfEffects.Count; ++i)
+        {
+            StatusEffectData effect = selfEffects[i];
+            ActiveStatusEffect existing = user.FindEffect(effect);
+            if (existing != null)
+            {
+                if (effect.IsStackable)
+                { if (existing.CurrentStacks < effect.MaxStack) existing.CurrentStacks++; }
+                else
+                    existing.RemainingTurns = Mathf.Max(existing.RemainingTurns, effect.Duration);
+            }
+            else
+                user.AddEffect(new ActiveStatusEffect(effect));
+        }
+        if (selfEffects.Count > 0)
+            user.RecalculateStats();
 
         // SkillResult 반환 (User, Skill, TargetResults 채워서)
         finalResult.User = user;
@@ -232,6 +273,10 @@ public class SkillExecutor
     {
         (int min, int max) range = CalcDamageRange(user, target, skill);
         int finalDamage = Random.Range(range.min, range.max + 1);
+        if(skill.MarkBonus && target.FindEffectByType(StatusEffectType.Mark) != null)
+        {
+            finalDamage = (int)(finalDamage * (1f + skill.MarkDamageBonus));
+        }
 
         return finalDamage;
     }
@@ -431,6 +476,14 @@ public class SkillExecutor
             unit.AddEffect(new ActiveStatusEffect(m_DeathsDoorRecovery));
 
         unit.RecalculateStats();
+    }
+    private CombatUnit ResolveGuardTarget(CombatUnit target, SkillData skill, List<CombatUnit> originalTargets)
+    {
+        CombatUnit guardian = target.GuardedBy;
+        if (skill.IsAllyTargeting || skill.BypassGuard) return target;
+        else if (guardian == null || !guardian.IsAlive || guardian.IsStunned) return target;
+        else if (originalTargets.Contains(guardian)) return target;
+        else return guardian;
     }
 
 }

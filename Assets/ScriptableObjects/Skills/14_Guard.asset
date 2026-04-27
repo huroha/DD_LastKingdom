@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bf8234ddd9a51424a99679d27d50c99b, type: 3}
-  m_Name: 4_Sweep
+  m_Name: 14_Guard
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  m_SkillName: "\uC804\uCCB4\uACF5\uACA9"
-  m_Description: "\uC804\uCCB4\uACF5\uACA9"
+  m_SkillName: "\uAC00\uB4DC"
+  m_Description: 
   m_SkillIcon: {fileID: -654946990322948871, guid: 19b9f610ec851694e962b1a8f6f32cca, type: 3}
   m_SkillType: 0
   m_RequiredState: 0
-  m_UsablePositions: 01010000
+  m_UsablePositions: 01010101
   m_TargetPositions: 01010101
-  m_TargetType: 2
-  m_DamageMultiplier: 0.5
+  m_TargetType: 3
+  m_DamageMultiplier: 0
   m_AccuracyMod: 0
   m_CritMod: 0
   m_MinHeal: 0
@@ -29,10 +29,10 @@ MonoBehaviour:
   m_EblaHealAmount: 0
   m_MoveUserAmount: 0
   m_MoveTargetAmount: 0
-  m_IsGuard: 0
+  m_IsGuard: 1
   m_IsForceGuard: 0
-  m_GuardDuration: 0
-  m_MarkBonus: 0
+  m_GuardDuration: 3
+  m_MarkBonus: 1
   m_MarkDamageBonus: 0
   m_ByPassGuard: 0
   m_OnHitEffects: []
@@ -40,4 +40,4 @@ MonoBehaviour:
   m_AttackEffect: {fileID: 0}
   m_AttackMovement: 0
   m_ProjectileSpeed: 20
-  m_HitEffect: {fileID: 11400000, guid: 1f0e70335cdaead418d0c3f13bd08c8c, type: 2}
+  m_HitEffect: {fileID: 0}

@@ -50,6 +50,13 @@ public class NikkeData : ScriptableObject
     [Header("Skills")]
     [SerializeField] private SkillData[] m_Skills = new SkillData[MaxSkillCount];
 
+    [Header("Camp Skills")]
+    [SerializeField] private CampSkillData[] m_CampSkills;
+
+    [Header("Gear")]
+    [SerializeField] private GearData m_Weapon;
+    [SerializeField] private GearData m_Armor;
+
     [Header("Visuals")]
     [SerializeField] private Sprite m_PortraitSprite;           // √ ªÛ»≠
     [SerializeField] private Sprite m_CombatIdleSprite;           // Idle
@@ -85,6 +92,9 @@ public class NikkeData : ScriptableObject
     public IReadOnlyList<int> ExpThresholds => m_ExpThresholds;
     public StatBlock StatGrowthPerLevel     => m_StatGrowthPerLevel;
     public IReadOnlyList<SkillData> Skills  => m_Skills;
+    public IReadOnlyList<CampSkillData> CampSkills => m_CampSkills;
+    public GearData Weapon => m_Weapon;
+    public GearData Armor => m_Armor;
     public Sprite PortraitSprite            => m_PortraitSprite;   
     public Sprite CombatIdleSprite            => m_CombatIdleSprite;   
     public GameObject CombatPrefab => m_CombatPrefab;

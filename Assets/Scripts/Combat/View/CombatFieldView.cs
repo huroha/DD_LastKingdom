@@ -166,7 +166,7 @@ public class CombatFieldView : MonoBehaviour
         {
             t += Time.deltaTime;
             float k = Mathf.Clamp01(t / m_CorpsePopDuration);
-            float eased = 1f - (1f - k) * (1f - k);
+            float eased = CoroutineHelper.OutQuad(k);
             sr.transform.localScale = Vector3.Lerp(startScale, baseScale, eased);
             sr.color = new Color(1f, 1f, 1f, k);
             yield return null;
@@ -207,6 +207,13 @@ public class CombatFieldView : MonoBehaviour
                 () => m_CombatHUD.ShowEnemyInfo(captured),
                 () => m_CombatHUD.HideEnemyInfo());
         }
+        else
+        {
+            UnitRightClickHandler rightClick = go.AddComponent<UnitRightClickHandler>();
+            CombatUnit captured = unit;
+            rightClick.Initialize(() => m_CombatHUD.ShowNikkeDetail(captured));
+        }
+
         go.transform.SetParent(transform);
         go.transform.position = pos;
         float scaleOffset =  unit.UnitType == CombatUnitType.Nikke ? unit.NikkeData.ScaleOffset : unit.EnemyData.ScaleOffset;

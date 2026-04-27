@@ -16,10 +16,6 @@ public class CombatDirector : MonoBehaviour
     [SerializeField] private CombatDeathVfxPlayer m_DeathVfxPlayer;
     [SerializeField] private CombatHpBarController m_HpBarController;
     [SerializeField] private BgAttackOverlay m_BgAttackOverlay;
-
-    [Header("References - Shared HitEffect")]
-    [SerializeField] private CombatEffectData m_SharedMeleeHit;
-    [SerializeField] private CombatEffectData m_SharedEblaHit;
     [SerializeField] private CombatEffectPool m_EffectPool;
 
     [Header("Timing")]
@@ -65,6 +61,8 @@ public class CombatDirector : MonoBehaviour
     private bool m_AttackEndReceived;
     private StringBuilder m_PopupTextBuilder;
 
+    //Ä³½Ì
+    private Dictionary<int, HashSet<string>> m_AnimParamCache;
 
     private void Awake()
     {
@@ -73,11 +71,13 @@ public class CombatDirector : MonoBehaviour
         m_WaitStatusPopup = new WaitForSecondsRealtime(m_StatusPopupDelay);
         m_WaitPostSequence = new WaitForSecondsRealtime(m_PostSequenceDelay);
         m_WaitHit = new WaitForSecondsRealtime(m_HitDuration);
+        m_AnimParamCache = new Dictionary<int, HashSet<string>>();
     }
 
     private void OnDisable()
     {
         StopAllCoroutines();
+        m_AnimParamCache.Clear();
     }
     public Coroutine PlaySkillSequence(CombatUnit user, SkillData skill, List<CombatUnit> targets, SkillResult result)
     {
@@ -352,13 +352,17 @@ public class CombatDirector : MonoBehaviour
 
     private bool HasParameter(Animator animator, string paramName)
     {
-        AnimatorControllerParameter[] parameters = animator.parameters;
-        for (int i = 0; i < parameters.Length; ++i)
+        if (animator.runtimeAnimatorController == null) return false;
+        int id = animator.runtimeAnimatorController.GetInstanceID();
+        if (!m_AnimParamCache.TryGetValue(id, out HashSet<string> paramSet))
         {
-            if (parameters[i].name == paramName)
-                return true;
+            AnimatorControllerParameter[] ps = animator.parameters;
+            paramSet = new HashSet<string>();
+            for (int i = 0; i < ps.Length; ++i)
+                paramSet.Add(ps[i].name);
+            m_AnimParamCache[id] = paramSet;
         }
-        return false;
+        return paramSet.Contains(paramName);
     }
 
     private void SetHitSprite(CombatUnit unit, CombatFieldView.UnitView view, UnitState previousState)
@@ -436,17 +440,6 @@ public class CombatDirector : MonoBehaviour
         else
             return effect.FlipXOnEnemyTarget;
     }
-    private CombatEffectData ResolveHitEffect(SkillData skill)
-    {
-        if (skill.HitEffect != null)
-            return skill.HitEffect;
-        else if (skill.SharedHitCategory == SharedHitCategory.Melee)
-            return m_SharedMeleeHit;
-        else if (skill.SharedHitCategory == SharedHitCategory.Ebla)
-            return m_SharedEblaHit;
-        else
-            return null;
-    }
     private IEnumerator ReturnAfter(Coroutine co, GameObject go, CombatEffectData effect)
     {
         yield return co;
@@ -462,14 +455,14 @@ public class CombatDirector : MonoBehaviour
         int order = userView.Renderer.sortingOrder + 2;
         bool flipX = ResolveFlipX(effect, refTarget);
 
-        GameObject go = m_EffectPool.Borrow(effect);
         if (skill.AttackMovement == EffectMovement.Static)
         {
-            Coroutine co = effect.Play(this, go, userView.Renderer.transform, order, flipX);
-            StartCoroutine(ReturnAfter(co, go, effect));
+            PlayAndReturn(effect, userView.Renderer.transform, order, flipX);
         }
         else if (skill.AttackMovement == EffectMovement.Projectile)
         {
+            GameObject go = m_EffectPool.Borrow(effect);
+            if (go == null) return;
             Vector3 from = userView.Renderer.transform.position;
             Vector3 to = m_FieldView.GetView(refTarget).Renderer.transform.position;
             Coroutine playCo = effect.Play(this, go, m_EffectPool.WorldRoot, order, flipX);
@@ -478,16 +471,13 @@ public class CombatDirector : MonoBehaviour
     }
     private void PlayHitEffect(CombatUnit target, SkillData skill)
     {
-        CombatEffectData effect = ResolveHitEffect(skill);
+        CombatEffectData effect = skill.HitEffect;
         if (effect == null)
             return;
         CombatFieldView.UnitView view = m_FieldView.GetView(target);
-        int order = view.Renderer.sortingOrder + 2;
+        int order = view.Renderer.sortingOrder + 1;
         bool flipX = ResolveFlipX(effect, target);
-
-        GameObject go = m_EffectPool.Borrow(effect);
-        Coroutine co = effect.Play(this, go, view.Renderer.transform, order, flipX);
-        StartCoroutine(ReturnAfter(co, go, effect));
+        PlayAndReturn(effect, view.Renderer.transform, order, flipX);
     }
     private IEnumerator ProjectileMove(GameObject go, Vector3 from, Vector3 to, float speed, Coroutine playCo, CombatEffectData effect)
     {
@@ -505,5 +495,12 @@ public class CombatDirector : MonoBehaviour
         go.transform.position = to;
         yield return playCo;
         m_EffectPool.Return(go, effect);
+    }
+    private void PlayAndReturn(CombatEffectData effect, Transform parent, int order, bool flipX)
+    {
+        GameObject go = m_EffectPool.Borrow(effect);
+        if (go == null) return;
+        Coroutine co = effect.Play(this, go, parent, order, flipX);
+        StartCoroutine (ReturnAfter(co, go, effect));
     }
 }

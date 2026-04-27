@@ -48,6 +48,8 @@ MonoBehaviour:
   m_Text: {fileID: 3283942882666775635}
   m_FloatSpeed: 1.2
   m_Duration: 0.8
+  m_IconRenderer: {fileID: 0}
+  m_SortingOrder: 20
 --- !u!1 &8639700659893378867
 GameObject:
   m_ObjectHideFlags: 0

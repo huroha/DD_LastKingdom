@@ -28,6 +28,11 @@ public class SpriteCombatEffect : CombatEffectData
     [SerializeField] private float m_PopInStartMul = 0.6f;
     [SerializeField] private float m_PopInDuration = 0.1f;
 
+    private WaitForSeconds m_WaitHold;
+    private WaitForSeconds m_WaitPopInTotal;    // maxDelay + m_PopinDuration
+    private WaitForSeconds[] m_WaitDelays;    // entry별 delay
+
+
     public override Coroutine Play(MonoBehaviour runner, GameObject instance, Transform parent, int sortingOrder, bool flipX)
     {
         instance.SetActive(true);
@@ -42,11 +47,11 @@ public class SpriteCombatEffect : CombatEffectData
         sr.sortingOrder = sortingOrder;
         sr.flipX = flipX;
         sr.color = Color.white;
-        instance.transform.localScale = Vector3.one * m_Scale;
         return runner.StartCoroutine(PlayRoutine(sr, instance, runner));
     }
     private IEnumerator PlayRoutine(SpriteRenderer sr, GameObject instance, MonoBehaviour runner)
     {
+        sr.transform.localScale = m_PlayMode == EffectPlayMode.PopIn ? Vector3.one : Vector3.one * m_Scale;
         switch (m_PlayMode)
         {
             case EffectPlayMode.Static:
@@ -60,16 +65,10 @@ public class SpriteCombatEffect : CombatEffectData
     private IEnumerator StaticRoutine(SpriteRenderer sr)
     {
         sr.sprite = m_Entries[0].Sprite;
-        yield return new WaitForSeconds(m_HoldDuration);
-        float elapsed = 0f;
-        while (elapsed < m_FadeDuration)
-        {
-            elapsed += Time.deltaTime;
-            float alpha = 1f - (elapsed / m_FadeDuration);
-            sr.color = new Color(1f, 1f, 1f, alpha);
-            yield return null;
-        }
-        sr.color = Color.clear;
+        if (m_WaitHold == null) m_WaitHold = new WaitForSeconds(m_HoldDuration);
+        yield return m_WaitHold;
+
+        yield return CoroutineHelper.FadeAlpha(sr, 1f, 0f, m_FadeDuration);
     }
     private IEnumerator SequentialRoutine(SpriteRenderer sr)
     {
@@ -84,64 +83,45 @@ public class SpriteCombatEffect : CombatEffectData
                 yield return null;
             }
         }
-        float t2 = 0f;
-        while (t2 < m_FadeDuration)
-        {
-            t2 += Time.deltaTime;
-            float k = 1f - (t2 / m_FadeDuration);
-            sr.color = new Color(1f, 1f, 1f, k);
-            yield return null;
-        }
-        sr.color = Color.clear;
+        yield return CoroutineHelper.FadeAlpha(sr, 1f, 0f, m_FadeDuration);
     }
     private IEnumerator PopInRoutine(SpriteRenderer rootSr, GameObject root, MonoBehaviour runner)
     {
-        SpriteRenderer[] srs = new SpriteRenderer[m_Entries.Length];
-        srs[0] = rootSr;
-        root.transform.localScale = Vector3.one;
-        for (int i = 1; i < m_Entries.Length; ++i)
+        SpriteSlotCache cache = root.GetComponent<SpriteSlotCache>();
+        if (cache == null) cache = root.AddComponent<SpriteSlotCache>();
+        cache.Setup(rootSr, m_Entries.Length,runner);
+
+        if (m_WaitDelays == null || m_WaitDelays.Length != m_Entries.Length)
         {
-            GameObject child = new GameObject("SpriteEntry");
-            child.transform.SetParent(root.transform.parent, false);
-            child.layer = root.layer;
-            SpriteRenderer childSr = child.AddComponent<SpriteRenderer>();
-            childSr.sortingLayerID = rootSr.sortingLayerID;
-            childSr.sortingOrder = rootSr.sortingOrder;
-            childSr.flipX = rootSr.flipX;
-            srs[i] = childSr;
+            m_WaitDelays = new WaitForSeconds[m_Entries.Length];
+            for (int i = 0; i < m_Entries.Length; ++i)
+                m_WaitDelays[i] = new WaitForSeconds(m_Entries[i].Delay);
         }
 
         float maxDelay = 0f;
         for (int i = 0; i < m_Entries.Length; ++i)
         {
             Vector3 baseOffset = LocalOffset;
-            runner.StartCoroutine(PopInEntryRoutine(srs[i], m_Entries[i], baseOffset));
+            Coroutine co = runner.StartCoroutine(PopInEntryRoutine(cache.GetSlot(i), m_Entries[i], baseOffset, i));
+            cache.StoreEntry(i, co);
             if (m_Entries[i].Delay > maxDelay) maxDelay = m_Entries[i].Delay;
         }
 
-        yield return new WaitForSeconds(maxDelay + m_PopInDuration);
-        yield return new WaitForSeconds(m_HoldDuration);
+        if (m_WaitPopInTotal == null) m_WaitPopInTotal = new WaitForSeconds(maxDelay + m_PopInDuration);
+        yield return m_WaitPopInTotal;
+        if (m_WaitHold == null) m_WaitHold = new WaitForSeconds(m_HoldDuration);
+        yield return m_WaitHold;
 
-        float elapsed = 0f;
-        while (elapsed < m_FadeDuration)
-        {
-            elapsed += Time.deltaTime;
-            float alpha = 1f - (elapsed / m_FadeDuration);
-            for (int i = 0; i < srs.Length; ++i)
-                srs[i].color = new Color(1f, 1f, 1f, alpha);
-            yield return null;
-        }
-        for (int i = 0; i < srs.Length; ++i)
-            srs[i].color = Color.clear;
-
-        for (int i = 1; i < srs.Length; ++i)
-            Object.Destroy(srs[i].gameObject);
+        yield return CoroutineHelper.FadeAlpha(cache.Slots, 1f, 0f, m_FadeDuration);
+        
+        for (int i = 0; i < m_Entries.Length; ++i)
+            cache.GetSlot(i).color = Color.clear;
     }
 
-    private IEnumerator PopInEntryRoutine(SpriteRenderer sr, SpriteEntry entry, Vector3 baseOffset)
+    private IEnumerator PopInEntryRoutine(SpriteRenderer sr, SpriteEntry entry, Vector3 baseOffset, int index)
     {
         if (entry.Delay > 0f)
-            yield return new WaitForSeconds(entry.Delay);
+            yield return m_WaitDelays[index];
 
         sr.sprite = entry.Sprite;
         sr.color = Color.white;
@@ -155,10 +135,19 @@ public class SpriteCombatEffect : CombatEffectData
         {
             t += Time.deltaTime;
             float k = t / m_PopInDuration;
-            float eased = 1f - (1f - k) * (1f - k);
+            float eased = CoroutineHelper.OutQuad(k);
             sr.transform.localScale = Vector3.Lerp(startScale, endScale, eased);
             yield return null;
         }
         sr.transform.localScale = endScale;
+    }
+    private void OnValidate()
+    {
+        if (m_Entries == null) return;
+        for (int i=0; i< m_Entries.Length; ++i)
+        {
+            if (m_Entries[i].Scale == 0f)
+                Debug.LogWarning($"{name}: Entries[{i}].Scale = 0 - sprite가 보이지않음");
+        }
     }
 }

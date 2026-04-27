@@ -4314,8 +4314,6 @@ MonoBehaviour:
   m_DeathVfxPlayer: {fileID: 1447598961}
   m_HpBarController: {fileID: 1976432143}
   m_BgAttackOverlay: {fileID: 1496988762}
-  m_SharedMeleeHit: {fileID: 11400000, guid: 1f0e70335cdaead418d0c3f13bd08c8c, type: 2}
-  m_SharedEblaHit: {fileID: 0}
   m_EffectPool: {fileID: 824591905}
   m_PopupDuration: 1
   m_StatusPopupDelay: 0.5

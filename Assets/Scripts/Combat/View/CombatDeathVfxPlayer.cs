@@ -26,12 +26,21 @@ public class CombatDeathVfxPlayer : MonoBehaviour
     [SerializeField] private float m_CorpseVfxScaleLarge = 4f;
     [SerializeField] private float m_CorpseVfxStartMultiplier = 0.9f;
 
+    private GameObject m_CorpseOverlayGo;
+    private SpriteRenderer m_CorpseOverlaySr;
+
+    private WaitForSeconds m_WaitDeathHold;
     private enum DeathVfxKind { None, Normal, Corpse }
     private HashSet<CombatUnit> m_DyingUnits;
 
     private void Awake()
     {
         m_DyingUnits = new HashSet<CombatUnit>();
+        m_WaitDeathHold = new WaitForSeconds(m_DeathHoldDuration);
+        m_CorpseOverlayGo = new GameObject("CorpseVfxOverlay");
+        m_CorpseOverlaySr = m_CorpseOverlayGo.AddComponent<SpriteRenderer>();
+        m_CorpseOverlayGo.transform.SetParent(transform, false);
+        m_CorpseOverlayGo.SetActive(false);
     }
     private void OnDisable()
     {
@@ -58,7 +67,7 @@ public class CombatDeathVfxPlayer : MonoBehaviour
         {
             t += Time.deltaTime;
             float k = t / duration;
-            float eased = 1f - (1f - k) * (1f - k);
+            float eased = CoroutineHelper.OutQuad(k);
             target.localScale = Vector3.Lerp(startScale, endScale, eased);
             yield return null;
         }
@@ -81,7 +90,7 @@ public class CombatDeathVfxPlayer : MonoBehaviour
         view.Renderer.color = new Color(0f, 0f, 0f, phase1Alpha);
 
         // Phase 2: hold
-        yield return new WaitForSeconds(m_DeathHoldDuration);
+        yield return m_WaitDeathHold;
 
         // Phase 3: alpha fade-out
         Color mainStart = view.Renderer.color;
@@ -172,30 +181,29 @@ public class CombatDeathVfxPlayer : MonoBehaviour
             yield break;
         }
 
-        // 동적 overlay 생성 (corpse view는 DeathOverlay가 null)
-        GameObject overlayGo = new GameObject("CorpseVfxOverlay");
-        overlayGo.transform.SetParent(view.Renderer.transform, false);
-        overlayGo.transform.localPosition = new Vector3(0f, 2f, 0f);
-        overlayGo.transform.localRotation = Quaternion.identity;
+        m_CorpseOverlayGo.transform.SetParent(view.Renderer.transform, false);
+        m_CorpseOverlayGo.transform.localPosition = new Vector3(0f, 2f, 0f);
+        m_CorpseOverlayGo.transform.localRotation = Quaternion.identity;
+        m_CorpseOverlayGo.SetActive(true);
 
-        SpriteRenderer overlay = overlayGo.AddComponent<SpriteRenderer>();
-        overlay.sprite = m_CorpseVfxSprite;
-        overlay.sortingLayerID = view.Renderer.sortingLayerID;
-        overlay.sortingOrder = view.Renderer.sortingOrder + 5;
-        overlay.gameObject.layer = view.Renderer.gameObject.layer;
-        overlay.color = Color.white;
+        m_CorpseOverlaySr.sprite = m_CorpseVfxSprite;
+        m_CorpseOverlaySr.sortingLayerID = view.Renderer.sortingLayerID;
+        m_CorpseOverlaySr.sortingOrder = view.Renderer.sortingOrder + 5;
+        m_CorpseOverlaySr.gameObject.layer = view.Renderer.gameObject.layer;
+        m_CorpseOverlaySr.color = Color.white;
 
         // Phase 0: Pop-in
         float baseScale = unit.SlotSize >= 2 ? m_CorpseVfxScaleLarge : m_CorpseVfxScale;
         Vector3 endScale = Vector3.one * baseScale;
         Vector3 startScale = endScale * m_CorpseVfxStartMultiplier;
-        yield return ScalePopIn(overlay.transform, startScale, endScale, m_DeathPopDuration);
+        yield return ScalePopIn(m_CorpseOverlaySr.transform, startScale, endScale, m_DeathPopDuration);
 
         // Phase 1 + 2 + 3
-        yield return DeathFadeSequence(view, overlay, fadeOutDuration, true);
+        yield return DeathFadeSequence(view, m_CorpseOverlaySr, fadeOutDuration, true);
 
         // 최종 정리
-        Destroy(overlayGo);
+        m_CorpseOverlayGo.SetActive(false);
+        m_CorpseOverlayGo.transform.SetParent(transform, false);
 
         m_DyingUnits.Remove(unit);
     }

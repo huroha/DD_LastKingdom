@@ -39,12 +39,14 @@ public class CombatUnit
     public int              SlotIndex { get; private set; }
 
     public int SlotSize     { get; }
-
+    public CombatUnit Protecting { get; private set; }
+   
     // 행동 수
     public int ActionsPerRound { get; }
 
     // 원본 데이터 참조
-    public NikkeData        NikkeData { get; }
+    public NikkeInstance NikkeInstance { get; }
+    public NikkeData NikkeData => NikkeInstance?.Data;
     public EnemyData        EnemyData { get; }
 
     // 스킬
@@ -102,26 +104,32 @@ public class CombatUnit
     }
     public void TickCorpseTimer() { CorpseTimer--; }
 
+    public CombatUnit GuardedBy { get; private set; }
+    public void SetGuardedBy(CombatUnit guardian, int turns) {  GuardedBy = guardian; GuardTurnsRemaining = turns; }
+    public void SetProtecting(CombatUnit target) { Protecting = target; }
+
+    public int GuardTurnsRemaining { get; private set; }
+
+
     // 생성자
-    public CombatUnit(NikkeData data, int slotIndex,int currentHp, int ebla,
-                     List<ActiveStatusEffect> activeEffects, SkillData[] selectedSkills = null)
+    public CombatUnit(NikkeInstance instance, int slotIndex, int currentHp, int ebla,
+                 List<ActiveStatusEffect> activeEffects)
     {
         UnitType = CombatUnitType.Nikke;
-        UnitName = data.NikkeName;
+        NikkeInstance = instance;
+        UnitName = instance.DisplayName;
         SlotIndex = slotIndex;
-        NikkeData = data;
-        Skills = BuildSkillList(data,selectedSkills);
+        Skills = BuildSkillList(instance);
         SlotSize = 1;
-
-        MaxHp = data.BaseStats.maxHp;
-        CurrentHp = currentHp;              
-        BaseStats = data.BaseStats;     
-        CurrentStats = data.BaseStats;
+        StatBlock effective = instance.GetEffectiveBaseStats();
+        MaxHp = effective.maxHp;
+        BaseStats = effective;
+        CurrentHp = currentHp;
+        CurrentStats = BaseStats;
         State = currentHp > 0 ? UnitState.Alive : UnitState.DeathsDoor;
         Ebla = ebla;
         ActionsPerRound = 1;
-        m_ActiveEffects = activeEffects ?? new List<ActiveStatusEffect>();    // Null 병합 연산자 왼쪽이 null이면 오른쪽 사용
-
+        m_ActiveEffects = activeEffects ?? new List<ActiveStatusEffect>();  // Null 병합 연산자 왼쪽이 null이면 오른쪽 사용
         RecalculateStats();
     }
 
@@ -144,7 +152,7 @@ public class CombatUnit
     }
 
     // 데미지
-    public UnitState TakeDamage(int damage, bool isDot = false)
+    public UnitState TakeDamage(int damage, bool isDot = false, bool isCrit = false)
     {
         if (State == UnitState.Dead)
             return UnitState.Dead;
@@ -175,7 +183,7 @@ public class CombatUnit
                 CurrentHp -= damage;
                 if(CurrentHp <= 0)
                 {
-                    if(isDot)
+                    if(isDot || isCrit)
                     {
                         CurrentHp = 0;
                         State = UnitState.Dead;
@@ -247,44 +255,9 @@ public class CombatUnit
         CurrentStats = stats;
     }
 
-    private static IReadOnlyList<SkillData> BuildSkillList(NikkeData data, SkillData[] selectedSkills)
+    private static IReadOnlyList<SkillData> BuildSkillList(NikkeInstance instance)
     {
-        SkillData[] result = new SkillData[4];
-        int filled = 0;
-
-        // 선택된 스킬 우선 채우기
-        if(selectedSkills != null)
-        {
-            for( int i=0; i< selectedSkills.Length && filled < 4; ++i)
-            {
-                if (selectedSkills[i] != null)
-                    result[filled++] = selectedSkills[i];
-            }
-        }
-
-        // 4개 미만이면 data.skill에서 index 순으로 채우기
-        for (int i = 0; i < data.Skills.Count && filled < 4; ++i)
-        {
-            SkillData candidate = data.Skills[i];
-            if (candidate == null)
-                continue;
-
-            // 이미 포함된 스킬이면 스킵
-            bool alreadyIncluded = false;
-            for( int j=0; j < filled; ++j)
-            {
-                if (result[j] == candidate)
-                {
-                    alreadyIncluded = true;
-                    break;
-                }
-            }
-
-            if(!alreadyIncluded)
-                result[filled++] = candidate;
-        }
-        return result;
-
+        return instance.GetActiveSkills();
     }
 
     public bool IsStunned
@@ -335,5 +308,9 @@ public class CombatUnit
                 return m_ActiveEffects[i];
         }
         return null;
+    }
+    public void DecrementGuardTurns()
+    {
+        GuardTurnsRemaining--;
     }
 }

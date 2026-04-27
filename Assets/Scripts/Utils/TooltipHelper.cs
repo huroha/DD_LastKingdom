@@ -8,6 +8,7 @@ public static class TooltipHelper
 
     public const string TAG_DEBUFF_OPEN = "<color=#BF1313>";
     public const string TAG_NORMAL_OPEN = "<color=#DBDBD0>";
+    public const string TAG_BUFF_OPEN = "<color=#00FFFF>";
     public const string TAG_BLEED = "<color=#BF1313>";
     public const string TAG_STUN = "<color=#CCA452>";
     public const string TAG_POISON = "<color=#BCC042>";

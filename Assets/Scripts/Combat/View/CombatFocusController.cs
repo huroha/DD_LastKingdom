@@ -201,7 +201,7 @@ public class CombatFocusController : MonoBehaviour
             view.Renderer.gameObject.layer = m_DefaultLayer;
             if (view.DeathOverlay != null)
             {
-                view.DeathOverlay.sortingOrder = m_OriginalSortingOrders[unit] + 1;
+                view.DeathOverlay.sortingOrder = m_OriginalSortingOrders[unit] + 2;
                 view.DeathOverlay.gameObject.layer = m_DefaultLayer;
             }
         }
@@ -245,7 +245,7 @@ public class CombatFocusController : MonoBehaviour
             view.Renderer.gameObject.layer = m_FocusLayer;
             if (view.DeathOverlay != null)
             {
-                view.DeathOverlay.sortingOrder = m_FocusSortingOrder + 1;
+                view.DeathOverlay.sortingOrder = m_FocusSortingOrder + 2;
                 view.DeathOverlay.gameObject.layer = m_FocusLayer;
             }
         }

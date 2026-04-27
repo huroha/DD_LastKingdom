@@ -8,7 +8,6 @@ public enum StatusEffectType
     Stun,       // 기절 - 행동 불가
     Buff,       // 버프 - 스탯 증가
     Debuff,      // 디버프 - 스탯 감소
-    Guard,      // 지정 아군 대신 피격
     Mark        // 표식된 유닛 추가피해
 }
 

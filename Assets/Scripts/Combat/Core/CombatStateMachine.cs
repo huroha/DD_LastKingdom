@@ -147,7 +147,8 @@ public class CombatStateMachine : MonoBehaviour
             NikkeData data = m_TestNikkes[i];
             if (data == null)
                 continue;//data.BaseStats.maxHp
-            nikkes.Add(new CombatUnit(data, i, data.BaseStats.maxHp, 95, null));
+            NikkeInstance instance = new NikkeInstance(data);
+            nikkes.Add(new CombatUnit(instance, i, instance.GetEffectiveBaseStats().maxHp, 95, null));
         }
 
         // 적 순환하면서 데이터 채우기
@@ -212,11 +213,20 @@ public class CombatStateMachine : MonoBehaviour
                 while (m_CombatHUD.IsTickerAnimating)
                     yield return null;
 
+            if (m_ActiveUnit.Protecting != null)
+            {
+                m_ActiveUnit.Protecting.DecrementGuardTurns();
+                if (m_ActiveUnit.Protecting.GuardTurnsRemaining <= 0)
+                {
+                    m_ActiveUnit.Protecting.SetGuardedBy(null, 0);
+                    m_ActiveUnit.SetProtecting(null);
+                }
+            }
             // Dot 틱
             List<DotTickResult> dotResults = m_StatusEffectManager.ApplyDotDamage(m_ActiveUnit);
             yield return StartCoroutine(ProcessDotResultsRoutine(dotResults));
             m_StatusEffectManager.DecrementDotEffects(m_ActiveUnit);
-            if (m_CombatHUD != null)
+            if (m_CombatHUD != null && m_ActiveUnit.IsAlive)
                 m_CombatHUD.RefreshUnit(m_ActiveUnit);
 
             EventBus.Publish(new TurnStartedEvent(m_ActiveUnit));

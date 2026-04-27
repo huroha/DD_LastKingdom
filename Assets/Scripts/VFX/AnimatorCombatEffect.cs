@@ -8,13 +8,15 @@ public class AnimatorCombatEffect : CombatEffectData
     [SerializeField] private GameObject m_Prefab;
     [SerializeField] private float m_LifeTime = 1f;
 
+    private WaitForSeconds m_WaitLifeTime;
+
     public GameObject Prefab => m_Prefab;
 
     public override Coroutine Play(MonoBehaviour runner, GameObject instance, Transform parent, int sortingOrder, bool flipX)
     {
         instance.SetActive(true);
         instance.transform.SetParent(parent, false);
-        instance.transform.localPosition = Vector3.zero;
+        instance.transform.localPosition = LocalOffset;
         SpriteRenderer sr = instance.GetComponentInChildren<SpriteRenderer>();
         if (sr != null)
         {
@@ -24,12 +26,19 @@ public class AnimatorCombatEffect : CombatEffectData
             sr.sortingOrder = sortingOrder;
             sr.flipX = flipX;
         }
-        instance.layer = parent.gameObject.layer;
+        SetLayerRecursively(instance, parent.gameObject.layer);
         return runner.StartCoroutine(PlayRoutine());
     }
 
     private IEnumerator PlayRoutine()
     {
-        yield return new WaitForSeconds(m_LifeTime);
+        if (m_WaitLifeTime == null) m_WaitLifeTime = new WaitForSeconds(m_LifeTime);
+        yield return m_WaitLifeTime;
+    }
+    private static void SetLayerRecursively(GameObject go, int layer)
+    {
+        go.layer = layer;
+        for (int i = 0; i < go.transform.childCount; ++i)
+            SetLayerRecursively(go.transform.GetChild(i).gameObject, layer);
     }
 }

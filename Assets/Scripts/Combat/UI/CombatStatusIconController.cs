@@ -19,7 +19,7 @@ public class CombatStatusIconController : MonoBehaviour
 
     public void Refresh(CombatUnit unit)
     {
-        GetDisplay(unit).Refresh(unit.ActiveEffects);
+        GetDisplay(unit).Refresh(unit.ActiveEffects,unit);
     }
     public void Clear(CombatUnit unit)
     {
