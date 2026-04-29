@@ -65,11 +65,14 @@ MonoBehaviour:
   m_Skills:
   - {fileID: 11400000, guid: 1af9adf875143234ea659f8e9ac6e0f9, type: 2}
   - {fileID: 11400000, guid: 95700198bc6f56446bcda1e8bdc6109e, type: 2}
-  - {fileID: 11400000, guid: 696598c6e05f0824c93937068cff509d, type: 2}
-  - {fileID: 11400000, guid: 43b0ba489ea560e489968ed0b564b7da, type: 2}
+  - {fileID: 11400000, guid: ab6e04249cff30d489789a01004e8716, type: 2}
+  - {fileID: 11400000, guid: 145113d2253152647bb07ab773315544, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  m_CampSkills: []
+  m_Weapon: {fileID: 0}
+  m_Armor: {fileID: 0}
   m_PortraitSprite: {fileID: 21300000, guid: b9672712443016242931e44a48416cda, type: 3}
   m_CombatIdleSprite: {fileID: 21300000, guid: 9e65e8b7624405645983b45cc82db74e, type: 3}
   m_CombatPrefab: {fileID: 2556627444221727513, guid: b9644b12f6a0e7e45b2e09f3a61af3a7, type: 3}

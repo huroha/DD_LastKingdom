@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf8234ddd9a51424a99679d27d50c99b, type: 3}
   m_Name: 15_Mark
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  m_SkillName: 
+  m_SkillName: "\uB9C8\uD06C"
   m_Description: 
-  m_SkillIcon: {fileID: 0}
+  m_SkillIcon: {fileID: -3747880761942071452, guid: 2ccf2f137e2fc544eb99c5c381640a5a, type: 3}
   m_SkillType: 0
   m_RequiredState: 0
-  m_UsablePositions: 00000000
-  m_TargetPositions: 00000000
+  m_UsablePositions: 01010101
+  m_TargetPositions: 01010101
   m_TargetType: 0
-  m_DamageMultiplier: 1
+  m_DamageMultiplier: 0
   m_AccuracyMod: 0
   m_CritMod: 0
   m_MinHeal: 0
@@ -34,8 +34,9 @@ MonoBehaviour:
   m_GuardDuration: 0
   m_MarkBonus: 0
   m_MarkDamageBonus: 0
-  m_ByPassGuard: 0
-  m_OnHitEffects: []
+  m_BypassGuard: 0
+  m_OnHitEffects:
+  - {fileID: 11400000, guid: e71afd73eedbcee4993b3b699676a546, type: 2}
   m_OnSelfEffects: []
   m_AttackEffect: {fileID: 0}
   m_AttackMovement: 0

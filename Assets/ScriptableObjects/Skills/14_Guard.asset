@@ -29,12 +29,12 @@ MonoBehaviour:
   m_EblaHealAmount: 0
   m_MoveUserAmount: 0
   m_MoveTargetAmount: 0
-  m_IsGuard: 1
-  m_IsForceGuard: 0
+  m_IsGuard: 0
+  m_IsForceGuard: 1
   m_GuardDuration: 3
   m_MarkBonus: 1
   m_MarkDamageBonus: 0
-  m_ByPassGuard: 0
+  m_BypassGuard: 0
   m_OnHitEffects: []
   m_OnSelfEffects: []
   m_AttackEffect: {fileID: 0}

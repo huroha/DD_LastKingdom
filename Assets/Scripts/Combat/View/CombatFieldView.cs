@@ -198,8 +198,10 @@ public class CombatFieldView : MonoBehaviour
             else
                 sr.sprite = unit.EnemyData.Sprite;
         }
-        go.AddComponent<BoxCollider2D>();
-        if(unit.UnitType == CombatUnitType.Enemy)
+        BoxCollider2D col = go.AddComponent<BoxCollider2D>();
+        col.size = new Vector2(6f, 10f);
+        col.offset = new Vector2(0f, 5.4f);
+        if (unit.UnitType == CombatUnitType.Enemy)
         {
             UnitHoverHandler hoverHandler = go.AddComponent<UnitHoverHandler>();
             CombatUnit captured = unit;

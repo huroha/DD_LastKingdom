@@ -20,16 +20,25 @@ MonoBehaviour:
   m_UsablePositions: 01010000
   m_TargetPositions: 01010101
   m_TargetType: 0
-  m_DamageMultiplier: 2
-  m_AccuracyMod: -20
+  m_DamageMultiplier: 1
+  m_AccuracyMod: 0
   m_CritMod: 15
-  m_HealAmount: 0
+  m_MinHeal: 0
+  m_MaxHeal: 0
   m_EblaDamage: 0
   m_EblaHealAmount: 0
   m_MoveUserAmount: 0
   m_MoveTargetAmount: 0
   m_IsGuard: 0
-  m_IsMark: 0
-  m_MarkDamageBonus: 0
+  m_IsForceGuard: 0
+  m_GuardDuration: 0
+  m_MarkBonus: 1
+  m_MarkDamageBonus: 0.1
+  m_BypassGuard: 0
   m_OnHitEffects:
   - {fileID: 11400000, guid: 9dcf7895691dda146a2afdb6459c5a35, type: 2}
+  m_OnSelfEffects: []
+  m_AttackEffect: {fileID: 0}
+  m_AttackMovement: 0
+  m_ProjectileSpeed: 20
+  m_HitEffect: {fileID: 0}
