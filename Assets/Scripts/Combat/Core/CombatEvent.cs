@@ -46,10 +46,11 @@ public struct BattleStartedEvent
 public struct BattleEndedEvent
 {
     public bool IsVictory;
-
-    public BattleEndedEvent(bool victory)
+    public CombatResult Result;
+    public BattleEndedEvent(bool victory, CombatResult result)
     {
-        IsVictory = victory;    
+        IsVictory = victory;
+        Result = result;
     }
 }
 

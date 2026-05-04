@@ -16,7 +16,7 @@ public class NikkeInstance
     private List<QuirkData> m_PosQuirks;
     private List<QuirkData> m_NegQuirks;
     private List<DiseaseData> m_Diseases;
-
+    private int m_Exp;
     public NikkeData Data => m_Data;
     public string DisplayName => m_NameOverride ?? m_Data.NikkeName;
     public string NameOverride { get => m_NameOverride; set => m_NameOverride = value; }
@@ -33,6 +33,16 @@ public class NikkeInstance
         if (slot < 0 || slot >= m_ActiveCampSkillIndices.Length) return;
         if (skillIndex == -1) { m_ActiveCampSkillIndices[slot] = -1; return; }
         m_ActiveCampSkillIndices[slot] = Mathf.Clamp(skillIndex, 0, m_Data.CampSkills.Count - 1);
+    }
+    public int Exp
+    {
+        get => m_Exp;
+        set
+        {
+            IReadOnlyList<int> thresholds = m_Data.ExpThresholds;
+            if (m_Level >= thresholds.Count) return;   // 최대 레벨이면 변경 안 함
+            m_Exp = Mathf.Clamp(value, 0, thresholds[m_Level]);
+        }
     }
     public int Level { get => m_Level; set => m_Level = Mathf.Clamp(value, 0, m_Data.MaxLevel); }
     public int WeaponLevel { get => m_WeaponLevel; set => m_WeaponLevel = Mathf.Clamp(value, 1, 5); }
@@ -56,6 +66,7 @@ public class NikkeInstance
         m_PosQuirks = new List<QuirkData>();
         m_NegQuirks = new List<QuirkData>();
         m_Diseases = new List<DiseaseData>();
+        m_Exp = 0;
     }
 
     public IReadOnlyList<SkillData> GetActiveSkills()

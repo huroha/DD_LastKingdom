@@ -70,12 +70,16 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  m_CampSkills: []
+  m_Weapon: {fileID: 0}
+  m_Armor: {fileID: 0}
   m_PortraitSprite: {fileID: -2074837423565974494, guid: c8fcdb590e18cc2489172aa60c4767f1, type: 3}
-  m_CombatIdleSprite: {fileID: 4238309404821430613, guid: 4b0865831e1abaf4f99430ff173efca7, type: 3}
+  m_CombatIdleSprite: {fileID: 21300000, guid: 99d2918e8018d44449677d83d56a298a, type: 3}
   m_CombatPrefab: {fileID: 774155546767078002, guid: 880aa97467d14b44b90caa242fbb28c3, type: 3}
   m_AttackSprite: {fileID: 21300000, guid: e3740f2838824ca40819b25f0d9d84c5, type: 3}
   m_HitSprite: {fileID: 21300000, guid: 3dafd70758ab26b46a2f12e6f96a0ef2, type: 3}
   m_ScaleOffset: 0.95
+  m_HeaderSprite: {fileID: 21300000, guid: 194169c3f4f69f64dbf099cca206a774, type: 3}
   m_AfflictionArt: {fileID: 21300000, guid: 1c78fdc6ce8ed634e940b4af8e315310, type: 3}
   m_VirtueArt: {fileID: 0}
   m_ForcedAfflictionType: {fileID: 0}

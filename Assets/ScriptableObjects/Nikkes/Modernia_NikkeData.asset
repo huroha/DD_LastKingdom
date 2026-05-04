@@ -74,11 +74,12 @@ MonoBehaviour:
   m_Weapon: {fileID: 0}
   m_Armor: {fileID: 0}
   m_PortraitSprite: {fileID: 21300000, guid: b9672712443016242931e44a48416cda, type: 3}
-  m_CombatIdleSprite: {fileID: 21300000, guid: 9e65e8b7624405645983b45cc82db74e, type: 3}
+  m_CombatIdleSprite: {fileID: 21300000, guid: 3929cfac9e6e9cc4f94fe98baaf94a00, type: 3}
   m_CombatPrefab: {fileID: 2556627444221727513, guid: b9644b12f6a0e7e45b2e09f3a61af3a7, type: 3}
   m_AttackSprite: {fileID: 21300000, guid: 7082b3ed386bfba4fb9cf17cc7042c40, type: 3}
   m_HitSprite: {fileID: 21300000, guid: 83bee85d30f206f428ccc0fb7fce03cb, type: 3}
   m_ScaleOffset: 1.05
+  m_HeaderSprite: {fileID: 21300000, guid: ccd451f6648aa7b48ab4266ebe3bb35f, type: 3}
   m_AfflictionArt: {fileID: 21300000, guid: 4fb24118a70a41348a0782ecdf7b5b31, type: 3}
   m_VirtueArt: {fileID: 0}
   m_ForcedAfflictionType: {fileID: 0}

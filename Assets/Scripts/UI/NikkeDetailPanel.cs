@@ -13,16 +13,33 @@ public class NikkeDetailPanel : MonoBehaviour
     [SerializeField] private CombatTooltip m_Tooltip;
 
     [Header("Identity")]
-    [SerializeField] private Image m_Portrait;
+    [SerializeField] private Image m_HedaerPortrait;
     [SerializeField] private TMP_InputField m_NameInput;
     [SerializeField] private TextMeshProUGUI m_ClassText;
     [SerializeField] private TextMeshProUGUI m_RankText;
     [SerializeField] private Image m_StandingIdle;
 
+    [Header("Level")]
+    [SerializeField] private Image m_LevelImage;
+    [SerializeField] private TextMeshProUGUI m_Leveltxt;
+    [SerializeField] private Image m_ExpBar; // fill amount
+    [SerializeField] private Sprite[] m_LevelSprites; // 총 7개
+
+    [Header("Ebla")]
+    [SerializeField] private Image[] m_EblaCells;          // 크기 10
+    [SerializeField] private GameObject m_EblaCellRoot;
+    [SerializeField] private Sprite m_EblaEmptySprite;
+    [SerializeField] private Sprite m_EblaPhase1Sprite;
+    [SerializeField] private Sprite m_EblaPhase2Sprite;
+
+    private int m_EblaTooltipValue;
+    private TooltipTrigger.ContentBuilderHandler m_EblaTooltipBuilder;
+
     [Header("Combat Skills")]
     [SerializeField] private Image[] m_SkillIcons;      // 크기 7
     [SerializeField] private RectTransform[] m_SkillSelectIcons;
     [SerializeField] private TextMeshProUGUI[] m_SkillLevelTexts;
+    [SerializeField] private SkillTooltip m_SkillTooltip;
 
     [Header("Skill Recommendation")]
     [SerializeField] private Image[] m_RecommendPositions;       // 크기 4
@@ -59,6 +76,11 @@ public class NikkeDetailPanel : MonoBehaviour
     [Header("Diseases")]
     [SerializeField] private TextMeshProUGUI[] m_DiseaseTexts;
 
+    [Header("Navigation")]
+    [SerializeField] private Button m_PrevButton;
+    [SerializeField] private Button m_NextButton;
+    private int m_CurrentSlotIndex;
+    private readonly List<CombatUnit> m_NavUnits = new List<CombatUnit>(4);
 
     private static readonly Color COLOR_NORMAL = new Color(0.8f, 0.8f, 0.8f, 1f);
     private static readonly Color COLOR_BUFF = new Color(0.8f, 0.76f, 0.56f, 1f);
@@ -90,6 +112,9 @@ public class NikkeDetailPanel : MonoBehaviour
             EnsureButton(m_CampSkillIcons[i].gameObject)
                 .onClick.AddListener(() => OnCampSkillClicked(captured));
         }
+        m_PrevButton.onClick.AddListener(OnPrev);
+        m_NextButton.onClick.AddListener(OnNext);
+        m_EblaTooltipBuilder = sb => sb.Append("에블라: ").Append(m_EblaTooltipValue).Append(" / 200");
     }
     public void Show(CombatUnit unit)
     {
@@ -103,10 +128,14 @@ public class NikkeDetailPanel : MonoBehaviour
         PopulateEquipment(unit.NikkeInstance);
         PopulateQuirks(unit.NikkeInstance);
         PopulateDiseases(unit.NikkeInstance);
+        m_CurrentSlotIndex = unit.SlotIndex;
+        PopulateEbla(unit);
         gameObject.SetActive(true);
     }
     public void Hide()
     {
+        m_Tooltip.Hide();
+        m_SkillTooltip.Hide();
         gameObject.SetActive(false);
     }
 
@@ -115,18 +144,47 @@ public class NikkeDetailPanel : MonoBehaviour
         if (!gameObject.activeSelf) return;
         if (Keyboard.current[Key.Escape].wasPressedThisFrame)
             Hide();
+        if (Keyboard.current[Key.Q].wasPressedThisFrame) OnPrev();
+        if (Keyboard.current[Key.E].wasPressedThisFrame) OnNext();
     }
     private void PopulateIdentity(CombatUnit unit)
     {
         NikkeData data = unit.NikkeData;
         NikkeInstance inst = unit.NikkeInstance;
-        m_Portrait.sprite = data.PortraitSprite;
+        m_StandingIdle.sprite = data.CombatIdleSprite;
+        m_HedaerPortrait.sprite = data.HeaderSprite;
         m_NameInput.text = inst.DisplayName;
         m_NameInput.interactable = false;
         m_Sb.Clear();
         m_Sb.Append(GetManufacturerLabel(data.Manufacturer)).Append(" ").Append(GetClassLabel(data.NikkeClass));
         m_ClassText.SetText(m_Sb);
         m_RankText.SetText(GetRankLabel(inst.Level));
+        int lv = inst.Level;
+        m_LevelImage.sprite = m_LevelSprites[Mathf.Clamp(lv, 0, m_LevelSprites.Length - 1)];
+        m_Leveltxt.SetText("{0}", lv);
+        IReadOnlyList<int> thresholds = data.ExpThresholds;
+        bool isMaxLevel = lv >= thresholds.Count;
+        m_ExpBar.fillAmount = isMaxLevel ? 1f : (float)inst.Exp / thresholds[lv];
+
+    }
+
+    private void PopulateEbla(CombatUnit unit)
+    {
+        int ebla = unit.Ebla;
+        int phase1Count = Mathf.CeilToInt(Mathf.Min(ebla, CombatUnit.EblaPhaseThreshold) / (float)CombatUnit.EblaCellValue);
+        int phase2Count = ebla > CombatUnit.EblaPhaseThreshold ? Mathf.CeilToInt((ebla - CombatUnit.EblaPhaseThreshold) / (float)CombatUnit.EblaCellValue) : 0;
+
+        for (int i = 0; i < m_EblaCells.Length; ++i)
+        {
+            if (i < phase2Count)
+                m_EblaCells[i].sprite = m_EblaPhase2Sprite;
+            else if (i < phase1Count)
+                m_EblaCells[i].sprite = m_EblaPhase1Sprite;
+            else
+                m_EblaCells[i].sprite = m_EblaEmptySprite;
+        }
+        m_EblaTooltipValue = ebla;
+        SetupTooltip(m_EblaCellRoot, m_EblaTooltipBuilder);
     }
     private static string GetClassLabel(NikkeClass nikkeClass)
     {
@@ -176,6 +234,7 @@ public class NikkeDetailPanel : MonoBehaviour
             if (!hasSkill) continue;
 
             m_SkillIcons[i].sprite = allSkills[i].SkillIcon;
+            SetupSkillTooltip(m_SkillIcons[i].gameObject, allSkills[i]);
         }
         RefreshSkillUI(inst);
     }
@@ -245,7 +304,9 @@ public class NikkeDetailPanel : MonoBehaviour
         IReadOnlyList<int> activeIndices = inst.ActiveCampSkillIndices;
         IReadOnlyList<CampSkillData> allSkills = inst.Data.CampSkills;
 
-        for (int i = 0; i < m_CampSkillIcons.Length; ++i)
+        if (allSkills == null) return;
+        int count = Mathf.Min(m_CampSkillIcons.Length, allSkills.Count);
+        for (int i = 0; i < count; ++i)
         {
             if (allSkills[i] == null) continue;
 
@@ -433,6 +494,13 @@ public class NikkeDetailPanel : MonoBehaviour
             trigger = go.AddComponent<TooltipTrigger>();
         trigger.Initialize(m_Tooltip, builder, new Vector2(10f, 0f));
     }
+    private void SetupSkillTooltip(GameObject go, SkillData skill)
+    {
+        SkillTooltipTrigger trigger = go.GetComponent<SkillTooltipTrigger>();
+        if (trigger == null)
+            trigger = go.AddComponent<SkillTooltipTrigger>();
+        trigger.Initialize(m_SkillTooltip, skill, new Vector2(0f, -24f));
+    }
     private static string GetRarityLabel(ItemRarity rarity)
     {
         switch (rarity)
@@ -474,10 +542,40 @@ public class NikkeDetailPanel : MonoBehaviour
         for (int s = 0; s < activeIndices.Count; ++s)
         {
             int idx = activeIndices[s];
-            bool valid = idx >= 0 && idx < icons.Length && icons[idx] != null;
+            bool valid = idx >= 0 && idx < icons.Length && icons[idx] != null && icons[idx].gameObject.activeSelf;
             selectIcons[s].gameObject.SetActive(valid);
             if (!valid) continue;
             selectIcons[s].position = icons[idx].rectTransform.position + SELECT_ICON_OFFSET;
+        }
+    }
+    private void RefreshNavUnits()
+    {
+        m_CombatStateMachine.PositionSystem.GetAllUnits(CombatUnitType.Nikke, m_NavUnits);
+    }
+    private void OnPrev()
+    {
+        RefreshNavUnits();
+        for (int i=0; i< m_NavUnits.Count; ++i)
+        {
+            if (m_NavUnits[i].SlotIndex == m_CurrentSlotIndex)
+            {
+                int prev = (i + 1 + m_NavUnits.Count) % m_NavUnits.Count;
+                Show(m_NavUnits[prev]);
+                return;
+            }
+        }
+    }
+    private void OnNext()
+    {
+        RefreshNavUnits();
+        for (int i = 0; i < m_NavUnits.Count; ++i)
+        {
+            if (m_NavUnits[i].SlotIndex == m_CurrentSlotIndex)
+            {
+                int next = (i - 1 + m_NavUnits.Count) % m_NavUnits.Count;
+                Show(m_NavUnits[next]);
+                return;
+            }
         }
     }
 }

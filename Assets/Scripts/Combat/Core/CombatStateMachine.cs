@@ -85,6 +85,7 @@ public class CombatStateMachine : MonoBehaviour
     private List<CombatUnit> m_IsValidTargetBuffer = new List<CombatUnit>();
 
     private List<CombatUnit> m_TargetExtractBuffer = new List<CombatUnit>(4);
+    private List<EnemyData> m_DefeatedEnemies = new List<EnemyData>();
 
     // 외부 읽기용 프로퍼티
     public CombatState CurrentState => m_CurrentState;
@@ -176,6 +177,7 @@ public class CombatStateMachine : MonoBehaviour
         m_SkillExecutor = new SkillExecutor(m_PositionSystem, m_EblaSystem, m_DeathsDoorDebuff, m_DeathsDoorRecovery);
         m_EnemyAI = new EnemyAI(m_PositionSystem, m_SkillExecutor);
         m_StatusEffectManager = new StatusEffectManager(m_StunResistBuff);
+        m_DefeatedEnemies.Clear();
 
         m_PositionSystem.Initialize(nikkes, enemies);
 
@@ -278,14 +280,15 @@ public class CombatStateMachine : MonoBehaviour
                 ApplyPostBattleEbla();
                 yield return StartCoroutine(FlushPendingResolutions());
                 SetState(CombatState.Victory);
-                EventBus.Publish(new BattleEndedEvent(true));
+                CombatResult combatResult = LootRoller.Roll(m_DefeatedEnemies);
+                EventBus.Publish(new BattleEndedEvent(true, combatResult));
                 yield break;
             }
             m_PositionSystem.GetAllUnits(CombatUnitType.Nikke, m_UnitBuffer);
             if (m_UnitBuffer.Count == 0)
             {
                 SetState(CombatState.Defeat);
-                EventBus.Publish(new BattleEndedEvent(false));
+                EventBus.Publish(new BattleEndedEvent(false, null));
                 yield break;
             }
 
@@ -453,11 +456,17 @@ public class CombatStateMachine : MonoBehaviour
                 {
                     m_PositionSystem.RemoveUnit(target);
                     EventBus.Publish(new UnitDiedEvent(target));
+                    UnitState prev = result.TargetResults[i].PreviousState;
                     if (target.UnitType == CombatUnitType.Nikke)
                         ApplyAllyDeathEbla();
+                    else
+                        TryRecordDefeat(target, prev);
                 }
                 else if (target.State == UnitState.Corpse && result.TargetResults[i].PreviousState == UnitState.Alive)
+                {
+                    TryRecordDefeat(target, UnitState.Alive);
                     EventBus.Publish(new UnitDiedEvent(target));
+                }
             }
         }
     }
@@ -580,6 +589,7 @@ public class CombatStateMachine : MonoBehaviour
             }
             if (tr.ResultState == UnitState.Dead)
             {
+                TryRecordDefeat(tr.Unit, tr.PreviousState);
                 m_PositionSystem.RemoveUnit(tr.Unit);
                 if (tr.Unit.UnitType == CombatUnitType.Nikke)
                     ApplyAllyDeathEbla();
@@ -650,5 +660,11 @@ public class CombatStateMachine : MonoBehaviour
             if (m_CombatHUD != null)
                 m_CombatHUD.RefreshUnit(p.Unit);
         }
+    }
+    private void TryRecordDefeat(CombatUnit unit, UnitState previousState)
+    {
+        if (unit.UnitType != CombatUnitType.Enemy) return;
+        if (previousState == UnitState.Corpse) return;
+        m_DefeatedEnemies.Add(unit.EnemyData);
     }
 }

@@ -11,13 +11,24 @@ public enum EnemyType
 [System.Serializable]
 public struct DropTable
 {
-    [Header("Gold")]
-    public int MinGold;
-    public int MaxGold;
+    [Header("Credit")]
+    public int MinCredit;
+    public int MaxCredit;
 
     [Header("Gems")]
     public int MinGems;
     public int MaxGems;
+
+    [Header("BattleData")]
+    public int MinBattleData;
+    public int MaxBattleData;
+    
+    [Header("CoreDust")]
+    public int MinCore;
+    public int MaxCore;
+
+    [Header("Relics - building")]
+    public RelicDrop[] Relics;
 
     // 추후 추가 예정
     // public TrinketDrop[]     trinkets;

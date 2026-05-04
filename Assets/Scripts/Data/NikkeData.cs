@@ -64,6 +64,8 @@ public class NikkeData : ScriptableObject
     [SerializeField] private Sprite m_AttackSprite;
     [SerializeField] private Sprite m_HitSprite;
     [SerializeField] private float m_ScaleOffset;
+    [SerializeField] private Sprite m_HeaderSprite;
+ 
 
     [Header("Ebla Resolution Visuals")]
     [SerializeField] private Sprite m_AfflictionArt;    // affiction Àü¿ë
@@ -101,6 +103,7 @@ public class NikkeData : ScriptableObject
     public Sprite AttackSprite => m_AttackSprite;
     public Sprite HitSprite => m_HitSprite;
     public float ScaleOffset => m_ScaleOffset;
+    public Sprite HeaderSprite => m_HeaderSprite;
     public Sprite AfflictionArt => m_AfflictionArt;
     public Sprite VirtueArt      => m_VirtueArt;
     public AfflictionTypeData ForcedAfflictionType => m_ForcedAfflictionType;
