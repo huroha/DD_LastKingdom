@@ -103,10 +103,10 @@ public class CombatStateMachine : MonoBehaviour
     private void Start()
     {
         Application.targetFrameRate = 60;
-        if (null != m_TestNikkes && m_TestNikkes.Length > 0)
-        {
+        if (ExpeditionManager.Instance != null && ExpeditionManager.Instance.IsActive)
+            StartFromExpedition();
+        else if (m_TestNikkes != null && m_TestNikkes.Length > 0)
             StartTestBattle();
-        }
     }
 
     private void Awake()
@@ -119,18 +119,25 @@ public class CombatStateMachine : MonoBehaviour
     private void OnEnable()
     {
         EventBus.Subscribe<RoundEndedEvent>(OnRoundEnded);
+        EventBus.Subscribe<BattleEndedEvent>(OnBattleEnded);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe<RoundEndedEvent>(OnRoundEnded);
+        EventBus.Unsubscribe<BattleEndedEvent>(OnBattleEnded);
     }
     // 이벤트 함수
     private void OnRoundEnded(RoundEndedEvent e)
     {
         TickCorpseTimers();
     }
-
+    private void OnBattleEnded(BattleEndedEvent e)
+    {
+        if (ExpeditionManager.Instance == null || !ExpeditionManager.Instance.IsActive) return;
+        ExpeditionManager.Instance.EndExpedition();
+        GameManager.Instance.ChangeState(GameState.Town);
+    }
 
     public bool ValidateSkill(CombatUnit unit, SkillData skill)
     {
@@ -168,6 +175,31 @@ public class CombatStateMachine : MonoBehaviour
         // 채운 데이터를 넘겨준다.
         StartBattle(nikkes, enemies);
     }
+    private void StartFromExpedition()
+    {
+        IReadOnlyList<NikkeInstance> party = ExpeditionManager.Instance.Party;
+        List<CombatUnit> nikkes = new List<CombatUnit>();
+        for (int i=0; i< party.Count; ++i)
+        {
+            NikkeInstance inst = party[i];
+            if (inst == null) continue;
+            nikkes.Add(new CombatUnit(inst, i, inst.GetEffectiveBaseStats().maxHp, 0, null));       // 생성 시 Ebla 수치 변경지점
+        }
+
+        IReadOnlyList<EnemyData> enemyDatas = ExpeditionManager.Instance.Encounter.Enemies;
+        List<CombatUnit> enemies = new List<CombatUnit>();
+        int slotIndex = 0;
+        for (int i=0; i< enemyDatas.Count; ++i)
+        {
+            EnemyData data = enemyDatas[i];
+            if (data == null) continue;
+            CombatUnit unit = new CombatUnit(data, slotIndex);
+            enemies.Add(unit);
+            slotIndex += unit.SlotSize;
+        }
+        StartBattle(nikkes, enemies);
+    }
+
     public void StartBattle(List<CombatUnit> nikkes, List<CombatUnit> enemies, SurpriseType surprise = SurpriseType.None)
     {
         // 시스템 인스턴스 생성

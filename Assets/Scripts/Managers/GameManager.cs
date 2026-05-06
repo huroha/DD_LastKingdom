@@ -1,7 +1,8 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public enum GameState
 {
+    Boot,
     Title,
     Town,
     Dungeon,
@@ -10,14 +11,14 @@ public enum GameState
 
 public delegate void StateChangedHandler(GameState previous, GameState current);
 
-// °ÔÀÓ ÀüÃ¼ Èå¸§ »óÅÂ¸¦ °ü¸®ÇÏ´Â ½Ì±ÛÅæ ¸Å´ÏÀú (Title/ Town / Dungeon / Combat)
+// ê²Œì„ ì „ì²´ íë¦„ ìƒíƒœë¥¼ ê´€ë¦¬í•˜ëŠ” ì‹±ê¸€í†¤ ë§¤ë‹ˆì € (Title/ Town / Dungeon / Combat)
 public class GameManager : Singleton<GameManager>
 {
     public event StateChangedHandler OnGameStateChanged;
     private GameState m_CurrentState;
     public GameState CurrentState => m_CurrentState;
 
-    // ÀÓ½Ã¿ë
+    // ì„ì‹œìš©
     private int m_Credit;
     private int m_BattleData;
     private int m_Core;
@@ -43,7 +44,7 @@ public class GameManager : Singleton<GameManager>
     protected override void Awake()
     {
         base.Awake();
-        m_CurrentState = GameState.Title;
+        m_CurrentState = GameState.Boot;
         Debug.Log("Awake  = [GameManager] Initialized. State : " + m_CurrentState);
     }
 

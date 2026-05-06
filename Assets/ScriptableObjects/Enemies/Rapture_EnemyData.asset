@@ -22,7 +22,7 @@ MonoBehaviour:
     minDamage: 35
     maxDamage: 55
     accuracyMod: 70
-    critChance: 100
+    critChance: 10
     defense: 5
     dodge: 5
     deathBlowResist: 0
@@ -41,10 +41,15 @@ MonoBehaviour:
   m_Skills:
   - {fileID: 11400000, guid: aa0bba7d332e50e46b083318c321aeb2, type: 2}
   m_DropTable:
-    MinGold: 0
-    MaxGold: 0
+    MinCredit: 100
+    MaxCredit: 200
     MinGems: 0
-    MaxGems: 0
+    MaxGems: 2
+    MinBattleData: 0
+    MaxBattleData: 2
+    MinCore: 0
+    MaxCore: 1
+    Relics: []
   m_CorpseHp: 20
   m_CorpseDecayTurns: 3
   m_Sprite: {fileID: -7382081116707789574, guid: 36dce3df22a4e2c4ca85e503dc0195d9, type: 3}
