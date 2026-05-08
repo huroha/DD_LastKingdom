@@ -10,13 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0891c4a7f942a774d9d29678cfd57bc5, type: 3}
-  m_Name: Encounter_test
+  m_Name: Encounter_test2
   m_EditorClassIdentifier: Assembly-CSharp::EncounterData
-  m_EncounterName: test1
+  m_EncounterName: test2
   m_Description: 
-  m_Icon: {fileID: 0}
+  m_Difficulty: 0
+  m_Length: 0
+  m_QuestType: 0
+  m_RewardGold: 0
+  m_BgIconSprite: {fileID: 21300000, guid: ddd44ea1de9c18e4ea7c5210e86955ab, type: 3}
+  m_IconSprite: {fileID: 21300000, guid: 2e8c103e511b70349931ca32e5ad4d44, type: 3}
   m_Enemies:
   - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
-  - {fileID: 11400000, guid: 597dfa92b6a61b0408211a9473517f39, type: 2}
-  - {fileID: 11400000, guid: 9bb52c184ca211e4595e32d4fb514b47, type: 2}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
+  - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
+  - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}

@@ -5,53 +5,82 @@ using TMPro;
 
 public class NikkeCardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
+    [SerializeField] private TextMeshProUGUI m_WeaponLvText;
+    [SerializeField] private TextMeshProUGUI m_ArmorLvText;
+    [SerializeField] private Image m_LevelIcon;
+    [SerializeField] private Image m_LevelElement;
+    [SerializeField] private Image m_SelectOverlay;
+    [SerializeField] private Image m_DimOverlay;
     [SerializeField] private Image m_Portrait;
     [SerializeField] private TextMeshProUGUI m_NameText;
 
+    [SerializeField] private Sprite[] m_LevelSprites;
+    [SerializeField] private Sprite[] m_LevelElementSprites;
+
     private NikkeInstance m_BoundInstance;
-    private Transform m_OriginalParent;
-    private int m_OriginalSiblingIndex;
-    private Canvas m_RootCanvas;
+    private RectTransform m_RectTransform;
+    
+
+    private PartySlotView m_CurrentSlot;
 
     public delegate void CardClickHandler(NikkeCardView card);
     public event CardClickHandler OnClicked;
+    public event CardClickHandler OnRightClicked;
 
     public NikkeInstance BoundInstance => m_BoundInstance;
+    public PartySlotView CurrentSlot => m_CurrentSlot;
 
     private void Awake()
     {
-        m_RootCanvas = GetComponentInParent<Canvas>().rootCanvas;
+        m_RectTransform = GetComponent<RectTransform>();
     }
     public void Bind(NikkeInstance instance)
     {
+        if (instance == null) return;
         m_BoundInstance = instance;
         m_NameText.text = instance.DisplayName;
         m_Portrait.sprite = instance.Data.PortraitSprite;
+        m_WeaponLvText.SetText("{0}", instance.WeaponLevel);
+        m_ArmorLvText.SetText("{0}", instance.ArmorLevel);
+        int lv = instance.Level;
+        m_LevelIcon.sprite = m_LevelSprites[Mathf.Clamp(lv, 0, m_LevelSprites.Length - 1)];
+        m_LevelElement.sprite = m_LevelElementSprites[Mathf.Clamp(lv, 0, m_LevelElementSprites.Length - 1)];
+
+        SetEmbarked(false);
     }
     public void OnBeginDrag(PointerEventData e)
     {
-        m_OriginalParent = transform.parent;
-        m_OriginalSiblingIndex = transform.GetSiblingIndex();
-        transform.SetParent(m_RootCanvas.transform);
-        transform.SetAsLastSibling();
+        if (m_CurrentSlot != null)
+            m_CurrentSlot.ClearSlot();
+        Canvas canvas = GetComponentInParent<Canvas>().rootCanvas;
+        NikkeDragEvents.BeginGhost(canvas, m_Portrait.sprite, m_Portrait.rectTransform.sizeDelta, e.position);
+        NikkeDragEvents.RaiseDragStarted(NikkeDragEvents.Source.Card);
     }
     public void OnDrag(PointerEventData e)
     {
-        transform.position = e.position;
+        NikkeDragEvents.UpdateGhost(e.position);
     }
     public void OnEndDrag(PointerEventData e)
     {
-        // 드롭 성공 시 partyslot view.Ondrop이 부모를 슬롯으로 바꿔줌
-        // 도달 실패시 원래 자리 복귀
-        if (transform.parent == m_RootCanvas.transform)
-        {
-            transform.SetParent(m_OriginalParent);
-            transform.SetSiblingIndex(m_OriginalSiblingIndex);
-        }
+        NikkeDragEvents.EndGhost();
+        NikkeDragEvents.RaiseDragEnded(NikkeDragEvents.Source.Card);
     }
     public void OnPointerClick(PointerEventData e)
     {
         if (e.dragging) return;
-        OnClicked?.Invoke(this);
+        if (e.button == PointerEventData.InputButton.Left)
+            OnClicked?.Invoke(this);
+        else if (e.button == PointerEventData.InputButton.Right)
+            OnRightClicked?.Invoke(this);
     }
+    public void SetEmbarked(bool embarked)
+    {
+        m_DimOverlay.enabled = embarked;
+        m_SelectOverlay.enabled = embarked;
+    }
+    public void ResetTransform()
+    {
+        m_RectTransform.anchoredPosition = Vector2.zero;
+    }
+    public void SetCurrentSlot(PartySlotView slot) => m_CurrentSlot = slot;
 }

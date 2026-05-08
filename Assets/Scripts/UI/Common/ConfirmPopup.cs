@@ -8,7 +8,6 @@ public class ConfirmPopup : MonoBehaviour
     [SerializeField] private Button m_ConfirmButton;
     [SerializeField] private Button m_CancelButton;
 
-    private delegate void ConfirmHandler();
     private System.Action m_OnConfirm;
 
 

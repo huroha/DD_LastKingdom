@@ -103,7 +103,7 @@ public class CombatStateMachine : MonoBehaviour
     private void Start()
     {
         Application.targetFrameRate = 60;
-        if (ExpeditionManager.Instance != null && ExpeditionManager.Instance.IsActive)
+        if(ExpeditionManager.Instance.IsActive)
             StartFromExpedition();
         else if (m_TestNikkes != null && m_TestNikkes.Length > 0)
             StartTestBattle();
@@ -134,7 +134,7 @@ public class CombatStateMachine : MonoBehaviour
     }
     private void OnBattleEnded(BattleEndedEvent e)
     {
-        if (ExpeditionManager.Instance == null || !ExpeditionManager.Instance.IsActive) return;
+        if (!ExpeditionManager.Instance.IsActive) return;
         ExpeditionManager.Instance.EndExpedition();
         GameManager.Instance.ChangeState(GameState.Town);
     }
@@ -154,25 +154,12 @@ public class CombatStateMachine : MonoBehaviour
         {
             NikkeData data = m_TestNikkes[i];
             if (data == null)
-                continue;//data.BaseStats.maxHp
+                continue;
             NikkeInstance instance = new NikkeInstance(data);
             nikkes.Add(new CombatUnit(instance, i, instance.GetEffectiveBaseStats().maxHp, 95, null));
         }
 
-        // 적 순환하면서 데이터 채우기
-        List<CombatUnit> enemies = new List<CombatUnit>();
-        int slotIndex = 0;
-        for (int i = 0; i < m_TestEnemies.Length; ++i)
-        {
-            EnemyData data = m_TestEnemies[i];
-            if (data == null)
-                continue;
-            CombatUnit unit = new CombatUnit(data, slotIndex);
-            enemies.Add(unit);
-            slotIndex += unit.SlotSize;
-        }
-
-        // 채운 데이터를 넘겨준다.
+        List<CombatUnit> enemies = BuildEnemyUnits(m_TestEnemies);
         StartBattle(nikkes, enemies);
     }
     private void StartFromExpedition()
@@ -183,20 +170,10 @@ public class CombatStateMachine : MonoBehaviour
         {
             NikkeInstance inst = party[i];
             if (inst == null) continue;
-            nikkes.Add(new CombatUnit(inst, i, inst.GetEffectiveBaseStats().maxHp, 0, null));       // 생성 시 Ebla 수치 변경지점
+            nikkes.Add(new CombatUnit(inst, i, inst.GetEffectiveBaseStats().maxHp, 0, null));
         }
 
-        IReadOnlyList<EnemyData> enemyDatas = ExpeditionManager.Instance.Encounter.Enemies;
-        List<CombatUnit> enemies = new List<CombatUnit>();
-        int slotIndex = 0;
-        for (int i=0; i< enemyDatas.Count; ++i)
-        {
-            EnemyData data = enemyDatas[i];
-            if (data == null) continue;
-            CombatUnit unit = new CombatUnit(data, slotIndex);
-            enemies.Add(unit);
-            slotIndex += unit.SlotSize;
-        }
+        List<CombatUnit> enemies = BuildEnemyUnits(ExpeditionManager.Instance.Encounter.Enemies);
         StartBattle(nikkes, enemies);
     }
 
@@ -286,8 +263,6 @@ public class CombatStateMachine : MonoBehaviour
                 yield return m_WaitBetweenTurn;
                 continue;
             }
-
-            //Debug.Log($"[Turn] Round {m_TurnManager.RoundNumber} — {m_ActiveUnit.UnitName} ({m_ActiveUnit.UnitType}, Slot{ m_ActiveUnit.SlotIndex}) HP: { m_ActiveUnit.CurrentHp}/{ m_ActiveUnit.MaxHp}");
 
             if (m_ActiveUnit.UnitType == CombatUnitType.Nikke)
                 yield return StartCoroutine(HandlePlayerTurn());
@@ -698,5 +673,20 @@ public class CombatStateMachine : MonoBehaviour
         if (unit.UnitType != CombatUnitType.Enemy) return;
         if (previousState == UnitState.Corpse) return;
         m_DefeatedEnemies.Add(unit.EnemyData);
+    }
+
+    private List<CombatUnit> BuildEnemyUnits(IReadOnlyList<EnemyData> enemies)
+    {
+        List<CombatUnit> units = new List<CombatUnit>();
+        int slotIndex = 0;
+        for (int i = 0; i < enemies.Count; ++i)
+        {
+            EnemyData data = enemies[i];
+            if (data == null) continue;
+            CombatUnit unit = new CombatUnit(data, slotIndex);
+            units.Add(unit);
+            slotIndex += unit.SlotSize;
+        }
+        return units;
     }
 }

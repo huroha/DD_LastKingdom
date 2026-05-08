@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public enum GameState
 {
@@ -29,7 +30,7 @@ public class GameManager : Singleton<GameManager>
     public int BattleData => m_BattleData;
     public int Core => m_Core;
     public int Gems => m_Gems;
-    public int[] Relics => m_Relics;
+    public IReadOnlyList<int> Relics => m_Relics;
 
     public void AddCredit(int amount) { m_Credit += amount; }
     public void AddBattleData(int amount) { m_BattleData += amount; }
@@ -45,7 +46,7 @@ public class GameManager : Singleton<GameManager>
     {
         base.Awake();
         m_CurrentState = GameState.Boot;
-        Debug.Log("Awake  = [GameManager] Initialized. State : " + m_CurrentState);
+        Debug.Log("Awake = [GameManager] Initialized. State : " + m_CurrentState);
     }
 
     public void ChangeState(GameState newState)
@@ -59,8 +60,6 @@ public class GameManager : Singleton<GameManager>
         GameState previousState = m_CurrentState;
         m_CurrentState = newState;
 
-        Debug.Log("[GameManager] Staged Change " + previousState + "->" + newState);
-        
         if (OnGameStateChanged != null)
             OnGameStateChanged.Invoke(previousState, newState);
 

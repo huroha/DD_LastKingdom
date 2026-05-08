@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
-public class NikkeRosterView : MonoBehaviour, IDropHandler
+public class NikkeRosterView : MonoBehaviour
 {
     [SerializeField] private Transform m_CardContainer;
     [SerializeField] private NikkeCardView m_CardPrefab;
@@ -11,10 +10,14 @@ public class NikkeRosterView : MonoBehaviour, IDropHandler
 
     public delegate void CardClickHandler(NikkeCardView card);
     public event CardClickHandler OnCardClicked;
+    public event CardClickHandler OnCardRightClicked;
+
+    private void ForwardClick(NikkeCardView c) => OnCardClicked?.Invoke(c);
+    private void ForwardRightClick(NikkeCardView c) => OnCardRightClicked?.Invoke(c);
+
     public void Bind(IReadOnlyList<NikkeInstance> roster)
     {
-        for (int i= m_CardContainer.childCount - 1; i>= 0; --i)
-            Destroy(m_CardContainer.GetChild(i).gameObject);
+        m_CardContainer.DestroyChildren();
         m_Cards.Clear();
 
         for (int i=0; i< roster.Count; ++i)
@@ -22,19 +25,8 @@ public class NikkeRosterView : MonoBehaviour, IDropHandler
             NikkeCardView card = Instantiate(m_CardPrefab, m_CardContainer);
             card.Bind(roster[i]);
             m_Cards.Add(card);
-            card.OnClicked += c => OnCardClicked?.Invoke(c);
+            card.OnClicked += ForwardClick;
+            card.OnRightClicked += ForwardRightClick;
         }
-    }
-    public void ReturnCard(NikkeCardView card)
-    {
-        card.transform.SetParent(m_CardContainer);
-        card.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-    }
-    public void OnDrop(PointerEventData e)
-    {
-        if (e.pointerDrag == null) return;
-        NikkeCardView card = e.pointerDrag.GetComponent<NikkeCardView>();
-        if (card == null) return;
-        ReturnCard(card);
     }
 }

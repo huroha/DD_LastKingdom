@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class ExpeditionManager : Singleton<ExpeditionManager>
 {
-    private List<NikkeInstance> m_Party;
+    private readonly List<NikkeInstance> m_Party = new List<NikkeInstance>();
     private EncounterData m_Encounter;
     private bool m_IsActive;
 
@@ -13,13 +13,15 @@ public class ExpeditionManager : Singleton<ExpeditionManager>
 
     public void BeginExpedition(List<NikkeInstance> party, EncounterData encounter)
     {
-        m_Party = party;
+        if (party == null || encounter == null) return;
+        m_Party.Clear();
+        m_Party.AddRange(party);
         m_Encounter = encounter;
         m_IsActive = true;
     }
     public void EndExpedition()
     {
-        m_Party = null;
+        m_Party.Clear();
         m_Encounter = null;
         m_IsActive=false;
     }

@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
 
 
@@ -40,7 +40,7 @@ public class NikkeInstance
         set
         {
             IReadOnlyList<int> thresholds = m_Data.ExpThresholds;
-            if (m_Level >= thresholds.Count) return;   // ÃÖ´ë ·¹º§ÀÌ¸é º¯°æ ¾È ÇÔ
+            if (m_Level >= thresholds.Count) return;   // ìµœëŒ€ ë ˆë²¨ì´ë©´ ë³€ê²½ ì•ˆ í•¨
             m_Exp = Mathf.Clamp(value, 0, thresholds[m_Level]);
         }
     }
