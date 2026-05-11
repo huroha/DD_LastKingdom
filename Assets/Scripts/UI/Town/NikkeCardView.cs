@@ -21,14 +21,14 @@ public class NikkeCardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private RectTransform m_RectTransform;
     
 
-    private PartySlotView m_CurrentSlot;
-
     public delegate void CardClickHandler(NikkeCardView card);
+    public delegate void CardDragHandler(NikkeCardView card);
+
     public event CardClickHandler OnClicked;
     public event CardClickHandler OnRightClicked;
+    public event CardDragHandler OnDragBegan;
 
     public NikkeInstance BoundInstance => m_BoundInstance;
-    public PartySlotView CurrentSlot => m_CurrentSlot;
 
     private void Awake()
     {
@@ -50,8 +50,7 @@ public class NikkeCardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     }
     public void OnBeginDrag(PointerEventData e)
     {
-        if (m_CurrentSlot != null)
-            m_CurrentSlot.ClearSlot();
+        OnDragBegan?.Invoke(this);
         Canvas canvas = GetComponentInParent<Canvas>().rootCanvas;
         NikkeDragEvents.BeginGhost(canvas, m_Portrait.sprite, m_Portrait.rectTransform.sizeDelta, e.position);
         NikkeDragEvents.RaiseDragStarted(NikkeDragEvents.Source.Card);
@@ -82,5 +81,4 @@ public class NikkeCardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         m_RectTransform.anchoredPosition = Vector2.zero;
     }
-    public void SetCurrentSlot(PartySlotView slot) => m_CurrentSlot = slot;
 }

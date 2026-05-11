@@ -7,6 +7,7 @@ public class NikkeRosterView : MonoBehaviour
     [SerializeField] private NikkeCardView m_CardPrefab;
 
     private List<NikkeCardView> m_Cards = new List<NikkeCardView>();
+    public IReadOnlyList<NikkeCardView> Cards => m_Cards;
 
     public delegate void CardClickHandler(NikkeCardView card);
     public event CardClickHandler OnCardClicked;

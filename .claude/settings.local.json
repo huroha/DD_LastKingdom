@@ -1,6 +1,7 @@
 {
   "enabledMcpjsonServers": [
-    "code-review-graph"
+    "code-review-graph",
+    "unityMCP"
   ],
   "enableAllProjectMcpServers": true
 }

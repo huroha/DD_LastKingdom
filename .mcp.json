@@ -1,16 +1,8 @@
 {
   "mcpServers": {
-    "code-review-graph": {
-      "command": "python",
-      "args": [
-        "-m",
-        "code_review_graph",
-        "serve"
-      ],
-      "env": {
-        "PYTHONUTF8": "1"
-      },
-      "type": "stdio"
+    "UnityMCP": {
+      "type": "sse",
+      "url": "http://127.0.0.1:8080/sse"
     }
   }
 }

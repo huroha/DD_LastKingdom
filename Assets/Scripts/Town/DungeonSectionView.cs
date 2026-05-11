@@ -13,11 +13,12 @@ public class DungeonSectionView : MonoBehaviour
     public event CardClickedHandler OnCardClicked;
     public DungeonType DungeonType => m_DungeonType;
 
-    public void Bind(DungeonData data, EncounterCardView cardPrefab)
+    public EncounterCardView Bind(DungeonData data, EncounterCardView cardPrefab)
     {
         m_SlotA.DestroyChildren();
         m_SlotB.DestroyChildren();
         m_TypeText.SetText(LabelText.GetDungeonTypeLabel(data.DungeonType));
+        EncounterCardView firstCard = null;
 
         IReadOnlyList<EncounterData> encounters = data.Encounters;
         for (int i=0; i< encounters.Count; ++i)
@@ -26,8 +27,10 @@ public class DungeonSectionView : MonoBehaviour
             Transform parent = i < 4 ? m_SlotA : m_SlotB;
             EncounterCardView card = Instantiate(cardPrefab, parent);
             card.Bind(encounters[i]);
+            if (firstCard == null) firstCard = card;
             card.OnClicked += OnEncounterCardClicked;
         }
+        return firstCard;
     }
     private void OnEncounterCardClicked(EncounterCardView card, EncounterData data) => OnCardClicked?.Invoke(card, data);
 

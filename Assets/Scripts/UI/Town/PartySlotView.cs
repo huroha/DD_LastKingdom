@@ -11,17 +11,20 @@ public class PartySlotView : MonoBehaviour, IDropHandler, IPointerClickHandler, 
     [SerializeField] private GameObject m_DropIndicator;
 
     private bool m_WasDragging;
+    private NikkeInstance m_BoundInstance;
 
-    private NikkeCardView m_AssignedCard;  // SetEmbarked 호출용으로만 보관
+    public delegate void RightClickedHandler(NikkeInstance instance);
+    public delegate void DroppedHereHandler(int slotIdx, NikkeInstance inst);
+    public delegate void SwapHandler(int srcIdx, int tgtIdx);
+    public delegate void ClearHandler(int slotIdx);
 
-    public delegate void SlotChangedHandler();
-    public event SlotChangedHandler OnSlotChanged;
+    public event RightClickedHandler OnRightClicked;
+    public event DroppedHereHandler OnDroppedHere;
+    public event SwapHandler OnSwapRequested;
+    public event ClearHandler OnClearRequested;
 
+    public bool IsEmpty => m_BoundInstance == null;
     public int SlotIndex => m_SlotIndex;
-    public NikkeInstance AssignedInstance => m_AssignedCard?.BoundInstance;
-    public bool IsEmpty => m_AssignedCard == null;
-    public NikkeCardView AssignedCard => m_AssignedCard;
-
 
     public void Init(int slotIndex)
     {
@@ -38,40 +41,21 @@ public class PartySlotView : MonoBehaviour, IDropHandler, IPointerClickHandler, 
         NikkeDragEvents.OnDragStarted -= OnAnyDragStarted;
         NikkeDragEvents.OnDragEnded -= OnAnyDragEnded;
     }
-    public void AssignCard(NikkeCardView card)
+    public void Render(NikkeInstance inst)
     {
-        if (card.CurrentSlot != null && card.CurrentSlot != this)
-            card.CurrentSlot.ClearSlot();
-        if (m_AssignedCard != null)
-            ClearSlot();
-        m_AssignedCard = card;
-        m_PortraitImage.sprite = card.BoundInstance.Data.PortraitSprite;
-        m_PortraitImage.gameObject.SetActive(true);
-        m_EmptyVisual.SetActive(false);
-        card.SetEmbarked(true);
-        card.SetCurrentSlot(this);
-        OnSlotChanged?.Invoke();
+        m_BoundInstance = inst;
+        bool has = inst != null;
+        m_PortraitImage.sprite = has ? inst.Data.PortraitSprite : null;
+        m_PortraitImage.gameObject.SetActive(has);
+        m_EmptyVisual.SetActive(!has);
     }
-    public NikkeCardView ClearSlot()
-    {
-        if (m_AssignedCard == null) return null;
-
-        NikkeCardView card = m_AssignedCard;
-        m_AssignedCard = null;
-        m_PortraitImage.gameObject.SetActive(false);
-        m_EmptyVisual.SetActive(true);
-        card.SetEmbarked(false);
-        card.SetCurrentSlot(null);
-        OnSlotChanged?.Invoke();
-        return card;
-    }
+    
     public void OnBeginDrag(PointerEventData e)
     {
-        if (m_AssignedCard == null) { e.pointerDrag = null; return; }
+        if (m_BoundInstance == null) { e.pointerDrag = null; return; }
         m_WasDragging = true;
         Canvas canvas = GetComponentInParent<Canvas>().rootCanvas;
-        NikkeDragEvents.BeginGhost(canvas, m_AssignedCard.BoundInstance.Data.PortraitSprite, m_PortraitImage.rectTransform.sizeDelta, e.position);
-        m_EmptyVisual.SetActive(true);
+        NikkeDragEvents.BeginGhost(canvas, m_BoundInstance.Data.PortraitSprite, m_PortraitImage.rectTransform.sizeDelta, e.position);
         m_PortraitImage.gameObject.SetActive(false);
         NikkeDragEvents.RaiseDragStarted(NikkeDragEvents.Source.Slot);
     }
@@ -85,11 +69,8 @@ public class PartySlotView : MonoBehaviour, IDropHandler, IPointerClickHandler, 
         NikkeDragEvents.RaiseDragEnded(NikkeDragEvents.Source.Slot);
 
         // 드롭 실패시 원복
-        if (m_AssignedCard != null)
-        {
-            m_PortraitImage.gameObject.SetActive(true);
-            m_EmptyVisual.SetActive(false);
-        }
+        if (m_BoundInstance != null)
+            Render(m_BoundInstance);
     }
     public void OnDrop(PointerEventData e)
     {
@@ -97,26 +78,22 @@ public class PartySlotView : MonoBehaviour, IDropHandler, IPointerClickHandler, 
         if (e.pointerDrag == null) return;
 
         NikkeCardView card = e.pointerDrag.GetComponent<NikkeCardView>();
-        if (card != null) { AssignCard(card); return; }
+        if (card != null) { OnDroppedHere?.Invoke(m_SlotIndex, card.BoundInstance); return; }
 
-        PartySlotView sourceSlot = e.pointerDrag.GetComponent<PartySlotView>();
-        if (sourceSlot == null || sourceSlot == this) return;
-        NikkeCardView sourceCard = sourceSlot.m_AssignedCard;
-        NikkeCardView myCard = m_AssignedCard;
-        sourceSlot.ClearSlot();
-        ClearSlot();
-        AssignCard(sourceCard);
-        if (myCard != null) sourceSlot.AssignCard(myCard);
+        PartySlotView src = e.pointerDrag.GetComponent<PartySlotView>();
+        if (src == null || src == this) return;
+        OnSwapRequested?.Invoke(src.SlotIndex, m_SlotIndex);
     }
     public void OnPointerClick(PointerEventData e)
     {
         if (m_WasDragging) { m_WasDragging = false; return; }
-        if (m_AssignedCard == null) return;
-        ClearSlot();
+        if (m_BoundInstance == null) return;
+        if (e.button == PointerEventData.InputButton.Right) { OnRightClicked?.Invoke(m_BoundInstance); return; }
+        OnClearRequested?.Invoke(m_SlotIndex);
     }
     private void OnAnyDragStarted(NikkeDragEvents.Source source)
     {
-        if (source == NikkeDragEvents.Source.Card && !IsEmpty) return;
+        if (!IsEmpty) return;  // portrait 있는 슬롯은 indicator 표시 안 함
         m_DropIndicator.SetActive(true);
     }
     private void OnAnyDragEnded(NikkeDragEvents.Source source)

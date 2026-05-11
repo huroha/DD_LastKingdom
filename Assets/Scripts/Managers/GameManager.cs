@@ -17,6 +17,11 @@ public class GameManager : Singleton<GameManager>
 {
     public event StateChangedHandler OnGameStateChanged;
     private GameState m_CurrentState;
+
+    [Header("Cursor")]
+    [SerializeField] private Texture2D m_CursorTexture;
+    [SerializeField] private Vector2 m_CursorHotspot;
+
     public GameState CurrentState => m_CurrentState;
 
     // 임시용
@@ -47,6 +52,8 @@ public class GameManager : Singleton<GameManager>
         base.Awake();
         m_CurrentState = GameState.Boot;
         Debug.Log("Awake = [GameManager] Initialized. State : " + m_CurrentState);
+        if (m_CursorTexture != null)
+            Cursor.SetCursor(m_CursorTexture, m_CursorHotspot, CursorMode.Auto);
     }
 
     public void ChangeState(GameState newState)

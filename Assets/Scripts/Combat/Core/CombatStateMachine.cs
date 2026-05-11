@@ -68,11 +68,9 @@ public class CombatStateMachine : MonoBehaviour
     private SkillData m_SelectedSkill;
     private CombatUnit m_SelectedTarget;
 
-    // 플레이어 입력 플래그
-    private bool m_SkillConfirmed;
-    private bool m_TargetConfirmed;
-    private bool m_MoveRequested;
-    private bool m_MoveConfirmed;
+    // 커멘트 관련
+    private PlayerCommand m_PendingCmd;
+    private bool m_HasCmd;
 
     // 리스트 버퍼들
     private List<CombatUnit> m_UnitBuffer = new List<CombatUnit>();
@@ -305,74 +303,61 @@ public class CombatStateMachine : MonoBehaviour
     private IEnumerator HandlePlayerTurn()
     {
         bool turnHandled = false;
-        m_MoveRequested = false;  // 전에 사용됬던거 사용 방지
-        m_MoveConfirmed = false;
         while (!turnHandled)
         {
             SetState(CombatState.PlayerSelectSkill);
-            m_SkillConfirmed = false;
             m_SelectedSkill = null;
             m_SkillSelectPanel.Show(m_ActiveUnit, OnSkillSelected, OnSkillPass, OnMoveRequested);
+            yield return WaitForCommand();
 
-            while (!m_SkillConfirmed)
-                yield return null;
-
-            // Move 요청된 경우
-            if (m_MoveRequested)
+            switch (m_PendingCmd.Kind)
             {
-                m_MoveRequested = false;
-                GetValidMoveTargets(m_MoveTargetBuffer);
-                if (m_MoveTargetBuffer.Count == 0)
-                    continue; // 이동 가능 슬롯 없으면 다시 스킬 선택
+                case PlayerCommandKind.RequestMove:
+                    GetValidMoveTargets(m_MoveTargetBuffer);
+                    if (m_MoveTargetBuffer.Count == 0)
+                        continue;
+                    SetState(CombatState.PlayerSelectMoveTarget);
+                    m_SelectedTarget = null;
+                    m_TargetSelectPanel.Show(m_MoveTargetBuffer, null, OnMoveTargetSelected, OnMoveCancel);
+                    yield return WaitForCommand();
 
-                SetState(CombatState.PlayerSelectMoveTarget);
-                m_MoveConfirmed = false;
-                m_SelectedTarget = null;
-                m_TargetSelectPanel.Show(m_MoveTargetBuffer, m_SelectedSkill, OnMoveTargetSelected, OnMoveCancel);
+                    if (m_PendingCmd.Kind == PlayerCommandKind.SelectTarget)
+                        turnHandled = true;
+                    // Cancel 이면 break -> while 처음으로 스킬 재선택
+                    break;
 
-                while (!m_MoveConfirmed)
-                    yield return null;
-
-                if (m_SelectedTarget != null)
+                case PlayerCommandKind.Pass:
+                    yield return m_CombatHUD.ShowPassLabel(m_ActiveUnit);
+                    SnapshotNikkeEbla();
+                    if (m_EblaSystem.ModifyEbla(m_ActiveUnit, PASS_EBLA_PENALTY))
+                    {
+                        m_PositionSystem.RemoveUnit(m_ActiveUnit);
+                        EventBus.Publish(new UnitDiedEvent(m_ActiveUnit));
+                    }
+                    yield return StartCoroutine(FlushEblaHalos());
+                    yield return StartCoroutine(FlushPendingResolutions());
                     turnHandled = true;
-                continue;
+                    break;
+
+                case PlayerCommandKind.SelectSkill:
+                    m_SelectedSkill = m_PendingCmd.Skill;
+                    SetState(CombatState.PlayerSelectTarget);
+                    m_SelectedTarget = null;
+                    m_PositionSystem.GetValidTargets(m_ActiveUnit, m_SelectedSkill, m_ValidTargetBuffer);
+                    m_TargetSelectPanel.Show(m_ValidTargetBuffer, m_SelectedSkill, OnTargetSelected, OnTargetCancel);
+                    yield return WaitForCommand();
+
+                    if (m_PendingCmd.Kind == PlayerCommandKind.SelectTarget)
+                    {
+                        m_SelectedTarget = m_PendingCmd.Target;
+                        turnHandled = true;
+                    }
+                    // Cancel 나면 break-> while 처음으로 스킬 재선택
+                    break;
             }
-
-
-            // 패스 선택 시
-            if (m_SelectedSkill == null)
-            {
-                yield return m_CombatHUD.ShowPassLabel(m_ActiveUnit);
-                SnapshotNikkeEbla();
-                if (m_EblaSystem.ModifyEbla(m_ActiveUnit, PASS_EBLA_PENALTY))
-                {
-                    m_PositionSystem.RemoveUnit(m_ActiveUnit);
-                    EventBus.Publish(new UnitDiedEvent(m_ActiveUnit));
-                }
-                yield return StartCoroutine(FlushEblaHalos());
-                yield return StartCoroutine(FlushPendingResolutions());
-                turnHandled = true;
-                continue;
-            }
-
-
-
-            // 타겟 선택
-            SetState(CombatState.PlayerSelectTarget);
-            m_TargetConfirmed = false;
-            m_SelectedTarget = null;
-            m_PositionSystem.GetValidTargets(m_ActiveUnit, m_SelectedSkill, m_ValidTargetBuffer);
-            m_TargetSelectPanel.Show(m_ValidTargetBuffer, m_SelectedSkill, OnTargetSelected, OnTargetCancel);
-
-            while (!m_TargetConfirmed)
-                yield return null;
-
-            if (m_SelectedTarget != null)
-                turnHandled = true;
-            // 취소면 루프 처음으로 돌아가 스킬 재선택
         }
 
-        // 패스가 아닐 때만 실행
+        // 패스가 아닐 경우에 실행
         if (m_SelectedSkill != null)
         {
             SetState(CombatState.ExecuteSkill);
@@ -517,36 +502,40 @@ public class CombatStateMachine : MonoBehaviour
         //Debug.Log($"[FSM] {newState}");
 
     }
+    private void Submit(PlayerCommandKind kind, SkillData skill = null, CombatUnit target = null)
+    {
+        m_PendingCmd = new PlayerCommand {  Kind = kind, Skill = skill, Target = target };
+        m_HasCmd = true;
+    }
+    private IEnumerator WaitForCommand()
+    {
+        while (!m_HasCmd)
+            yield return null;
+        m_HasCmd = false;
+    }
     private void OnSkillSelected(SkillData skill)
     {
-        m_SelectedSkill = skill;
-        m_SkillConfirmed = true;
+        Submit(PlayerCommandKind.SelectSkill, skill: skill);
     }
     private void OnSkillPass()
     {
-        m_SelectedSkill = null;
-        m_SkillConfirmed = true;
+        Submit(PlayerCommandKind.Pass);
     }
     private void OnTargetSelected(CombatUnit target)
     {
-        m_SelectedTarget = target;
-        m_TargetConfirmed = true;
+        Submit(PlayerCommandKind.SelectTarget, target: target);
     }
     private void OnTargetCancel()
     {
-        m_SelectedTarget = null;
-        m_TargetConfirmed = true;
+        Submit(PlayerCommandKind.Cancel);
     }
-
     private void OnMoveCancel()
     {
-        m_SelectedTarget = null;
-        m_MoveConfirmed = true;
+        Submit(PlayerCommandKind.Cancel);
     }
     private void OnMoveRequested()
     {
-        m_MoveRequested = true;
-        m_SkillConfirmed = true; // while(!m_SkillConfirmed) 루프 탈출용
+        Submit(PlayerCommandKind.RequestMove);
     }
 
     private void OnMoveTargetSelected(CombatUnit target)
@@ -554,8 +543,7 @@ public class CombatStateMachine : MonoBehaviour
         int steps = target.SlotIndex - m_ActiveUnit.SlotIndex;
         m_PositionSystem.Move(m_ActiveUnit, steps);
         EventBus.Publish(new UnitMovedEvent(m_ActiveUnit, target));
-        m_SelectedTarget = target;
-        m_MoveConfirmed = true;
+        Submit(PlayerCommandKind.SelectTarget, target: target);
     }
 
     private void GetValidMoveTargets(List<CombatUnit> result)

@@ -7,6 +7,7 @@ public class ConfirmPopup : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_MessageText;
     [SerializeField] private Button m_ConfirmButton;
     [SerializeField] private Button m_CancelButton;
+    [SerializeField] private Image m_HoverOverlay;
 
     private System.Action m_OnConfirm;
 
@@ -15,6 +16,9 @@ public class ConfirmPopup : MonoBehaviour
     {
         m_ConfirmButton.onClick.AddListener(OnConfirmClicked);
         m_CancelButton.onClick.AddListener(OnCancelClicked);
+        m_HoverOverlay.gameObject.SetActive(false);
+        AddHoverListeners(m_ConfirmButton);
+        AddHoverListeners(m_CancelButton);
         gameObject.SetActive(false);
     }
     public void Show(string message, System.Action onConfirm)
@@ -39,5 +43,19 @@ public class ConfirmPopup : MonoBehaviour
     private void OnCancelClicked()
     {
         Hide();
+    }
+    private void AddHoverListeners(Button btn)
+    {
+        UIEventUtil.AddHover(m_ConfirmButton,
+            () => OnButtonHovered(m_ConfirmButton),
+            () => m_HoverOverlay.gameObject.SetActive(false));
+        UIEventUtil.AddHover(m_CancelButton,
+            () => OnButtonHovered(m_CancelButton),
+            () => m_HoverOverlay.gameObject.SetActive(false));
+    }
+    private void OnButtonHovered(Button btn)
+    {
+        m_HoverOverlay.transform.position = btn.transform.position;
+        m_HoverOverlay.gameObject.SetActive(true);
     }
 }
