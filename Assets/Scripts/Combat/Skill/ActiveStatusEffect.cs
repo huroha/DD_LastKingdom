@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ActiveStatusEffect
 {
@@ -10,14 +10,14 @@ public class ActiveStatusEffect
     {
         Data = data;
         RemainingTurns = data.Duration;
-        CurrentStacks = 1;
+        CurrentStacks = (data.EffectType == StatusEffectType.Block) ? data.MaxStack : 1;
         AccumulatedTickDamage = data.TickDamage;
     }
     public ActiveStatusEffect(StatusEffectData data, int durationOverride)
     {
         Data = data;
         RemainingTurns = durationOverride;
-        CurrentStacks = 1;
+        CurrentStacks = (data.EffectType == StatusEffectType.Block) ? data.MaxStack : 1;
         AccumulatedTickDamage = data.TickDamage;
     }
 }

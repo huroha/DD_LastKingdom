@@ -1,0 +1,124 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd9ac6bf9354d344cbfc0f6cc8d3a23c, type: 3}
+  m_Name: KilloWT
+  m_EditorClassIdentifier: Assembly-CSharp::GearData
+  m_GearName: "\uC740\uB454\uC790"
+  m_Description: 
+  m_GearType: 0
+  m_LevelSprites:
+  - {fileID: 21300000, guid: 0d7a31740d38e2d4bab0a06f586ff56f, type: 3}
+  - {fileID: 21300000, guid: 8728642de0ae19942bde47f8f410e59b, type: 3}
+  - {fileID: 21300000, guid: a84fa2cf80c9bc447a39b71ecf6a341f, type: 3}
+  - {fileID: 21300000, guid: b07361e1dfef76a40a97fb40645bf433, type: 3}
+  - {fileID: 21300000, guid: 2858286cccb307a43a4e76085c8284d8, type: 3}
+  m_LevelStats:
+  - maxHp: 0
+    minDamage: 5
+    maxDamage: 10
+    accuracyMod: 0
+    critChance: 1
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 4
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 0
+    minDamage: 6
+    maxDamage: 12
+    accuracyMod: 0
+    critChance: 2
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 4
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 0
+    minDamage: 7
+    maxDamage: 14
+    accuracyMod: 0
+    critChance: 3
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 5
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 0
+    minDamage: 8
+    maxDamage: 16
+    accuracyMod: 0
+    critChance: 4
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 5
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 0
+    minDamage: 9
+    maxDamage: 19
+    accuracyMod: 0
+    critChance: 5
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 6
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0

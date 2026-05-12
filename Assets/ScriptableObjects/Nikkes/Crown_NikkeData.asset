@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cead30f8b213ad443a5387d8789ed940, type: 3}
   m_Name: Crown_NikkeData
   m_EditorClassIdentifier: Assembly-CSharp::NikkeData
+  m_Id: 0002_crown
   m_NikkeName: Crown
   m_NikkeClass: 2
   m_CanVirtue: 0
@@ -22,58 +23,58 @@ MonoBehaviour:
     maxHp: 0
     minDamage: 0
     maxDamage: 0
-    accuracyMod: 100
-    critChance: 5
-    defense: 25
-    dodge: 10
-    deathBlowResist: 0
-    speed: 10
-    moveRange: 2
+    accuracyMod: 0
+    critChance: 0
+    defense: 5
+    dodge: 0
+    deathBlowResist: 67
+    speed: 6
+    moveRange: 1
     resistance:
       stun: 40
       move: 40
       poison: 40
-      disease: 40
+      disease: 30
       bleed: 40
-      debuff: 40
+      debuff: 30
       trap: 40
     damageMultiplier: 0
     eblaMultiplier: 0
   m_MaxLevel: 6
-  m_ExpThresholds: 64000000640000002c01000058020000e8030000dc050000
+  m_ExpThresholds: 14000000280000003c000000640000008c000000c8000000
   m_StatGrowthPerLevel:
-    maxHp: 18
+    maxHp: 3
     minDamage: 0
-    maxDamage: 0
+    maxDamage: 1
     accuracyMod: 0
     critChance: 0
-    defense: 1
+    defense: 0
     dodge: 0
     deathBlowResist: 0
     speed: 0
     moveRange: 0
     resistance:
-      stun: 0
-      move: 0
-      poison: 0
-      disease: 0
-      bleed: 0
-      debuff: 0
-      trap: 0
+      stun: 10
+      move: 10
+      poison: 10
+      disease: 10
+      bleed: 10
+      debuff: 10
+      trap: 10
     damageMultiplier: 0
     eblaMultiplier: 0
   m_Skills:
   - {fileID: 11400000, guid: 1af9adf875143234ea659f8e9ac6e0f9, type: 2}
   - {fileID: 11400000, guid: 6bfc8192882314a49973a1cca8b1f05e, type: 2}
   - {fileID: 11400000, guid: 696598c6e05f0824c93937068cff509d, type: 2}
-  - {fileID: 11400000, guid: 43b0ba489ea560e489968ed0b564b7da, type: 2}
+  - {fileID: 11400000, guid: 1bd52a3750960ad4d9cc9704be96fc0a, type: 2}
   - {fileID: 11400000, guid: 0db16968f2d832c4e852a5dea5ad2fd5, type: 2}
   - {fileID: 11400000, guid: 95700198bc6f56446bcda1e8bdc6109e, type: 2}
   - {fileID: 11400000, guid: 420590bbf8084e84fb1016ca5669c311, type: 2}
   m_CampSkills: []
   m_Weapon: {fileID: 11400000, guid: 5395d7dd418a9a14799cd7547218650b, type: 2}
   m_Armor: {fileID: 11400000, guid: 90729043f6a97094c9fe0445212f78d9, type: 2}
-  m_PortraitSprite: {fileID: 1032635755590463704, guid: 08cba6c78a218644fb5b9da39711e2f3, type: 3}
+  m_PortraitSprite: {fileID: 21300000, guid: 64e67ad8ce368b24c8b8a6ea9f9aea22, type: 3}
   m_CombatIdleSprite: {fileID: 21300000, guid: 75423a9606906084da699dd74e450735, type: 3}
   m_CombatPrefab: {fileID: 2262194569955279401, guid: 0d6bf606bd529b84eb31c4abd92361cb, type: 3}
   m_AttackSprite: {fileID: 21300000, guid: d198cae91083e4a4f80103d22684304c, type: 3}

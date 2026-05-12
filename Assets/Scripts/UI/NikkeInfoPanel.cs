@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Text;
@@ -16,7 +16,7 @@ public class NikkeInfoPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_ClassText;
 
     [Header("Skills")]
-    [SerializeField] private Image[] m_SkillIcons;      // Å©±â 4
+    [SerializeField] private Image[] m_SkillIcons;      // í¬ê¸° 4
 
     [Header("Status")]
     [SerializeField] private TextMeshProUGUI m_HpText;
@@ -99,16 +99,22 @@ public class NikkeInfoPanel : MonoBehaviour
 
     private void OnEnable()
     {
+        EventBus.Subscribe<BattleStartedEvent>(OnBattleStarted);
         EventBus.Subscribe<TurnStartedEvent>(OnTurnStarted);
         EventBus.Subscribe<TurnEndedEvent>(OnTurnEnded);
     }
 
     private void OnDisable()
     {
+        EventBus.Unsubscribe<BattleStartedEvent>(OnBattleStarted);
         EventBus.Unsubscribe<TurnStartedEvent>(OnTurnStarted);
         EventBus.Unsubscribe<TurnEndedEvent>(OnTurnEnded);
     }
-
+    private void OnBattleStarted(BattleStartedEvent e)
+    {
+        if (e.Nikkes == null || e.Nikkes.Count == 0) return;
+        Show(e.Nikkes[0]);
+    }
     private void OnTurnStarted(TurnStartedEvent e)
     {
         if (e.Unit.UnitType == CombatUnitType.Nikke)
@@ -126,9 +132,9 @@ public class NikkeInfoPanel : MonoBehaviour
     {
         switch (nikkeClass)
         {
-            case NikkeClass.Attacker: return "°ø°İÇü";
-            case NikkeClass.Supporter: return "Áö¿øÇü";
-            case NikkeClass.Defender: return "¹æ¾îÇü";
+            case NikkeClass.Attacker: return "ê³µê²©í˜•";
+            case NikkeClass.Supporter: return "ì§€ì›í˜•";
+            case NikkeClass.Defender: return "ë°©ì–´í˜•";
             default: return nikkeClass.ToString();
         }
     }
@@ -137,11 +143,11 @@ public class NikkeInfoPanel : MonoBehaviour
     {
         switch (manufacturer)
         {
-            case Manufacturer.Pilgrim: return "ÇÊ±×¸²";
-            case Manufacturer.Elysion: return "¿¤¸®½Ã¿Â";
-            case Manufacturer.Missilis: return "¹Ì½Ç¸®½º";
-            case Manufacturer.Tetra: return "Å×Æ®¶ó";
-            case Manufacturer.Abnormal: return "¾îºê³ë¸Ö";
+            case Manufacturer.Pilgrim: return "í•„ê·¸ë¦¼";
+            case Manufacturer.Elysion: return "ì—˜ë¦¬ì‹œì˜¨";
+            case Manufacturer.Missilis: return "ë¯¸ì‹¤ë¦¬ìŠ¤";
+            case Manufacturer.Tetra: return "í…ŒíŠ¸ë¼";
+            case Manufacturer.Abnormal: return "ì–´ë¸Œë…¸ë©€";
             default: return manufacturer.ToString();
         }
     }

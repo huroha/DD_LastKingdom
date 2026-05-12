@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
-
 public enum GameState
 {
     Boot,
@@ -23,29 +21,6 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private Vector2 m_CursorHotspot;
 
     public GameState CurrentState => m_CurrentState;
-
-    // 임시용
-    private int m_Credit;
-    private int m_BattleData;
-    private int m_Core;
-    private int m_Gems;
-    private int[] m_Relics = new int[4];
-
-    public int Credit => m_Credit;
-    public int BattleData => m_BattleData;
-    public int Core => m_Core;
-    public int Gems => m_Gems;
-    public IReadOnlyList<int> Relics => m_Relics;
-
-    public void AddCredit(int amount) { m_Credit += amount; }
-    public void AddBattleData(int amount) { m_BattleData += amount; }
-    public void AddCore(int amount) { m_Core += amount; }
-    public void AddGems(int amount) { m_Gems += amount; }
-
-    public void AddRelics(RelicType type, int amount)
-    {
-        m_Relics[(int)type] += amount;
-    }
 
     protected override void Awake()
     {

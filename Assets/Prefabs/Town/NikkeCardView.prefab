@@ -149,8 +149,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4291611852
-  m_fontColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -562,6 +562,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NikkeCardView
   m_WeaponLvText: {fileID: 5015959652819870095}
   m_ArmorLvText: {fileID: 1095158873398216547}
+  m_LvText: {fileID: 1359541644679411411}
   m_LevelIcon: {fileID: 4048768534597842723}
   m_LevelElement: {fileID: 3111955885884052071}
   m_SelectOverlay: {fileID: 7595790953548680301}

@@ -1,0 +1,124 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd9ac6bf9354d344cbfc0f6cc8d3a23c, type: 3}
+  m_Name: ModerniaWT
+  m_EditorClassIdentifier: Assembly-CSharp::GearData
+  m_GearName: "\uB274 \uC5D0\uC774\uC9C0"
+  m_Description: 
+  m_GearType: 0
+  m_LevelSprites:
+  - {fileID: 21300000, guid: b6af1d7b592d1414fb3f92020081a412, type: 3}
+  - {fileID: 21300000, guid: 7417152cccd44a34485fed942a070d29, type: 3}
+  - {fileID: 21300000, guid: 0d668b4f7f8f4be4fa7dc2cf7eee34ad, type: 3}
+  - {fileID: 21300000, guid: 84d50d83a7a355142af3bc0eda01334d, type: 3}
+  - {fileID: 21300000, guid: 92783ea6b73f4a245b041b260572e7e4, type: 3}
+  m_LevelStats:
+  - maxHp: 0
+    minDamage: 4
+    maxDamage: 8
+    accuracyMod: 0
+    critChance: 10
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 3
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 0
+    minDamage: 5
+    maxDamage: 10
+    accuracyMod: 0
+    critChance: 11
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 3
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 0
+    minDamage: 6
+    maxDamage: 11
+    accuracyMod: 0
+    critChance: 12
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 4
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 0
+    minDamage: 6
+    maxDamage: 13
+    accuracyMod: 0
+    critChance: 14
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 4
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 0
+    minDamage: 7
+    maxDamage: 15
+    accuracyMod: 0
+    critChance: 15
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 5
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0

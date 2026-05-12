@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 public struct AttackPreview
@@ -57,7 +57,7 @@ public class SkillExecutor
     public SkillResult Execute(CombatUnit user, SkillData skill, CombatUnit selectedTarget = null)
     {
         // ValidateSkill 실패 시 빈 SkillResult 반환 (early return)
-        SkillResult finalResult;
+        SkillResult finalResult = new SkillResult();
 
         if (!ValidateSkill(user, skill))
             return new SkillResult();
@@ -93,85 +93,8 @@ public class SkillExecutor
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log($"[Skill] {user.UnitName} → {actualTarget.UnitName} | Hit:{result[i].IsHit}");
 #endif
-            // [명중 성공 시]
             if (result[i].IsHit)
-            {
-                int damage = 0;
-                // [데미지/힐 계산]
-                if (skill.MaxHeal > 0)
-                    result[i].HealAmount = Random.Range(skill.MinHeal, skill.MaxHeal + 1);
-                else
-                    damage = CalcDamage(user, actualTarget, skill);
-
-                // [크리티컬 판정] RollCrit 호출
-                result[i].IsCrit = RollCrit(user, skill);
-                if (result[i].IsCrit)
-                {
-                    // 크리티컬이면: 데미지 또는 힐량에 CRIT_DAMAGE_MULTI 적용 (int 캐스팅)
-                    damage = (int)(damage * CRIT_DAMAGE_MULTI);
-                    result[i].HealAmount = (int)(result[i].HealAmount * CRIT_DAMAGE_MULTI);
-                }
-
-                // [적용]
-                // 힐 스킬이면: target.Heal(healAmount)
-                result[i].PreviousHp = actualTarget.CurrentHp;
-                if (skill.MaxHeal > 0)
-                {
-                    UnitState preHealState = actualTarget.State;
-                    actualTarget.Heal(result[i].HealAmount);
-                    if (preHealState == UnitState.DeathsDoor && actualTarget.State == UnitState.Alive)
-                        ApplyDeathsDoorRecovery(actualTarget);
-                }
-                // 아니면: target.TakeDamage(damage)
-                else
-                {
-                    result[i].PreviousState = actualTarget.State;
-                    actualTarget.TakeDamage(damage, isCrit: result[i].IsCrit);
-                    result[i].DamageDealt = damage;
-
-                    if (result[i].PreviousState == UnitState.Alive && actualTarget.State == UnitState.DeathsDoor)
-                    {
-                        m_EblaSystem.ModifyEbla(actualTarget, CombatUnit.DEATHS_DOOR_EBLA);
-                        ApplyDeathsDoorDebuff(actualTarget);
-                    }
-                }
-                // [에블라]
-                // skill.EblaDamage > 0 이면: target.AddEbla(skill.EblaDamage)
-                if (skill.EblaDamage > 0)
-                    m_EblaSystem.ModifyEbla(actualTarget, skill.EblaDamage);
-                // skill.EblaHealAmount > 0 이면: target.AddEbla(-skill.EblaHealAmount)
-                if (skill.EblaHealAmount > 0)
-                    m_EblaSystem.ModifyEbla(actualTarget, -skill.EblaHealAmount);
-
-
-                // 상태이상 타겟이 살아있을때만 적용
-                if (actualTarget.IsAlive)
-                    ApplyOnHitEffects(actualTarget, skill, m_AppliedBuffer, m_ResistedBuffer, result[i].IsCrit);
-
-                // [크리티컬 추가 효과] 크리티컬이면 ApplyCritEffects 호출
-                if (result[i].IsCrit)
-                {
-                    if (!allNikkesFetched)
-                    {
-                        m_PositionSystem.GetAllUnits(CombatUnitType.Nikke, m_AllNikkesBuffer);
-                        allNikkesFetched = true;
-                    }
-                    ApplyCritEffects(user, actualTarget, m_AllNikkesBuffer);
-                }
-
-                if (skill.IsGuard)
-                {
-                    user.Protecting?.SetGuardedBy(null, 0);
-                    user.SetProtecting(actualTarget);
-                    actualTarget.SetGuardedBy(user, skill.GuardDuration);
-                }
-                else if (skill.IsForceGuard)
-                {
-                    actualTarget.Protecting?.SetGuardedBy(null, 0);
-                    actualTarget.SetProtecting(user);
-                    user.SetGuardedBy(actualTarget, skill.GuardDuration);
-                }
-            }
+                ApplyHit(user, actualTarget, skill, ref result[i], ref allNikkesFetched);
 
             // [위치 이동] ApplyPositionMove 호출 (명중 여부 무관)
             ApplyPositionMove(user, skill, actualTarget, result[i].IsHit);
@@ -202,6 +125,7 @@ public class SkillExecutor
             else
                 user.AddEffect(new ActiveStatusEffect(effect));
         }
+
         if (selfEffects.Count > 0)
             user.RecalculateStats();
 
@@ -209,6 +133,8 @@ public class SkillExecutor
         finalResult.User = user;
         finalResult.Skill = skill;
         finalResult.TargetResults = result;
+        if (selfEffects.Count > 0)
+            finalResult.SelfAppliedEffects = selfEffects;
         return finalResult;
     }
 
@@ -273,7 +199,7 @@ public class SkillExecutor
     {
         (int min, int max) range = CalcDamageRange(user, target, skill);
         int finalDamage = Random.Range(range.min, range.max + 1);
-        if(skill.MarkBonus && target.FindEffectByType(StatusEffectType.Mark) != null)
+        if (skill.MarkBonus && target.FindEffectByType(StatusEffectType.Mark) != null)
         {
             finalDamage = (int)(finalDamage * (1f + skill.MarkDamageBonus));
         }
@@ -485,5 +411,86 @@ public class SkillExecutor
         else if (originalTargets.Contains(guardian)) return target;
         else return guardian;
     }
+    private void ApplyHit(CombatUnit user, CombatUnit target, SkillData skill, ref TargetResult result, ref bool allNikkesFetched)
+    {
+        result.PreviousHp = target.CurrentHp;
 
+        // 직접 공격만 Block 소모 — 힐·아군 스킬은 통과
+        if (skill.MaxHeal <= 0 && !skill.IsAllyTargeting)
+        {
+            ActiveStatusEffect blockEffect = target.FindEffectByType(StatusEffectType.Block);
+            if (blockEffect != null)
+            {
+                result.WasBlocked = true;
+                blockEffect.CurrentStacks--;
+                if (blockEffect.CurrentStacks <= 0)
+                    target.RemoveEffect(blockEffect.Data);
+                return;
+            }
+        }
+
+        int damage = 0;
+        if (skill.MaxHeal > 0)
+            result.HealAmount = Random.Range(skill.MinHeal, skill.MaxHeal + 1);
+        else
+            damage = CalcDamage(user, target, skill);
+
+        result.IsCrit = RollCrit(user, skill);
+        if (result.IsCrit)
+        {
+            damage = (int)(damage * CRIT_DAMAGE_MULTI);
+            result.HealAmount = (int)(result.HealAmount * CRIT_DAMAGE_MULTI);
+        }
+
+        if (skill.MaxHeal > 0)
+        {
+            UnitState preHealState = target.State;
+            target.Heal(result.HealAmount);
+            if (preHealState == UnitState.DeathsDoor && target.State == UnitState.Alive)
+                ApplyDeathsDoorRecovery(target);
+        }
+        else
+        {
+            result.PreviousState = target.State;
+            target.TakeDamage(damage, isCrit: result.IsCrit);
+            result.DamageDealt = damage;
+
+            if (result.PreviousState == UnitState.Alive && target.State == UnitState.DeathsDoor)
+            {
+                m_EblaSystem.ModifyEbla(target, CombatUnit.DEATHS_DOOR_EBLA);
+                ApplyDeathsDoorDebuff(target);
+            }
+        }
+
+        if (skill.EblaDamage > 0)
+            m_EblaSystem.ModifyEbla(target, skill.EblaDamage);
+        if (skill.EblaHealAmount > 0)
+            m_EblaSystem.ModifyEbla(target, -skill.EblaHealAmount);
+
+        if (target.IsAlive)
+            ApplyOnHitEffects(target, skill, m_AppliedBuffer, m_ResistedBuffer, result.IsCrit);
+
+        if (result.IsCrit)
+        {
+            if (!allNikkesFetched)
+            {
+                m_PositionSystem.GetAllUnits(CombatUnitType.Nikke, m_AllNikkesBuffer);
+                allNikkesFetched = true;
+            }
+            ApplyCritEffects(user, target, m_AllNikkesBuffer);
+        }
+
+        if (skill.IsGuard)
+        {
+            user.Protecting?.SetGuardedBy(null, 0);
+            user.SetProtecting(target);
+            target.SetGuardedBy(user, skill.GuardDuration);
+        }
+        else if (skill.IsForceGuard)
+        {
+            target.Protecting?.SetGuardedBy(null, 0);
+            target.SetProtecting(user);
+            user.SetGuardedBy(target, skill.GuardDuration);
+        }
+    }
 }

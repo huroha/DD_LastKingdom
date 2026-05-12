@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 public class TitleSceneUI : MonoBehaviour
 {
@@ -14,6 +15,9 @@ public class TitleSceneUI : MonoBehaviour
     [SerializeField] private float m_BgStartY = -5.4f;
     [SerializeField] private float m_BgEndY = 5.4f;
 
+    private float m_LastClickTime = -1f;
+    private const float DoubleClickThreshold = 0.3f;
+
 
     private void Awake()
     {
@@ -24,6 +28,24 @@ public class TitleSceneUI : MonoBehaviour
     private void Start()
     {
         StartCoroutine(BgPanRoutine());
+    }
+    private void Update()
+    {
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            if (Time.time - m_LastClickTime < DoubleClickThreshold)
+                SkipAnimation();
+            m_LastClickTime = Time.time;
+        }
+    }
+    private void SkipAnimation()
+    {
+        StopAllCoroutines();
+        Vector3 pos = m_BgTransform.position;
+        pos.y = m_BgEndY;
+        m_BgTransform.position = pos;
+        m_StartBtnGroup.alpha = 1f;
+        m_StartBtnGroup.interactable = true;
     }
     private IEnumerator BgPanRoutine()
     {

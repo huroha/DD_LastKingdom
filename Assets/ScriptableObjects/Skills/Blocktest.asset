@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf8234ddd9a51424a99679d27d50c99b, type: 3}
+  m_Name: Blocktest
+  m_EditorClassIdentifier: Assembly-CSharp::SkillData
+  m_SkillName: "\uBE14\uB77D"
+  m_Description: "\uBE14\uB77D\uD14C\uC2A4\uD2B8"
+  m_SkillIcon: {fileID: -654946990322948871, guid: 19b9f610ec851694e962b1a8f6f32cca, type: 3}
+  m_SkillType: 0
+  m_RequiredState: 0
+  m_UsablePositions: 01010101
+  m_TargetPositions: 01010101
+  m_TargetType: 6
+  m_DamageMultiplier: 0
+  m_AccuracyMod: 0
+  m_CritMod: -100
+  m_MinHeal: 0
+  m_MaxHeal: 0
+  m_EblaDamage: 0
+  m_EblaHealAmount: 0
+  m_MoveUserAmount: 0
+  m_MoveTargetAmount: 0
+  m_IsGuard: 0
+  m_IsForceGuard: 0
+  m_GuardDuration: 0
+  m_MarkBonus: 0
+  m_MarkDamageBonus: 0
+  m_BypassGuard: 0
+  m_OnHitEffects:
+  - {fileID: 11400000, guid: 85f7b33688ea8bc469b1dd37e58e163f, type: 2}
+  m_OnSelfEffects:
+  - {fileID: 11400000, guid: c40f12eec239c1d4989e67d32668c4b7, type: 2}
+  m_AttackEffect: {fileID: 0}
+  m_AttackMovement: 0
+  m_ProjectileSpeed: 20
+  m_HitEffect: {fileID: 0}

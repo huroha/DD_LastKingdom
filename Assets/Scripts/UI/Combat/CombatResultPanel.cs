@@ -111,19 +111,19 @@ public class CombatResultPanel : MonoBehaviour
         switch (slot.Item.Type)
         {
             case LootType.Credit:
-                GameManager.Instance.AddCredit(slot.Item.Quantity);
+                ResourceManager.Instance.AddCredit(slot.Item.Quantity);
                 break;
             case LootType.BattleData:
-                GameManager.Instance.AddBattleData(slot.Item.Quantity);
+                ResourceManager.Instance.AddBattleData(slot.Item.Quantity);
                 break;
             case LootType.Core:
-                GameManager.Instance.AddCore(slot.Item.Quantity);
+                ResourceManager.Instance.AddCore(slot.Item.Quantity);
                 break;
             case LootType.Gems:
-                GameManager.Instance.AddGems(slot.Item.Quantity);
+                ResourceManager.Instance.AddGems(slot.Item.Quantity);
                 break;
             case LootType.Relics:
-                GameManager.Instance.AddRelics(slot.Item.Relic, slot.Item.Quantity);
+                ResourceManager.Instance.AddRelic(slot.Item.Relic, slot.Item.Quantity);
                 break;
             default:
                 Debug.Log("획득: " + slot.Item.Type);

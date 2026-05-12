@@ -154,7 +154,7 @@ public class CombatStateMachine : MonoBehaviour
             if (data == null)
                 continue;
             NikkeInstance instance = new NikkeInstance(data);
-            nikkes.Add(new CombatUnit(instance, i, instance.GetEffectiveBaseStats().maxHp, 95, null));
+            nikkes.Add(new CombatUnit(instance, i, instance.GetEffectiveBaseStats().maxHp, 10, null));
         }
 
         List<CombatUnit> enemies = BuildEnemyUnits(m_TestEnemies);
@@ -187,6 +187,9 @@ public class CombatStateMachine : MonoBehaviour
         m_DefeatedEnemies.Clear();
 
         m_PositionSystem.Initialize(nikkes, enemies);
+        CombatUnit front = m_PositionSystem.GetUnit(CombatUnitType.Nikke, 0);
+        if (front != null)
+            m_SkillSelectPanel.Preview(front);
 
         List<CombatUnit> allUnits = new List<CombatUnit>();
         allUnits.AddRange(nikkes);
@@ -344,6 +347,7 @@ public class CombatStateMachine : MonoBehaviour
                     SetState(CombatState.PlayerSelectTarget);
                     m_SelectedTarget = null;
                     m_PositionSystem.GetValidTargets(m_ActiveUnit, m_SelectedSkill, m_ValidTargetBuffer);
+                    m_SkillSelectPanel.Hide();
                     m_TargetSelectPanel.Show(m_ValidTargetBuffer, m_SelectedSkill, OnTargetSelected, OnTargetCancel);
                     yield return WaitForCommand();
 

@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
 
 public enum NikkeClass
@@ -29,6 +29,9 @@ public enum ElementType
 [CreateAssetMenu(fileName = "New Nikke", menuName = "LastKingdom/Nikke Data")]
 public class NikkeData : ScriptableObject
 {
+    [Header("ID")]
+    [SerializeField] private string m_Id;
+
     [Header("Basic Info")]
     [SerializeField] private string m_NikkeName;
     [SerializeField] private NikkeClass m_NikkeClass;
@@ -44,8 +47,8 @@ public class NikkeData : ScriptableObject
 
     [Header("Level")]
     [SerializeField] private int        m_MaxLevel = 6;
-    [SerializeField] private int[]      m_ExpThresholds = new int[0];        // ÀÎµ¦½º = ·¹¹ë, °ª = ÇØ´ç ·¹º§ µµ´Þ ´©Àû °æÇèÄ¡
-    [SerializeField] private StatBlock  m_StatGrowthPerLevel;   // ·¹º§¾÷ ½Ã °¡»êµÇ´Â ½ºÅÈ
+    [SerializeField] private int[]      m_ExpThresholds = new int[0];        // ì¸ë±ìŠ¤ = ë ˆë°¸, ê°’ = í•´ë‹¹ ë ˆë²¨ ë„ë‹¬ ëˆ„ì  ê²½í—˜ì¹˜
+    [SerializeField] private StatBlock  m_StatGrowthPerLevel;   // ë ˆë²¨ì—… ì‹œ ê°€ì‚°ë˜ëŠ” ìŠ¤íƒ¯
 
     [Header("Skills")]
     [SerializeField] private SkillData[] m_Skills = new SkillData[MaxSkillCount];
@@ -58,7 +61,7 @@ public class NikkeData : ScriptableObject
     [SerializeField] private GearData m_Armor;
 
     [Header("Visuals")]
-    [SerializeField] private Sprite m_PortraitSprite;           // ÃÊ»óÈ­
+    [SerializeField] private Sprite m_PortraitSprite;           // ì´ˆìƒí™”
     [SerializeField] private Sprite m_CombatIdleSprite;           // Idle
     [SerializeField] private GameObject m_CombatPrefab;
     [SerializeField] private Sprite m_AttackSprite;
@@ -68,8 +71,8 @@ public class NikkeData : ScriptableObject
  
 
     [Header("Ebla Resolution Visuals")]
-    [SerializeField] private Sprite m_AfflictionArt;    // affiction Àü¿ë
-    [SerializeField] private Sprite m_VirtueArt;     // °¢¼º Àü¿ë
+    [SerializeField] private Sprite m_AfflictionArt;    // affiction ì „ìš©
+    [SerializeField] private Sprite m_VirtueArt;     // ê°ì„± ì „ìš©
 
     [Header("Ebla Resolution -Forced Type")]
     [SerializeField] private AfflictionTypeData m_ForcedAfflictionType;
@@ -80,9 +83,10 @@ public class NikkeData : ScriptableObject
     [Header("Passive : Critical")]
     [SerializeField] private StatusEffectData[] m_OnCritSelfEffects;
     [SerializeField] private StatusEffectData[] m_OnReceiveCritSelfEffects;
- 
+
 
     // Get Method
+    public string Id => m_Id;
     public string NikkeName                 => m_NikkeName;
     public NikkeClass NikkeClass            => m_NikkeClass;
     public bool CanVirtue                   => m_CanVirtue;

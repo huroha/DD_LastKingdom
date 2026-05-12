@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cead30f8b213ad443a5387d8789ed940, type: 3}
   m_Name: Modernia_NikkeData
   m_EditorClassIdentifier: Assembly-CSharp::NikkeData
+  m_Id: 0004_modernia
   m_NikkeName: "\uBAA8\uB354\uB2C8\uC544"
   m_NikkeClass: 0
   m_CanVirtue: 0
@@ -19,32 +20,32 @@ MonoBehaviour:
   m_Element: 0
   m_Squad: {fileID: 11400000, guid: 2367d89cc0adfe842a478227bd2f8f28, type: 2}
   m_BaseStats:
-    maxHp: 250
-    minDamage: 60
-    maxDamage: 80
-    accuracyMod: 95
-    critChance: 10
-    defense: 5
-    dodge: 0
-    deathBlowResist: 67
-    speed: 12
-    moveRange: 2
-    resistance:
-      stun: 40
-      move: 40
-      poison: 40
-      disease: 40
-      bleed: 40
-      debuff: 40
-      trap: 67
-    damageMultiplier: 0
-    eblaMultiplier: 0
-  m_MaxLevel: 6
-  m_ExpThresholds: 
-  m_StatGrowthPerLevel:
     maxHp: 0
     minDamage: 0
     maxDamage: 0
+    accuracyMod: 0
+    critChance: 0
+    defense: 0
+    dodge: 0
+    deathBlowResist: 67
+    speed: 0
+    moveRange: 2
+    resistance:
+      stun: 30
+      move: 40
+      poison: 30
+      disease: 50
+      bleed: 30
+      debuff: 40
+      trap: 50
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  m_MaxLevel: 6
+  m_ExpThresholds: 14000000280000003c000000640000008c000000c8000000
+  m_StatGrowthPerLevel:
+    maxHp: 3
+    minDamage: 0
+    maxDamage: 1
     accuracyMod: 0
     critChance: 0
     defense: 0
@@ -53,13 +54,13 @@ MonoBehaviour:
     speed: 0
     moveRange: 0
     resistance:
-      stun: 0
-      move: 0
-      poison: 0
-      disease: 0
-      bleed: 0
-      debuff: 0
-      trap: 0
+      stun: 10
+      move: 10
+      poison: 10
+      disease: 10
+      bleed: 10
+      debuff: 10
+      trap: 10
     damageMultiplier: 0
     eblaMultiplier: 0
   m_Skills:
@@ -71,8 +72,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   m_CampSkills: []
-  m_Weapon: {fileID: 0}
-  m_Armor: {fileID: 0}
+  m_Weapon: {fileID: 11400000, guid: 2fc940a44c3e92f46bb74a16dc676936, type: 2}
+  m_Armor: {fileID: 11400000, guid: 4f80dde1349fe644ba1c8967c7ca2e5a, type: 2}
   m_PortraitSprite: {fileID: 21300000, guid: b9672712443016242931e44a48416cda, type: 3}
   m_CombatIdleSprite: {fileID: 21300000, guid: 3929cfac9e6e9cc4f94fe98baaf94a00, type: 3}
   m_CombatPrefab: {fileID: 2556627444221727513, guid: b9644b12f6a0e7e45b2e09f3a61af3a7, type: 3}

@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -26,7 +26,7 @@ public class CombatDirector : MonoBehaviour
     [SerializeField] private float m_DotDeathFadeOutDuration = 0.25f;
 
 
-    // »ö»ó »ó¼ö
+    // ìƒ‰ìƒ ìƒìˆ˜
     private static readonly Color COLOR_DAMAGE_RED = new Color(0.75f, 0.07f, 0.07f);
     private static readonly Color COLOR_CRIT = new Color(0.9f, 0.53f, 0.1f);
     private static readonly Color COLOR_HEAL = new Color(0.53f, 0.75f, 0.26f);
@@ -36,32 +36,33 @@ public class CombatDirector : MonoBehaviour
     private static readonly Color COLOR_DEBUFF = new Color(0.75f, 0.38f, 0.06f);
     private static readonly Color COLOR_BUFF = new Color(0f, 1f, 1f);
     private static readonly Color COLOR_RESIST = new Color(0.7f, 0.7f, 0.7f);
+    private static readonly Color COLOR_BLOCK = new Color(0.15f, 0.16f, 0.15f);
     private static readonly Color COLOR_DEATHDOOR = new Color(0.6f, 0f, 0f);
 
-    // ÆË¾÷ ÅØ½ºÆ®
+    // íŒì—… í…ìŠ¤íŠ¸
     private const string TRIGGER_ATTACK = "Attack";
     private const string TRIGGER_HIT = "Hit";
     private const string TRIGGER_DEATH = "Death";
 
-    private const string POPUP_DODGE = "È¸ÇÇ";
-    private const string POPUP_RESIST = "ÀúÇ×";
-    private const string POPUP_CRIT = "Ä¡¸íÅ¸!\n";
-    private const string POPUP_DEATHS_DOOR = "Á×À½ÀÇ ¹®ÅÎ!";
-
+    private const string POPUP_DODGE = "íšŒí”¼";
+    private const string POPUP_RESIST = "ì €í•­";
+    private const string POPUP_CRIT = "ì¹˜ëª…íƒ€!\n";
+    private const string POPUP_DEATHS_DOOR = "ì£½ìŒì˜ ë¬¸í„±!";
+    private const string POPUP_BLOCK = "í”¼í•´ ì°¨ë‹¨ë¨";
     private const float CRIT_POPUP_SCALE = 1.15f;
 
-    // duration ÇÊµå
+    // duration í•„ë“œ
     private WaitForSecondsRealtime m_WaitPopup;
     private WaitForSecondsRealtime m_WaitStatusPopup;
     private WaitForSecondsRealtime m_WaitPostSequence;
     private WaitForSecondsRealtime m_WaitHit;
 
 
-    // Animation Event µ¿±âÈ­ ÇÃ·¡±×
+    // Animation Event ë™ê¸°í™” í”Œë˜ê·¸
     private bool m_AttackEndReceived;
     private StringBuilder m_PopupTextBuilder;
 
-    //Ä³½Ì
+    //ìºì‹±
     private Dictionary<int, HashSet<string>> m_AnimParamCache;
 
     private void Awake()
@@ -112,7 +113,7 @@ public class CombatDirector : MonoBehaviour
         yield return m_FocusController.FocusIn(skill.IsAllyTargeting);
         m_DriftController.StartDrift(user, skill);
 
-        // 3. °ø°İ ¸ğ¼Ç
+        // 3. ê³µê²© ëª¨ì…˜
         if (result.TargetResults != null && result.TargetResults.Length > 0)
         {
             PlayAttackEffect(user, skill, targets);
@@ -127,7 +128,7 @@ public class CombatDirector : MonoBehaviour
                 ProcessSingleHit(result.TargetResults[0], skill);
         }
 
-        // »ç¸Á overlay µ¿ÀÛ
+        // ì‚¬ë§ overlay ë™ì‘
         if (result.TargetResults != null)
         {
             for (int i = 0; i < result.TargetResults.Length; ++i)
@@ -163,18 +164,18 @@ public class CombatDirector : MonoBehaviour
         }
         m_DriftController.StopDrift();
 
-        // 8.Äİ¹é Á¤¸®
+        // 8.ì½œë°± ì •ë¦¬
         if (userView.AnimBridge != null)
             userView.AnimBridge.ClearCallbacks();
 
-        // ghostbar ÁØºñ
+        // ghostbar ì¤€ë¹„
         for (int i = 0; i < result.TargetResults.Length; ++i)
         {
             TargetResult tr = result.TargetResults[i];
             if (!tr.IsHit)
                 continue;
             if (tr.PreviousState != UnitState.Corpse && tr.Target.State == UnitState.Corpse)
-                continue;   // alive -> corpse¸¸ ºÒÅë
+                continue;   // alive -> corpseë§Œ ë¶ˆí†µ
             m_HpBarController.PrepareGhost(tr.Target,tr.PreviousHp);
         }
 
@@ -183,7 +184,7 @@ public class CombatDirector : MonoBehaviour
         m_FieldView.SetFocusLock(false);
         m_FieldView.MoveAllToCurrentSlots();
 
-        // bar µîÀå Á÷ÈÄ Àû¿ë
+        // bar ë“±ì¥ ì§í›„ ì ìš©
         if (result.TargetResults != null)
         {
             for (int i = 0; i < result.TargetResults.Length; ++i)
@@ -193,11 +194,11 @@ public class CombatDirector : MonoBehaviour
                 m_HpBarController.StartGhostDrain(result.TargetResults[i].Target);
             }
         }
-        // º¹±Í
+        // ë³µê·€
         yield return m_WaitPostSequence;
         RestoreSprites(user, userView, result.TargetResults);
 
-        // »óÅÂÀÌ»ó ÆË¾÷
+        // ìƒíƒœì´ìƒ íŒì—…
         if (result.TargetResults != null)
         {
             for (int i = 0; i < result.TargetResults.Length; ++i)
@@ -232,8 +233,21 @@ public class CombatDirector : MonoBehaviour
                 }
             }
         }
+        // OnSelf íš¨ê³¼ íŒì—…
+        if (result.SelfAppliedEffects != null)
+        {
+            Vector3 userPos = m_FieldView.GetSlotPosition(user);
+            bool userIsNikke = user.UnitType == CombatUnitType.Nikke;
+            for (int i = 0; i < result.SelfAppliedEffects.Count; ++i)
+            {
+                StatusEffectData effect = result.SelfAppliedEffects[i];
+                m_PopupPool.SpawnEffect(userPos, userIsNikke, effect.EffectName,
+                                        GetEffectColor(effect.EffectType), effect.Icon);
+                yield return m_WaitStatusPopup;
+            }
+        }
 
-        // 10. ÈÄµô·¹ÀÌ
+        // 10. í›„ë”œë ˆì´
         yield return m_WaitPostSequence;
     }
 
@@ -270,11 +284,15 @@ public class CombatDirector : MonoBehaviour
         Vector3 pos = view.Renderer.transform.position;
         bool isNikke = target.UnitType == CombatUnitType.Nikke;
 
-        if (skill.MaxHeal > 0)
+        if (result.WasBlocked)
+        {
+            m_PopupPool.SpawnDamage(pos, isNikke, POPUP_BLOCK, COLOR_BLOCK);
+        }
+        else if (skill.MaxHeal > 0)
         {
             m_PopupPool.SpawnDamage(pos, isNikke, result.HealAmount.ToString(), COLOR_HEAL);
         }
-        else if(result.DamageDealt > 0)
+        else if (result.DamageDealt > 0)
         {
             m_PopupTextBuilder.Clear();
             if (result.IsCrit)
@@ -298,6 +316,8 @@ public class CombatDirector : MonoBehaviour
                 return COLOR_STUN;
             case StatusEffectType.Buff:
                 return COLOR_BUFF;
+            case StatusEffectType.Block:
+                return COLOR_BLOCK;
             default:
                 return COLOR_DEBUFF;
         }
@@ -316,14 +336,14 @@ public class CombatDirector : MonoBehaviour
 
         SetHitSprite(unit, view, previousState);
 
-        // Death VFX ÆÇÁ¤°ú ½ÃÀÛ
+        // Death VFX íŒì •ê³¼ ì‹œì‘
         Coroutine deathCo = m_DeathVfxPlayer.Play(unit, previousState, resultState, true, m_DotDeathFadeOutDuration);
 
         m_PopupPool.SpawnEffect(m_FieldView.GetSlotPosition(unit), isNikke, damage.ToString(), GetEffectColor(type));
         yield return m_WaitPopup;
         RestoreSingleSprite(unit, view);
 
-        // DeathVfx°¡ ÆË¾÷º¸´Ù ±æ¸é ¿Ï·á±îÁö ´ë±â
+        // DeathVfxê°€ íŒì—…ë³´ë‹¤ ê¸¸ë©´ ì™„ë£Œê¹Œì§€ ëŒ€ê¸°
         if (deathCo != null)
             yield return deathCo;
     }
@@ -387,15 +407,15 @@ public class CombatDirector : MonoBehaviour
     }
     private void RestoreSprites(CombatUnit user, CombatFieldView.UnitView userView, TargetResult[] results)
     {
-        // °ø°İÀÚ º¹±Í
+        // ê³µê²©ì ë³µê·€
         RestoreSingleSprite(user, userView);
-        // ÇÇ°İÀÚ º¹±Í
+        // í”¼ê²©ì ë³µê·€
         for (int i = 0; i < results.Length; ++i)
         {
             CombatFieldView.UnitView targetView = m_FieldView.GetView(results[i].Target);
             RestoreSingleSprite(results[i].Target, targetView);
 
-            // Death Æ®¸®°Å´Â º°µµ Ã³¸®
+            // Death íŠ¸ë¦¬ê±°ëŠ” ë³„ë„ ì²˜ë¦¬
             if (targetView.Animator != null
                 && results[i].IsHit
                 && (results[i].ResultState == UnitState.Dead || results[i].ResultState == UnitState.Corpse)
@@ -407,7 +427,7 @@ public class CombatDirector : MonoBehaviour
     }
     private void RestoreSingleSprite(CombatUnit unit, CombatFieldView.UnitView view)
     {
-        // ½ÃÃ¼ pop in¿¡¼­ ÀçµîÀå ¿¹Á¤
+        // ì‹œì²´ pop inì—ì„œ ì¬ë“±ì¥ ì˜ˆì •
         if (unit.State == UnitState.Dead || unit.State == UnitState.Corpse)
             return;
 
@@ -419,7 +439,7 @@ public class CombatDirector : MonoBehaviour
             view.Renderer.sprite = unit.EnemyData.Sprite;
     }
 
-    // Stun°ü·Ã
+    // Stunê´€ë ¨
     public Coroutine PlayStunRecovery(CombatUnit unit, StatusEffectData stunResistBuff)
     {
         return StartCoroutine(StunRecoveryRoutine(unit, stunResistBuff));
@@ -432,7 +452,7 @@ public class CombatDirector : MonoBehaviour
         m_PopupPool.SpawnEffect(pos, isNikke, stunResistBuff.EffectName, GetEffectColor(stunResistBuff.EffectType), stunResistBuff.Icon);
         yield return m_WaitStatusPopup;
     }
-    // Effect °ü·Ã
+    // Effect ê´€ë ¨
     private bool ResolveFlipX(CombatEffectData effect, CombatUnit target)
     {
         if (target.UnitType == CombatUnitType.Nikke)

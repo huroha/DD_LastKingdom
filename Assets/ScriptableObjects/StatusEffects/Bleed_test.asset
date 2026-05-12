@@ -18,7 +18,7 @@ MonoBehaviour:
   m_Description: 
   m_ShowName: 0
   m_Duration: 3
-  m_TickDamage: 20
+  m_TickDamage: 3
   m_StatModifier:
     maxHp: 0
     minDamage: 0

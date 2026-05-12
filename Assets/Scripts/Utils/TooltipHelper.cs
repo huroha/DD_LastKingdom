@@ -1,4 +1,4 @@
-using System.Text;
+ï»¿using System.Text;
 using UnityEngine;
 
 public static class TooltipHelper
@@ -18,19 +18,19 @@ public static class TooltipHelper
     public const string TAG_COLOR_CLOSE = "</color>";
 
 
-    public const string STAT_DAMAGE = "ÇÇÇØ";
-    public const string STAT_ACCURACY = "¸íÁß";
-    public const string STAT_CRIT = "Ä¡¸íÅ¸À²";
-    public const string STAT_DEFENCE = "¹æ¾îÀ²";
-    public const string STAT_DODGE = "È¸ÇÇ";
-    public const string STAT_SPEED = "¼Óµµ";
+    public const string STAT_DAMAGE = "í”¼í•´";
+    public const string STAT_ACCURACY = "ëª…ì¤‘";
+    public const string STAT_CRIT = "ì¹˜ëª…íƒ€ìœ¨";
+    public const string STAT_DEFENCE = "ë°©ì–´ìœ¨";
+    public const string STAT_DODGE = "íšŒí”¼";
+    public const string STAT_SPEED = "ì†ë„";
 
-    public const string STAT_RES_STUN = "±âÀý ÀúÇ×";
-    public const string STAT_RES_MOVE = "ÀÌµ¿ ÀúÇ×";
-    public const string STAT_RES_POISON = "Áßµ¶ ÀúÇ×";
-    public const string STAT_RES_DISEASE = "Áúº´ ÀúÇ×";
-    public const string STAT_RES_BLEED = "ÃâÇ÷ ÀúÇ×";
-    public const string STAT_RES_DEBUFF = "µð¹öÇÁ ÀúÇ×";
+    public const string STAT_RES_STUN = "ê¸°ì ˆ ì €í•­";
+    public const string STAT_RES_MOVE = "ì´ë™ ì €í•­";
+    public const string STAT_RES_POISON = "ì¤‘ë… ì €í•­";
+    public const string STAT_RES_DISEASE = "ì§ˆë³‘ ì €í•­";
+    public const string STAT_RES_BLEED = "ì¶œí˜ˆ ì €í•­";
+    public const string STAT_RES_DEBUFF = "ë””ë²„í”„ ì €í•­";
 
 
     public static void ClampToScreen(RectTransform rectTransform)
@@ -40,7 +40,7 @@ public static class TooltipHelper
         float offsetX = 0f;
         float offsetY = 0f;
 
-        // ¿À¸¥ÂÊ ºüÁ®³ª°¨
+        // ì˜¤ë¥¸ìª½ ë¹ ì ¸ë‚˜ê°
         if (s_Corners[2].x > Screen.width)
             offsetX = Screen.width - s_Corners[2].x;
         if (s_Corners[0].x < 0f)
@@ -64,7 +64,7 @@ public static class TooltipHelper
         {
             sb.Append('(');
             sb.Append(turns);
-            sb.Append("Â÷·Ê)");
+            sb.Append("ì°¨ë¡€)");
         }
     }
     public static void AppendStatPercent(StringBuilder sb, string statName, int value, int turns =0)
@@ -80,21 +80,21 @@ public static class TooltipHelper
         {
             sb.Append("(");
             sb.Append(turns);
-            sb.Append("Â÷·Ê)");
+            sb.Append("ì°¨ë¡€)");
         }
     }
     public static string GetEffectColorTag(StatusEffectType effectType)
     {
-        if (effectType == StatusEffectType.Stun)
-            return TAG_STUN;
-        else if (effectType == StatusEffectType.Poison)
-            return TAG_POISON;
-        else if (effectType == StatusEffectType.Debuff)
-            return TAG_DEBUFF;
-        else if (effectType == StatusEffectType.Bleed)
-            return TAG_BLEED;
-        else
-            return TAG_NORMAL_OPEN;
+        switch (effectType)
+        {
+            case StatusEffectType.Stun: return TAG_STUN;
+            case StatusEffectType.Poison: return TAG_POISON;
+            case StatusEffectType.Debuff: return TAG_DEBUFF;
+            case StatusEffectType.Bleed: return TAG_BLEED;
+            case StatusEffectType.Buff: return TAG_BUFF_OPEN;
+            case StatusEffectType.Block: return TAG_NORMAL_OPEN;
+            default: return TAG_NORMAL_OPEN;
+        }
     }
 
     public static void AppendStatBlock(StringBuilder sb, StatBlock mod, int turns = 0)
@@ -125,4 +125,12 @@ public static class TooltipHelper
         if (mod.resistance.debuff != 0)
             AppendStatPercent(sb, STAT_RES_DEBUFF, (int)mod.resistance.debuff, turns);
     }
+    public static bool HasStatContent(in StatBlock s)
+    {
+        return s.damageMultiplier != 0 || s.accuracyMod != 0 || s.defense != 0
+            || s.dodge != 0 || s.speed != 0 || s.critChance != 0f
+            || s.resistance.stun != 0 || s.resistance.move != 0 || s.resistance.poison != 0
+            || s.resistance.disease != 0 || s.resistance.bleed != 0 || s.resistance.debuff != 0;
+    }
+
 }

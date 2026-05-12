@@ -49,7 +49,7 @@ public class SkillData : ScriptableObject
     [Header("Damage")]
     [SerializeField] private float m_DamageMultiplier = 1.0f;        // 피해 배율 (1.0 == 100%)
     [SerializeField] private int m_AccuracyMod;                     // 명중 보정
-    [Range(0f, 100f)]
+    [Range(-100f, 100f)]
     [SerializeField] private float m_CritMod;                       // 치명 보정
 
     [Header("Heal & Ebla")]
@@ -88,7 +88,8 @@ public class SkillData : ScriptableObject
                                   || m_TargetType == TargetType.EnemyAll;
     public bool IsAllyTargeting => m_TargetType == TargetType.AllySingle
                                   || m_TargetType == TargetType.AllyMulti
-                                  || m_TargetType == TargetType.AllyAll;
+                                  || m_TargetType == TargetType.AllyAll
+                                  || m_TargetType == TargetType.Self;
     public string SkillName => m_SkillName;
     public string Description => m_Description;
     public Sprite SkillIcon => m_SkillIcon;

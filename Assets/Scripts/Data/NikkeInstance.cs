@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-
+using System;
 
 public class NikkeInstance
 {
-    private NikkeData   m_Data;
-    private string      m_NameOverride;
+    private NikkeData m_Data;
+    private string m_NameOverride;
     private int[] m_ActiveSkillIndices;
     private int[] m_ActiveCampSkillIndices;
     private int m_Level;
@@ -17,6 +17,10 @@ public class NikkeInstance
     private List<QuirkData> m_NegQuirks;
     private List<DiseaseData> m_Diseases;
     private int m_Exp;
+
+    private StatBlock m_CachedStats;
+    private bool m_StatsDirty = true;
+    private void InvalidateStats() => m_StatsDirty = true;
     public NikkeData Data => m_Data;
     public string DisplayName => m_NameOverride ?? m_Data.NikkeName;
     public string NameOverride { get => m_NameOverride; set => m_NameOverride = value; }
@@ -44,9 +48,20 @@ public class NikkeInstance
             m_Exp = Mathf.Clamp(value, 0, thresholds[m_Level]);
         }
     }
-    public int Level { get => m_Level; set => m_Level = Mathf.Clamp(value, 0, m_Data.MaxLevel); }
-    public int WeaponLevel { get => m_WeaponLevel; set => m_WeaponLevel = Mathf.Clamp(value, 1, 5); }
-    public int ArmorLevel { get => m_ArmorLevel; set => m_ArmorLevel = Mathf.Clamp(value, 1, 5); }
+    public int Level
+    {
+        get => m_Level;
+        set { m_Level = Mathf.Clamp(value, 0, m_Data.MaxLevel); InvalidateStats(); }
+    }
+    public int WeaponLevel
+    {   get => m_WeaponLevel;
+        set { m_WeaponLevel = Mathf.Clamp(value, 1, 5); InvalidateStats(); }
+    }
+    public int ArmorLevel
+    {
+        get => m_ArmorLevel;
+        set { m_ArmorLevel = Mathf.Clamp(value, 1, 5); InvalidateStats(); }
+    }
     public TrinketData[] Trinkets => m_Trinkets;
     public IReadOnlyList<QuirkData> PosQuirks => m_PosQuirks;
     public IReadOnlyList<QuirkData> NegQuirks => m_NegQuirks;
@@ -88,7 +103,9 @@ public class NikkeInstance
     }
     public StatBlock GetEffectiveBaseStats()
     {
+        if (!m_StatsDirty) return m_CachedStats;
         StatBlock result = m_Data.BaseStats;
+        result = result.Apply(m_Data.StatGrowthPerLevel.Scale(m_Level));
         if (m_Data.Weapon != null) result = result.Apply(m_Data.Weapon.GetStats(m_WeaponLevel));
         if (m_Data.Armor != null) result = result.Apply(m_Data.Armor.GetStats(m_ArmorLevel));
         for (int i=0; i < m_Trinkets.Length; ++i)
@@ -101,7 +118,10 @@ public class NikkeInstance
             result = result.Apply(m_NegQuirks[i].StatDelta);
         for (int i = 0; i < m_Diseases.Count; ++i)
             result = result.Apply(m_Diseases[i].StatDelta);
-        return result;
+
+        m_CachedStats = result;
+        m_StatsDirty = false;
+        return m_CachedStats;
     }
 
     public void AddQuirk(QuirkData quirk)
@@ -110,20 +130,111 @@ public class NikkeInstance
         List<QuirkData> target = quirk.IsPositive ? m_PosQuirks : m_NegQuirks;
         if (target.Contains(quirk)) return;
         target.Add(quirk);
+        InvalidateStats();
     }
     public void RemoveQuirk(QuirkData quirk)
     {
         if (quirk == null) return;
-        if (quirk.IsPositive) m_PosQuirks.Remove(quirk);
-        else m_NegQuirks.Remove(quirk);
+        if (quirk.IsPositive)
+        {
+            m_PosQuirks.Remove(quirk);
+            InvalidateStats();
+        }
+        else
+        {
+            m_NegQuirks.Remove(quirk);
+            InvalidateStats();
+        }
     }
     public void AddDisease(DiseaseData disease)
     {
         if (disease == null || m_Diseases.Contains(disease)) return;
         m_Diseases.Add(disease);
+        InvalidateStats();
     }
     public void RemoveDisease(DiseaseData disease)
     {
         m_Diseases.Remove(disease);
+        InvalidateStats();
+    }
+    public NikkeSaveData ToSaveData()
+    {
+        NikkeSaveData save = new NikkeSaveData();
+        save.nikkeId = m_Data.Id;
+        save.nameOverride = m_NameOverride;
+        save.level = m_Level;
+        save.exp = m_Exp;
+        save.weaponLevel = m_WeaponLevel;
+        save.armorLevel = m_ArmorLevel;
+
+        save.skillLevels = new int[m_SkillLevels.Length];
+        Array.Copy(m_SkillLevels, save.skillLevels, m_SkillLevels.Length);
+
+        save.activeSkillIndices = new int[m_ActiveSkillIndices.Length];
+        Array.Copy(m_ActiveSkillIndices, save.activeSkillIndices, m_ActiveSkillIndices.Length);
+
+        save.activeCampSkillIndices = new int[m_ActiveCampSkillIndices.Length];
+        Array.Copy(m_ActiveCampSkillIndices, save.activeCampSkillIndices, m_ActiveCampSkillIndices.Length);
+
+        save.trinketNames = new string[m_Trinkets.Length];
+        for (int i = 0; i < m_Trinkets.Length; ++i)
+            save.trinketNames[i] = m_Trinkets[i] != null ? m_Trinkets[i].Id : "";
+
+        save.posQuirkNames = ToIds(m_PosQuirks, q => q.Id);
+        save.negQuirkNames = ToIds(m_NegQuirks, q => q.Id);
+        save.diseaseNames = ToIds(m_Diseases, d => d.Id);
+
+        return save;
+    }
+    private static string[] ToIds<T>(List<T> list, Func<T, string> getId)
+    {
+        string[] ids = new string[list.Count];
+        for (int i = 0; i < list.Count; ++i)
+            ids[i] = getId(list[i]);
+        return ids;
+    }
+    private static void HydrateList<T>(string[] ids, Func<string, T> resolve, List<T> dst) where T : class
+    {
+        if (ids == null) return;
+        for (int i = 0; i < ids.Length; ++i)
+        {
+            T item = resolve(ids[i]);
+            if (item != null) dst.Add(item);
+        }
+    }
+    public NikkeInstance(NikkeData data, NikkeSaveData save)
+    {
+        m_Data = data;
+        m_NameOverride = save.nameOverride;
+        m_Level = Mathf.Clamp(save.level, 0, data.MaxLevel);
+        Exp = save.exp;   // setter로 threshold 검증
+        m_WeaponLevel = Mathf.Clamp(save.weaponLevel, 1, 5);
+        m_ArmorLevel = Mathf.Clamp(save.armorLevel, 1, 5);
+
+        m_SkillLevels = new int[data.Skills.Count];
+        for (int i = 0; i < m_SkillLevels.Length; ++i)
+            m_SkillLevels[i] = (save.skillLevels != null && i < save.skillLevels.Length) ? save.skillLevels[i] : 1;
+
+        m_ActiveSkillIndices = save.activeSkillIndices ?? new int[] { 0, 1, 2, 3 };
+        m_ActiveCampSkillIndices = save.activeCampSkillIndices ?? new int[] { 0, 1, 2 };
+
+        m_Trinkets = new TrinketData[2];
+        if (save.trinketNames != null)
+            for (int i = 0; i < m_Trinkets.Length && i < save.trinketNames.Length; ++i)
+                if (!string.IsNullOrEmpty(save.trinketNames[i]))
+                    m_Trinkets[i] = DataManager.Instance.GetTrinketData(save.trinketNames[i]);
+
+        m_PosQuirks = new List<QuirkData>();
+        m_NegQuirks = new List<QuirkData>();
+        m_Diseases = new List<DiseaseData>();
+        HydrateList(save.posQuirkNames, DataManager.Instance.GetQuirkData, m_PosQuirks);
+        HydrateList(save.negQuirkNames, DataManager.Instance.GetQuirkData, m_NegQuirks);
+        HydrateList(save.diseaseNames, DataManager.Instance.GetDiseaseData, m_Diseases);
+    }
+    public void SetTrinket(int slot, TrinketData data)
+    {
+        if (slot < 0 || slot >= m_Trinkets.Length) return;
+        m_Trinkets[slot] = data;
+        InvalidateStats();
     }
 }

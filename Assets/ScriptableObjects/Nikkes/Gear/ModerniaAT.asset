@@ -1,0 +1,124 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd9ac6bf9354d344cbfc0f6cc8d3a23c, type: 3}
+  m_Name: ModerniaAT
+  m_EditorClassIdentifier: Assembly-CSharp::GearData
+  m_GearName: "\uC138\uCEE8\uB4DC \uC5B4\uD399\uC158"
+  m_Description: 
+  m_GearType: 1
+  m_LevelSprites:
+  - {fileID: 21300000, guid: 68da90d5611a73d4fb5068eca4eed243, type: 3}
+  - {fileID: 21300000, guid: 7df063c73bc5bab44937784fef57eeee, type: 3}
+  - {fileID: 21300000, guid: f3cd99e11b24d5244b8596fa4e96394c, type: 3}
+  - {fileID: 21300000, guid: fafc1e70483b23742b15a714dc343623, type: 3}
+  - {fileID: 21300000, guid: ef3f813a091cd604ab1a90a7c0a0b1f4, type: 3}
+  m_LevelStats:
+  - maxHp: 27
+    minDamage: 0
+    maxDamage: 0
+    accuracyMod: 0
+    critChance: 0
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 0
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 32
+    minDamage: 0
+    maxDamage: 0
+    accuracyMod: 0
+    critChance: 0
+    defense: 0
+    dodge: 5
+    deathBlowResist: 0
+    speed: 0
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 37
+    minDamage: 0
+    maxDamage: 0
+    accuracyMod: 0
+    critChance: 0
+    defense: 0
+    dodge: 10
+    deathBlowResist: 0
+    speed: 0
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 42
+    minDamage: 0
+    maxDamage: 0
+    accuracyMod: 0
+    critChance: 0
+    defense: 0
+    dodge: 15
+    deathBlowResist: 0
+    speed: 0
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 47
+    minDamage: 0
+    maxDamage: 0
+    accuracyMod: 0
+    critChance: 0
+    defense: 0
+    dodge: 20
+    deathBlowResist: 0
+    speed: 0
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0

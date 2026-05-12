@@ -22,7 +22,6 @@ public class SkillSelectPanel : MonoBehaviour
 
     [Header("Skill Buttons")]
     [SerializeField] private Button[] m_SkillButtons;   //4개
-    [SerializeField] private TextMeshProUGUI[] m_SkillNames; //4개
 
     [Header("Pass Button")]
     [SerializeField] private Button m_PassButton;
@@ -99,6 +98,7 @@ public class SkillSelectPanel : MonoBehaviour
 
     public void Show(CombatUnit unit, SkillSelectedHandler onSkillSelected, PassHandler onPass, MoveHandler onMove)
     {
+        StopAllCoroutines();
         m_CurrentUnit = unit;
         m_OnSkillSelected = onSkillSelected;
         m_OnPass = onPass;
@@ -146,12 +146,10 @@ public class SkillSelectPanel : MonoBehaviour
             if (skill == null)
             {
                 m_SkillButtons[i].interactable = false;
-                m_SkillNames[i].text = "";
                 continue;
             }
             bool isValid = m_CombatStateMachine.ValidateSkill(m_CurrentUnit, skill);
             m_SkillButtons[i].interactable = isValid;
-            m_SkillNames[i].text = skill.SkillName;
         }
     }
     private void OnSkillButtonClicked(int index)
@@ -163,7 +161,6 @@ public class SkillSelectPanel : MonoBehaviour
             return;
         }
         SkillData skill = m_CurrentUnit.Skills[index];
-        m_OnSkillSelected(skill);
         if (m_SelectedSkillIndex >= 0 && m_SelectedSkillIndex != index)
             StartCoroutine(PopIn(m_SkillIconTransforms[m_SelectedSkillIndex]));
 
@@ -176,13 +173,13 @@ public class SkillSelectPanel : MonoBehaviour
         StartCoroutine(PopIn(m_SkillSelectIconRect));
 
         m_SelectedSkillIndex = index;
-        StartCoroutine(DelayedHide());
+        StartCoroutine(NotifyAfterPopIn(skill));
 
     }
-    private IEnumerator DelayedHide()
+    private IEnumerator NotifyAfterPopIn(SkillData skill)
     {
         yield return new WaitForSeconds(m_PopInDuration);
-        Hide();
+        m_OnSkillSelected(skill);
     }
     private void OnPassButtonClicked()
     {
@@ -243,5 +240,20 @@ public class SkillSelectPanel : MonoBehaviour
     public void SetPendingMove()
     {
         m_PendingMove = true;
+    }
+    public void Preview(CombatUnit unit)
+    {
+        StopAllCoroutines();
+        m_CurrentUnit = unit;
+        m_OnSkillSelected = null;
+        m_OnPass = null;
+        m_OnMove = null;
+        m_SkillSelectIcon.SetActive(false);
+        m_SelectedSkillIndex = -1;
+        m_PassButton.gameObject.SetActive(false);
+        m_MoveButton.gameObject.SetActive(false);
+        for (int i = 0; i < m_SkillButtons.Length; ++i)
+            m_SkillButtons[i].interactable = false;
+        gameObject.SetActive(true);
     }
 }

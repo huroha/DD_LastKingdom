@@ -18,23 +18,23 @@ MonoBehaviour:
   m_SlotSize: 1
   m_ActionsPerRound: 1
   m_BaseStats:
-    maxHp: 150
-    minDamage: 35
-    maxDamage: 55
-    accuracyMod: 70
-    critChance: 10
-    defense: 5
-    dodge: 5
+    maxHp: 10
+    minDamage: 3
+    maxDamage: 8
+    accuracyMod: 0
+    critChance: 6
+    defense: 0
+    dodge: 0
     deathBlowResist: 0
-    speed: 6
+    speed: 2
     moveRange: 0
     resistance:
-      stun: 20
-      move: 10
-      poison: 15
+      stun: 25
+      move: 20
+      poison: 10
       disease: 0
-      bleed: 20
-      debuff: 40
+      bleed: 200
+      debuff: 15
       trap: 0
     damageMultiplier: 0
     eblaMultiplier: 0

@@ -1,9 +1,10 @@
-
+﻿using System.Collections.Generic;
 public struct SkillResult
 {
     public CombatUnit       User;
     public SkillData        Skill;
     public TargetResult[]   TargetResults;
+    public IReadOnlyList<StatusEffectData> SelfAppliedEffects;
 }
 
 
@@ -13,6 +14,7 @@ public struct TargetResult
     public UnitState PreviousState;
     public bool IsHit;
     public bool IsCrit;
+    public bool WasBlocked;
     public int DamageDealt;
     public int HealAmount;
     public int EblaDamageDealt;

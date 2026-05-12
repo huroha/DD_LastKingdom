@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using TMPro;
 using System.Text;
 using UnityEngine.UI;
@@ -30,33 +30,36 @@ public class SkillTooltip : MonoBehaviour
             return;
         m_CurrentSkill = skill;
         m_SB.Clear();
-        // ½ºÅ³¸í + Lv
-        m_SB.Append("<b>").Append(skill.SkillName).Append("</b>1\n"); // ¼ýÀÚ´Â ÃßÈÄ skilldata ¸â¹ö Ãß°¡ÇØ¼­ °¡Á®¿Ã°Í.
+        // ìŠ¤í‚¬ëª… + Lv
+        m_SB.Append("<b>").Append(skill.SkillName).Append("</b>1\n"); // ìˆ«ìžëŠ” ì¶”í›„ skilldata ë©¤ë²„ ì¶”ê°€í•´ì„œ ê°€ì ¸ì˜¬ê²ƒ.
 
-        // ½ºÅ³ Å¸ÀÔ
+        // ìŠ¤í‚¬ íƒ€ìž…
         if(skill.IsEnemyTargeting)
-            m_SB.Append(TooltipHelper.TAG_SKILLTYPE).Append(skill.SkillType == SkillType.Melee ? "±ÙÁ¢" : "¿ø°Å¸®").Append("\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
-        // ±âº» ½ºÅÈ
+            m_SB.Append(TooltipHelper.TAG_SKILLTYPE).Append(skill.SkillType == SkillType.Melee ? "ê·¼ì ‘" : "ì›ê±°ë¦¬").Append("\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
+        // ê¸°ë³¸ ìŠ¤íƒ¯
         if(skill.AccuracyMod != 0)
-            m_SB.Append("¸íÁß º¸Á¤: ").Append(skill.AccuracyMod).Append("\n");
+            m_SB.Append("ëª…ì¤‘ ë³´ì •: ").Append(skill.AccuracyMod).Append("\n");
         if(skill.DamageMultiplier != 1 && skill.DamageMultiplier != 0)
-            m_SB.Append("ÇÇÇØ º¸Á¤: ").Append((int)(skill.DamageMultiplier * 100f) - 100).Append("%").Append("\n");
+            m_SB.Append("í”¼í•´ ë³´ì •: ").Append((int)(skill.DamageMultiplier * 100f) - 100).Append("%").Append("\n");
         if (skill.MaxHeal != 0)
-            m_SB.Append(skill.MinHeal).Append("-").Append(skill.MaxHeal).Append(TooltipHelper.TAG_HEAL).Append(" È¸º¹\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
+            m_SB.Append(skill.MinHeal).Append("-").Append(skill.MaxHeal).Append(TooltipHelper.TAG_HEAL).Append(" íšŒë³µ\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
         if (skill.EblaHealAmount != 0)
-            m_SB.Append("¿¡ºí¶ó : -").Append(skill.EblaHealAmount).Append("\n");
+            m_SB.Append("ì—ë¸”ë¼ : -").Append(skill.EblaHealAmount).Append("\n");
 
         if (skill.CritMod != 0)
-            m_SB.Append("Ä¡¸íÅ¸ º¸Á¤: ").Append((int)skill.CritMod).Append("%\n");
+            m_SB.Append("ì¹˜ëª…íƒ€ ë³´ì •: ").Append((int)skill.CritMod).Append("%\n");
         if (skill.MarkBonus)
-            m_SB.Append(TooltipHelper.TAG_NORMAL_OPEN).Append("Ç¥½Ä Ãß°¡ µ¥¹ÌÁö: +").Append((int)(skill.MarkDamageBonus * 100f)).Append("%\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
+            m_SB.Append(TooltipHelper.TAG_NORMAL_OPEN).Append("í‘œì‹ ì¶”ê°€ ë°ë¯¸ì§€: +").Append((int)(skill.MarkDamageBonus * 100f)).Append("%\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
 
         // OnHitEffects
         if (skill.OnHitEffects != null && skill.OnHitEffects.Count > 0)
         {
             m_SB.Append("\n");
             for (int i = 0; i < skill.OnHitEffects.Count; ++i)
+            {
+                if (skill.OnHitEffects[i] == null) continue;
                 BuildEffectText(m_SB, skill.OnHitEffects[i]);
+            }
         }
 
  
@@ -92,18 +95,18 @@ public class SkillTooltip : MonoBehaviour
     private void BuildEffectText(StringBuilder sb, StatusEffectData effect)
     {
         string effectColor = TooltipHelper.GetEffectColorTag(effect.EffectType);
-        // È¿°ú¸í (±âº» 100%)
+        // íš¨ê³¼ëª… (ê¸°ë³¸ 100%)
         sb.Append(effectColor).Append(effect.EffectName).Append(TooltipHelper.TAG_COLOR_CLOSE)
-          .Append(" (±âº» ").Append(effect.BaseApplyRate).Append("%)\n");
+          .Append(" (ê¸°ë³¸ ").Append(effect.BaseApplyRate).Append("%)\n");
 
-        // DescriptionÀÌ ÀÖÀ¸¸é Ç¥½Ã
+        // Descriptionì´ ìžˆìœ¼ë©´ í‘œì‹œ
         if (!string.IsNullOrEmpty(effect.Description))
             sb.Append(effect.Description).Append("\n");
         
         if (effect.TickDamage != 0)
-            sb.Append("ÅÏ´ç ").Append(effect.TickDamage).Append(" ÇÇÇØ,").Append(effect.Duration).Append("ÅÏ Áö¼Ó");
+            sb.Append("í„´ë‹¹ ").Append(effect.TickDamage).Append(" í”¼í•´,").Append(effect.Duration).Append("í„´ ì§€ì†");
 
-        // ½ºÅÈ º¯È­°¡ ÀÖÀ¸¸é
+        // ìŠ¤íƒ¯ ë³€í™”ê°€ ìžˆìœ¼ë©´
         TooltipHelper.AppendStatBlock(sb, effect.StatModifier);
     }
 }

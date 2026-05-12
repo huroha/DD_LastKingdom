@@ -1,21 +1,21 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Text;
 public class StatusEffectIconDisplay : MonoBehaviour
 {
-    [SerializeField] private Transform m_IconContainer;     // HorizontalLayoutGroup ¿ÀºêÁ§Æ®
-    [SerializeField] private GameObject m_IconPrefab;       // Image¸¸ °¡Áø °£´ÜÇÑ ÇÁ¸®ÆÕ
-    [SerializeField] private int m_MaxDisplayCount;         // ÃÖ´ë Ç¥±â °³¼ö
+    [SerializeField] private Transform m_IconContainer;     // HorizontalLayoutGroup ì˜¤ë¸Œì íŠ¸
+    [SerializeField] private GameObject m_IconPrefab;       // Imageë§Œ ê°€ì§„ ê°„ë‹¨í•œ í”„ë¦¬íŒ¹
+    [SerializeField] private int m_MaxDisplayCount;         // ìµœëŒ€ í‘œê¸° ê°œìˆ˜
     [SerializeField] private Sprite m_GuardedIcon;
 
     private CombatTooltip m_Tooltip;
 
-    private ActiveStatusEffect[] m_SlotEffects;     // È¿°ú ½½·Ô
-    private CombatUnit m_GuardSlotUnit;             // °¡µå ¾ÆÀÌÄÜ ½½·ÔÀÇ unit
-    private int m_GuardSlotIndex = -1;              // °¡µå°¡ Â÷ÁöÇÑ ½½·Ô ÀÎµ¦½º
+    private ActiveStatusEffect[] m_SlotEffects;     // íš¨ê³¼ ìŠ¬ë¡¯
+    private CombatUnit m_GuardSlotUnit;             // ê°€ë“œ ì•„ì´ì½˜ ìŠ¬ë¡¯ì˜ unit
+    private int m_GuardSlotIndex = -1;              // ê°€ë“œê°€ ì°¨ì§€í•œ ìŠ¬ë¡¯ ì¸ë±ìŠ¤
 
-    private List<Image> m_IconPool;     // ¿ÀºêÁ§Æ® Ç®¸µ¿ë
+    private List<Image> m_IconPool;     // ì˜¤ë¸Œì íŠ¸ í’€ë§ìš©
     private List<TooltipTrigger> m_TriggerPool;
 
     private void Awake()
@@ -82,30 +82,41 @@ public class StatusEffectIconDisplay : MonoBehaviour
 
     private void BuildEffectTooltip(StringBuilder sb,ActiveStatusEffect effect)
     {
+        // Block íƒ€ì…: ë‚¨ì€ ì°¨ë‹¨ íšŸìˆ˜ í‘œì‹œ
+        if (effect.Data.EffectType == StatusEffectType.Block)
+        {
+            if (effect.Data.ShowName)
+                sb.Append(TooltipHelper.TAG_NORMAL_OPEN).Append(effect.Data.EffectName).Append(TooltipHelper.TAG_COLOR_CLOSE).Append('\n');
+            sb.Append(TooltipHelper.TAG_NORMAL_OPEN).Append(effect.CurrentStacks).Append("íšŒ ì°¨ë‹¨ ë‚¨ìŒ").Append(TooltipHelper.TAG_COLOR_CLOSE);
+            if (!string.IsNullOrEmpty(effect.Data.Description))
+                sb.Append('\n').Append(TooltipHelper.TAG_NORMAL_OPEN).Append(effect.Data.Description).Append(TooltipHelper.TAG_COLOR_CLOSE);
+            return;
+        }
+
         int turns = effect.RemainingTurns;
 
         if(effect.Data.ShowName)
             sb.Append(TooltipHelper.TAG_DEBUFF_OPEN).Append(effect.Data.EffectName).Append(TooltipHelper.TAG_COLOR_CLOSE).Append('\n');
 
-        if (effect.Data.TickDamage == 0 && turns > 0)
-            sb.Append(TooltipHelper.TAG_NORMAL_OPEN).Append(turns).Append("ÅÏ ³²À½").Append(TooltipHelper.TAG_COLOR_CLOSE);
+        if (effect.Data.TickDamage == 0 && turns > 0 && !TooltipHelper.HasStatContent(effect.Data.StatModifier))
+            sb.Append(TooltipHelper.TAG_NORMAL_OPEN).Append(turns).Append("í„´ ë‚¨ìŒ").Append(TooltipHelper.TAG_COLOR_CLOSE);
 
         if (!string.IsNullOrEmpty(effect.Data.Description))
             sb.Append(TooltipHelper.TAG_NORMAL_OPEN).Append(effect.Data.Description).Append(TooltipHelper.TAG_COLOR_CLOSE);
 
-        // µµÆ® ÇÇÇØ
+        // ë„íŠ¸ í”¼í•´
         if (effect.Data.TickDamage > 0)
         {
             sb.Append(TooltipHelper.TAG_DEBUFF_OPEN);
             sb.Append(effect.AccumulatedTickDamage);
-            sb.Append(" ÇÇÇØ (");
+            sb.Append(" í”¼í•´ (");
             sb.Append(turns);
-            sb.Append("Â÷·Ê)");
+            sb.Append("ì°¨ë¡€)");
             sb.Append(TooltipHelper.TAG_COLOR_CLOSE);
 
         }
 
-        // ½ºÅÈ º¯È­
+        // ìŠ¤íƒ¯ ë³€í™”
         TooltipHelper.AppendStatBlock(sb, effect.Data.StatModifier, turns);
     }
     private Image GetOrCreateIcon(int displayIndex)
@@ -118,7 +129,7 @@ public class StatusEffectIconDisplay : MonoBehaviour
         m_IconPool.Add(image);
 
         TooltipTrigger trigger = obj.AddComponent<TooltipTrigger>();
-        int slot = displayIndex;   // capture 1È¸
+        int slot = displayIndex;   // capture 1íšŒ
         trigger.Initialize(m_Tooltip, (sb) => BuildSlotTooltip(sb, slot), new Vector2(0, -25));
         m_TriggerPool.Add(trigger);
         return image;
@@ -129,8 +140,8 @@ public class StatusEffectIconDisplay : MonoBehaviour
         {
             CombatUnit guardian = m_GuardSlotUnit.GuardedBy;
             int turns = m_GuardSlotUnit.GuardTurnsRemaining;
-            sb.Append(TooltipHelper.TAG_BUFF_OPEN).Append("º¸È£¹Ş´ÂÁß").Append(TooltipHelper.TAG_COLOR_CLOSE).Append('\n');
-            sb.Append(TooltipHelper.TAG_NORMAL_OPEN).Append(guardian.UnitName).Append("(").Append(turns).Append("ÅÏ)").Append(TooltipHelper.TAG_COLOR_CLOSE);
+            sb.Append(TooltipHelper.TAG_BUFF_OPEN).Append("ë³´í˜¸ë°›ëŠ”ì¤‘").Append(TooltipHelper.TAG_COLOR_CLOSE).Append('\n');
+            sb.Append(TooltipHelper.TAG_NORMAL_OPEN).Append(guardian.UnitName).Append("(").Append(turns).Append("í„´)").Append(TooltipHelper.TAG_COLOR_CLOSE);
             return;
         }
         ActiveStatusEffect effect = m_SlotEffects[slot];

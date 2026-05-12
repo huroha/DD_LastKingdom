@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cead30f8b213ad443a5387d8789ed940, type: 3}
   m_Name: Chime_NikkeData
   m_EditorClassIdentifier: Assembly-CSharp::NikkeData
+  m_Id: 0001_chime
   m_NikkeName: "\uCC28\uC784"
   m_NikkeClass: 1
   m_CanVirtue: 0
@@ -19,32 +20,32 @@ MonoBehaviour:
   m_Element: 3
   m_Squad: {fileID: 11400000, guid: b63fa638ddcdedb4086548dbba25858f, type: 2}
   m_BaseStats:
-    maxHp: 220
-    minDamage: 40
-    maxDamage: 50
-    accuracyMod: 90
-    critChance: 30
-    defense: 0
-    dodge: 15
-    deathBlowResist: 67
-    speed: 7
-    moveRange: 2
-    resistance:
-      stun: 40
-      move: 40
-      poison: 40
-      disease: 40
-      bleed: 40
-      debuff: 40
-      trap: 67
-    damageMultiplier: 0
-    eblaMultiplier: 0
-  m_MaxLevel: 6
-  m_ExpThresholds: 
-  m_StatGrowthPerLevel:
     maxHp: 0
     minDamage: 0
     maxDamage: 0
+    accuracyMod: 0
+    critChance: 0
+    defense: 0
+    dodge: 0
+    deathBlowResist: 67
+    speed: 0
+    moveRange: 3
+    resistance:
+      stun: 30
+      move: 30
+      poison: 30
+      disease: 40
+      bleed: 40
+      debuff: 30
+      trap: 40
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  m_MaxLevel: 6
+  m_ExpThresholds: 14000000280000003c000000640000008c000000c8000000
+  m_StatGrowthPerLevel:
+    maxHp: 1
+    minDamage: 0
+    maxDamage: 1
     accuracyMod: 0
     critChance: 0
     defense: 0
@@ -53,13 +54,13 @@ MonoBehaviour:
     speed: 0
     moveRange: 0
     resistance:
-      stun: 0
-      move: 0
-      poison: 0
-      disease: 0
-      bleed: 0
-      debuff: 0
-      trap: 0
+      stun: 10
+      move: 10
+      poison: 10
+      disease: 10
+      bleed: 10
+      debuff: 10
+      trap: 10
     damageMultiplier: 0
     eblaMultiplier: 0
   m_Skills:
@@ -71,8 +72,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   m_CampSkills: []
-  m_Weapon: {fileID: 0}
-  m_Armor: {fileID: 0}
+  m_Weapon: {fileID: 11400000, guid: ec714b1641d72da449048ea5d86b57f9, type: 2}
+  m_Armor: {fileID: 11400000, guid: 9fd7e0825bd29c14893cc68e9491a149, type: 2}
   m_PortraitSprite: {fileID: -2074837423565974494, guid: c8fcdb590e18cc2489172aa60c4767f1, type: 3}
   m_CombatIdleSprite: {fileID: 21300000, guid: 99d2918e8018d44449677d83d56a298a, type: 3}
   m_CombatPrefab: {fileID: 774155546767078002, guid: 880aa97467d14b44b90caa242fbb28c3, type: 3}

@@ -7,6 +7,7 @@ public class NikkeCardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 {
     [SerializeField] private TextMeshProUGUI m_WeaponLvText;
     [SerializeField] private TextMeshProUGUI m_ArmorLvText;
+    [SerializeField] private TextMeshProUGUI m_LvText;
     [SerializeField] private Image m_LevelIcon;
     [SerializeField] private Image m_LevelElement;
     [SerializeField] private Image m_SelectOverlay;
@@ -43,6 +44,7 @@ public class NikkeCardView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         m_WeaponLvText.SetText("{0}", instance.WeaponLevel);
         m_ArmorLvText.SetText("{0}", instance.ArmorLevel);
         int lv = instance.Level;
+        m_LvText.SetText("{0}", lv);
         m_LevelIcon.sprite = m_LevelSprites[Mathf.Clamp(lv, 0, m_LevelSprites.Length - 1)];
         m_LevelElement.sprite = m_LevelElementSprites[Mathf.Clamp(lv, 0, m_LevelElementSprites.Length - 1)];
 

@@ -12,21 +12,105 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd9ac6bf9354d344cbfc0f6cc8d3a23c, type: 3}
   m_Name: CrownWT
   m_EditorClassIdentifier: Assembly-CSharp::GearData
-  m_GearName: "\uBB34\uAE30"
+  m_GearName: "\uC720\uC5B4 \uB9C8\uC81C\uC2A4\uD2F0"
   m_Description: 
   m_GearType: 0
   m_LevelSprites:
-  - {fileID: 21300000, guid: 2b5a258a789cd65439a6f2b185ad4e86, type: 3}
+  - {fileID: 21300000, guid: bb846014c42f07d4bbc7f2a439f8f83b, type: 3}
+  - {fileID: 21300000, guid: 4eca5b11eae81cb44be1ece5fbf5068f, type: 3}
+  - {fileID: 21300000, guid: 53933bbab35a41e42a30c6b482a14d37, type: 3}
+  - {fileID: 21300000, guid: 3de8aa6bf48dff94e821ca85af243670, type: 3}
+  - {fileID: 21300000, guid: 6e466c8e9af563a4fb7dca0afe907ab3, type: 3}
   m_LevelStats:
   - maxHp: 0
-    minDamage: 5
-    maxDamage: 9
+    minDamage: 7
+    maxDamage: 14
+    accuracyMod: 0
+    critChance: 1
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 3
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 0
+    minDamage: 8
+    maxDamage: 16
     accuracyMod: 0
     critChance: 2
     defense: 0
     dodge: 0
     deathBlowResist: 0
     speed: 3
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 0
+    minDamage: 8
+    maxDamage: 17
+    accuracyMod: 0
+    critChance: 3
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 4
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 0
+    minDamage: 9
+    maxDamage: 19
+    accuracyMod: 0
+    critChance: 4
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 4
+    moveRange: 0
+    resistance:
+      stun: 0
+      move: 0
+      poison: 0
+      disease: 0
+      bleed: 0
+      debuff: 0
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  - maxHp: 0
+    minDamage: 10
+    maxDamage: 22
+    accuracyMod: 0
+    critChance: 5
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 5
     moveRange: 0
     resistance:
       stun: 0
