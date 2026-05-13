@@ -11,7 +11,7 @@ public class TitleSceneUI : MonoBehaviour
     [Header("Title")]
     [SerializeField] private ParticleSystem m_GlitterPS;
     [SerializeField] private CanvasGroup m_TitleGroup;
-    [SerializeField] private float m_GlitterFadeInDuration = 1.5f;
+    [SerializeField] private float m_IntroDuration = 1.5f;
 
     [Header("BG")]
     [SerializeField] private Transform m_BgTransform;
@@ -101,19 +101,17 @@ public class TitleSceneUI : MonoBehaviour
         m_GlitterPS.Play();
         float elapsed = 0f;
         ParticleSystem.MainModule main = m_GlitterPS.main;
-        while (elapsed < m_GlitterFadeInDuration)
+        Color c = main.startColor.color;   
+        while (elapsed < m_IntroDuration)
         {
             elapsed += Time.deltaTime;
-            float alpha = Mathf.Clamp01(elapsed / m_GlitterFadeInDuration);
-            Color c = main.startColor.color;
-            c.a = alpha;
+            c.a = Mathf.Clamp01(elapsed / m_IntroDuration);
             main.startColor = c;
-            m_TitleGroup.alpha = alpha;
+            m_TitleGroup.alpha = c.a;
             yield return null;
         }
-        Color final = main.startColor.color;
-        final.a = 1f;
-        main.startColor = final;
+        c.a = 1f;
+        main.startColor = c;
         m_TitleGroup.alpha = 1f;
     }
 }

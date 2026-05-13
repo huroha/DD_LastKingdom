@@ -5133,7 +5133,7 @@ MonoBehaviour:
   m_StartButton: {fileID: 1836354006}
   m_GlitterPS: {fileID: 859206140}
   m_TitleGroup: {fileID: 1086677217}
-  m_GlitterFadeInDuration: 1
+  m_IntroDuration: 1
   m_BgTransform: {fileID: 1431142602}
   m_StartBtnGroup: {fileID: 1836354009}
   m_PanDuration: 2

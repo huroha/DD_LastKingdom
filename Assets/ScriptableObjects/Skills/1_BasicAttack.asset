@@ -30,12 +30,16 @@ MonoBehaviour:
   m_MoveUserAmount: 0
   m_MoveTargetAmount: 0
   m_IsGuard: 0
-  m_IsMark: 0
+  m_IsForceGuard: 0
+  m_GuardDuration: 0
+  m_MarkBonus: 0
   m_MarkDamageBonus: 0
+  m_BypassGuard: 0
   m_OnHitEffects:
   - {fileID: 11400000, guid: 006430056699d464db19d9104d427b4f, type: 2}
+  m_OnSelfEffects: []
+  m_AttackSprite: {fileID: -2931891477665235166, guid: a666be5903c1cb3488cb56cb03b9e140, type: 3}
   m_AttackEffect: {fileID: 0}
   m_AttackMovement: 0
   m_ProjectileSpeed: 20
   m_HitEffect: {fileID: 11400000, guid: 1f0e70335cdaead418d0c3f13bd08c8c, type: 2}
-  m_SharedHitCategory: 1
