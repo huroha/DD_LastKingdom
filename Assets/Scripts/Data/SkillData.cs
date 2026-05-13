@@ -78,6 +78,7 @@ public class SkillData : ScriptableObject
     [SerializeField] private StatusEffectData[] m_OnSelfEffects;    // 자기 자신에게 적용
 
     [Header("Combat Effects")]
+    [SerializeField] private Sprite m_AttackSprite;
     [SerializeField] private CombatEffectData m_AttackEffect;
     [SerializeField] private EffectMovement m_AttackMovement;
     [SerializeField] private float m_ProjectileSpeed = 20f;
@@ -115,6 +116,7 @@ public class SkillData : ScriptableObject
     public bool BypassGuard => m_BypassGuard;
     public IReadOnlyList<StatusEffectData> OnHitEffects => m_OnHitEffects ?? System.Array.Empty<StatusEffectData>();
     public IReadOnlyList<StatusEffectData> OnSelfEffects => m_OnSelfEffects ?? System.Array.Empty<StatusEffectData>();
+    public Sprite AttackSprite => m_AttackSprite;
     public CombatEffectData AttackEffect => m_AttackEffect;
     public EffectMovement AttackMovement => m_AttackMovement;
     public float ProjectileSpeed => m_ProjectileSpeed;

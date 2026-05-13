@@ -7,6 +7,12 @@ public class TitleSceneUI : MonoBehaviour
 {
     [Header("StartButton")]
     [SerializeField] private Button m_StartButton;
+
+    [Header("Title")]
+    [SerializeField] private ParticleSystem m_GlitterPS;
+    [SerializeField] private CanvasGroup m_TitleGroup;
+    [SerializeField] private float m_GlitterFadeInDuration = 1.5f;
+
     [Header("BG")]
     [SerializeField] private Transform m_BgTransform;
     [SerializeField] private CanvasGroup m_StartBtnGroup;
@@ -23,7 +29,9 @@ public class TitleSceneUI : MonoBehaviour
     {
         m_StartBtnGroup.alpha = 0f;
         m_StartBtnGroup.interactable = false;
+        m_TitleGroup.alpha = 0f;
         m_StartButton.onClick.AddListener(OnStartClicked);
+        m_GlitterPS.Stop();
     }
     private void Start()
     {
@@ -46,6 +54,12 @@ public class TitleSceneUI : MonoBehaviour
         m_BgTransform.position = pos;
         m_StartBtnGroup.alpha = 1f;
         m_StartBtnGroup.interactable = true;
+        ParticleSystem.MainModule main = m_GlitterPS.main;
+        Color c = main.startColor.color;
+        c.a = 1f;
+        main.startColor = c;
+        m_TitleGroup.alpha = 1f;
+        m_GlitterPS.Play();
     }
     private IEnumerator BgPanRoutine()
     {
@@ -64,11 +78,11 @@ public class TitleSceneUI : MonoBehaviour
         pos.y = m_BgEndY;
         m_BgTransform.position = pos;
         StartCoroutine(BtnFadeInRoutine());
+        StartCoroutine(GlitterFadeInRoutine());
     }
     private IEnumerator BtnFadeInRoutine()
     {
         float elapsed = 0f;
-        Vector3 pos = m_BgTransform.position;
         while (elapsed < m_BtnFadeInDuration)
         {
             elapsed += Time.deltaTime;
@@ -81,5 +95,25 @@ public class TitleSceneUI : MonoBehaviour
     private void OnStartClicked()
     {
         GameManager.Instance.ChangeState(GameState.Town);
+    }
+    private IEnumerator GlitterFadeInRoutine()
+    {
+        m_GlitterPS.Play();
+        float elapsed = 0f;
+        ParticleSystem.MainModule main = m_GlitterPS.main;
+        while (elapsed < m_GlitterFadeInDuration)
+        {
+            elapsed += Time.deltaTime;
+            float alpha = Mathf.Clamp01(elapsed / m_GlitterFadeInDuration);
+            Color c = main.startColor.color;
+            c.a = alpha;
+            main.startColor = c;
+            m_TitleGroup.alpha = alpha;
+            yield return null;
+        }
+        Color final = main.startColor.color;
+        final.a = 1f;
+        main.startColor = final;
+        m_TitleGroup.alpha = 1f;
     }
 }

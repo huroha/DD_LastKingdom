@@ -18,7 +18,7 @@ MonoBehaviour:
   m_SlotSize: 1
   m_ActionsPerRound: 1
   m_BaseStats:
-    maxHp: 10
+    maxHp: 20
     minDamage: 3
     maxDamage: 8
     accuracyMod: 0

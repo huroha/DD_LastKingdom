@@ -138,11 +138,12 @@ public class CombatDirector : MonoBehaviour
             }
         }
         CombatFieldView.UnitView userView = m_FieldView.GetView(user);
-        if (user.UnitType == CombatUnitType.Nikke && user.NikkeData.AttackSprite != null)
+        Sprite attackSprite = ResolveAttackSprite(user, skill);
+        if (attackSprite != null)
         {
             if (userView.Animator != null)
                 userView.Animator.enabled = false;
-            userView.Renderer.sprite = user.NikkeData.AttackSprite;
+            userView.Renderer.sprite = attackSprite;
             yield return m_WaitPopup;
         }
         else if (userView.Animator != null && HasParameter(userView.Animator, TRIGGER_ATTACK))
@@ -369,7 +370,14 @@ public class CombatDirector : MonoBehaviour
             m_PopupPool.SpawnEffect(m_FieldView.GetSlotPosition(result.Target), isNikke, POPUP_DODGE, COLOR_MISS);
         }
     }
-
+    private Sprite ResolveAttackSprite(CombatUnit user, SkillData skill)
+    {
+        if (skill.AttackSprite != null)
+            return skill.AttackSprite;
+        if (user.UnitType == CombatUnitType.Nikke && user.NikkeData.AttackSprite != null)
+            return user.NikkeData.AttackSprite;
+        return null;
+    }
     private bool HasParameter(Animator animator, string paramName)
     {
         if (animator.runtimeAnimatorController == null) return false;
