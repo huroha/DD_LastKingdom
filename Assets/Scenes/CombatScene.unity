@@ -4283,9 +4283,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatStateMachine
   m_TestNikkes:
-  - {fileID: 11400000, guid: 069f1fe0fed765746b00ab9f2749e6db, type: 2}
-  - {fileID: 11400000, guid: 7fbd0ab8a2d9e2a48b86768f546fe8a1, type: 2}
+  - {fileID: 11400000, guid: 1622f742f4aca914590a6a5dec68619a, type: 2}
+  - {fileID: 11400000, guid: 1622f742f4aca914590a6a5dec68619a, type: 2}
+  - {fileID: 11400000, guid: 9c1e1849a4c5d6844a83b9c36ac1b35d, type: 2}
+  - {fileID: 11400000, guid: 9c1e1849a4c5d6844a83b9c36ac1b35d, type: 2}
   m_TestEnemies:
+  - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
+  - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
+  - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
   - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
   m_EnemyActionDelay: 1
   m_SkillSelectPanel: {fileID: 1281108709}
@@ -12252,7 +12257,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BgAttackOverlay
   m_Renderer: {fileID: 1496988763}
-  m_NormalSprite: {fileID: 21300000, guid: 863b9742773b5df4bac38142d0abf4ab, type: 3}
+  m_NormalSprite: {fileID: 21300000, guid: 7daa9c299e5651c459b285aae4e8aaac, type: 3}
   m_CritSprite: {fileID: 21300000, guid: 83ab7912589461d408b79b45602afb23, type: 3}
   m_NikkeTargetFlipX: 1
   m_EnemyTargetFlipX: 0
@@ -14119,7 +14124,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -3114214927532585284, guid: 4a181bfcdbc6c0241910d9bfeceaa56a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 415a655f139706a48a6a276a1076d336, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

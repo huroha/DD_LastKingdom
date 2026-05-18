@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
 
 public enum EnemyType
@@ -30,7 +30,7 @@ public struct DropTable
     [Header("Relics - building")]
     public RelicDrop[] Relics;
 
-    // ÃßÈÄ Ãß°¡ ¿¹Á¤
+    // ì¶”í›„ ì¶”ê°€ ì˜ˆì •
     // public TrinketDrop[]     trinkets;
     // public SupplyItemDrop[]  supplyItems;
     // public MaterialDrop[]    buildingMaterials;

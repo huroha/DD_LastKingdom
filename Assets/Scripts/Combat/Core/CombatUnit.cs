@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
 
 public enum CombatUnitType
@@ -10,8 +10,8 @@ public enum CombatUnitType
 public enum UnitState
 {
     Alive,
-    DeathsDoor,     // Nikke Àü¿ë HP 0, ´ÙÀ½ ÇÇÇØ ½Ã deathblow ÆÇÁ¤
-    Corpse,         // Enemy Àü¿ë - º°µµ hp º¸À¯, ÀÏ¹İ/ Dot ÇÇÇØ ¸ğµÎ Àû¿ë
+    DeathsDoor,     // Nikke ì „ìš© HP 0, ë‹¤ìŒ í”¼í•´ ì‹œ deathblow íŒì •
+    Corpse,         // Enemy ì „ìš© - ë³„ë„ hp ë³´ìœ , ì¼ë°˜/ Dot í”¼í•´ ëª¨ë‘ ì ìš©
     Dead
 }
 
@@ -30,10 +30,10 @@ public class CombatUnit
 {
     public const int DEATHS_DOOR_EBLA = 18;
     public const int MaxEbla = 200;
-    public const int EblaPhaseThreshold = 100;  //  Affliction/Virtue ÀÓ°è°ª
-    public const int EblaCellValue = 10;        // ¼¿ ÇÏ³ª´ç ebla °ª
+    public const int EblaPhaseThreshold = 100;  //  Affliction/Virtue ì„ê³„ê°’
+    public const int EblaCellValue = 10;        // ì…€ í•˜ë‚˜ë‹¹ ebla ê°’
 
-    // À¯´Ö ½Äº°
+    // ìœ ë‹› ì‹ë³„
     public CombatUnitType   UnitType { get; }
     public string           UnitName { get; }
     public int              SlotIndex { get; private set; }
@@ -41,18 +41,18 @@ public class CombatUnit
     public int SlotSize     { get; }
     public CombatUnit Protecting { get; private set; }
    
-    // Çàµ¿ ¼ö
+    // í–‰ë™ ìˆ˜
     public int ActionsPerRound { get; }
 
-    // ¿øº» µ¥ÀÌÅÍ ÂüÁ¶
+    // ì›ë³¸ ë°ì´í„° ì°¸ì¡°
     public NikkeInstance NikkeInstance { get; }
     public NikkeData NikkeData => NikkeInstance?.Data;
     public EnemyData        EnemyData { get; }
 
-    // ½ºÅ³
+    // ìŠ¤í‚¬
     public IReadOnlyList<SkillData> Skills { get; }
 
-    // ·±Å¸ÀÓ »óÅÂ
+    // ëŸ°íƒ€ì„ ìƒíƒœ
     public UnitState State { get; private set; }
     public bool      IsAlive => State == UnitState.Alive || State == UnitState.DeathsDoor;
 
@@ -60,11 +60,11 @@ public class CombatUnit
     public int CurrentHp { get; private set; }
     public int MaxHp { get; }
     
-    // ½ºÅÈ
+    // ìŠ¤íƒ¯
     public StatBlock BaseStats { get; }
     public StatBlock CurrentStats { get; private set; }
 
-    // ¿¡ºí¶ó 
+    // ì—ë¸”ë¼ 
     public int Ebla { get; private set; }
     public EblaState EblaState { get; private set; }
     public void SetEblaState(EblaState state)
@@ -83,7 +83,7 @@ public class CombatUnit
         CurrentVirtueType = type;
     }
 
-    // Àû¿ëÁßÀÎ »óÅÂÀÌ»ó
+    // ì ìš©ì¤‘ì¸ ìƒíƒœì´ìƒ
     private List<ActiveStatusEffect> m_ActiveEffects;
     public IReadOnlyList<ActiveStatusEffect> ActiveEffects => m_ActiveEffects;
 
@@ -111,7 +111,7 @@ public class CombatUnit
     public int GuardTurnsRemaining { get; private set; }
 
 
-    // »ı¼ºÀÚ
+    // ìƒì„±ì
     public CombatUnit(NikkeInstance instance, int slotIndex, int currentHp, int ebla,
                  List<ActiveStatusEffect> activeEffects)
     {
@@ -129,7 +129,7 @@ public class CombatUnit
         State = currentHp > 0 ? UnitState.Alive : UnitState.DeathsDoor;
         Ebla = ebla;
         ActionsPerRound = 1;
-        m_ActiveEffects = activeEffects ?? new List<ActiveStatusEffect>();  // Null º´ÇÕ ¿¬»êÀÚ ¿ŞÂÊÀÌ nullÀÌ¸é ¿À¸¥ÂÊ »ç¿ë
+        m_ActiveEffects = activeEffects ?? new List<ActiveStatusEffect>();  // Null ë³‘í•© ì—°ì‚°ì ì™¼ìª½ì´ nullì´ë©´ ì˜¤ë¥¸ìª½ ì‚¬ìš©
         RecalculateStats();
     }
 
@@ -151,7 +151,7 @@ public class CombatUnit
         m_ActiveEffects = new List<ActiveStatusEffect>();
     }
 
-    // µ¥¹ÌÁö
+    // ë°ë¯¸ì§€
     public UnitState TakeDamage(int damage, bool isDot = false, bool isCrit = false)
     {
         if (State == UnitState.Dead)
@@ -170,7 +170,7 @@ public class CombatUnit
             }
             else if (State == UnitState.DeathsDoor)
             {
-                // hp 0 °íÁ¤, deathblow ÆÇÁ¤¸¸ ¼öÇà
+                // hp 0 ê³ ì •, deathblow íŒì •ë§Œ ìˆ˜í–‰
                 float roll = Random.Range(0f, 100f);
                 if (roll > CurrentStats.deathBlowResist)
                     State = UnitState.Dead;
@@ -212,7 +212,7 @@ public class CombatUnit
         return State;
     }
 
-    // È¸º¹
+    // íšŒë³µ
     public void Heal(int amount)
     {
         if (!IsAlive)
@@ -223,7 +223,7 @@ public class CombatUnit
             CurrentHp = MaxHp;
 
 
-        // DeathsDoor »óÅÂ¿¡¼­ Èú ¹ŞÀ¸¸é alive·Î º¹±Í
+        // DeathsDoor ìƒíƒœì—ì„œ í ë°›ìœ¼ë©´ aliveë¡œ ë³µê·€
         if (State == UnitState.DeathsDoor && CurrentHp > 0)
             State = UnitState.Alive;
     }
@@ -235,7 +235,7 @@ public class CombatUnit
     }
 
 
-    // ¿¡ºí¶ó
+    // ì—ë¸”ë¼
     public void AddEbla(int amount)
     {
         if (UnitType != CombatUnitType.Nikke)
@@ -243,8 +243,8 @@ public class CombatUnit
         Ebla = Mathf.Clamp(Ebla + amount, 0, MaxEbla);
     }
 
-    // ½ºÅÈ Àç°è»ê
-    // Phase2 StatusEffectManager ¿¬µ¿ ½Ã ¹öÇÁ/µğ¹öÇÁ ÇÕ»ê ÈÄ È£Ãâ
+    // ìŠ¤íƒ¯ ì¬ê³„ì‚°
+    // Phase2 StatusEffectManager ì—°ë™ ì‹œ ë²„í”„/ë””ë²„í”„ í•©ì‚° í›„ í˜¸ì¶œ
     public void RecalculateStats()
     {
         StatBlock stats = BaseStats;

@@ -64,13 +64,13 @@ MonoBehaviour:
     damageMultiplier: 0
     eblaMultiplier: 0
   m_Skills:
-  - {fileID: 11400000, guid: 6cb3785aff0211040872254893e154e3, type: 2}
-  - {fileID: 11400000, guid: bfe0b70f675e7ae43b35727974556082, type: 2}
-  - {fileID: 11400000, guid: 1a22aa7c6e39b9d4292f8c28f479c54c, type: 2}
-  - {fileID: 11400000, guid: 169f057941835e24cbe8e2c22ff53acd, type: 2}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: cf7faba79d1df304dbd6700aa72eddc0, type: 2}
+  - {fileID: 11400000, guid: fe402ae34eb2ef44992d78edd983bd91, type: 2}
+  - {fileID: 11400000, guid: 47a54277fb244584daf113886ae26d51, type: 2}
+  - {fileID: 11400000, guid: d50255c23fe62d34caa8bd86027984e3, type: 2}
+  - {fileID: 11400000, guid: 4fe45888d4797694dabdeb0b6bff3641, type: 2}
+  - {fileID: 11400000, guid: 5c468f9f1885a2b42b4d139bb7e4dd4a, type: 2}
+  - {fileID: 11400000, guid: 93afd579777f65f4eb43661ccf74e5b9, type: 2}
   m_CampSkills: []
   m_Weapon: {fileID: 11400000, guid: ec714b1641d72da449048ea5d86b57f9, type: 2}
   m_Armor: {fileID: 11400000, guid: 9fd7e0825bd29c14893cc68e9491a149, type: 2}

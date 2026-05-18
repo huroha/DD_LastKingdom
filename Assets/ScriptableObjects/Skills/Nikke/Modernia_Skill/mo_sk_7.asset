@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf8234ddd9a51424a99679d27d50c99b, type: 3}
+  m_Name: mo_sk_7
+  m_EditorClassIdentifier: Assembly-CSharp::SkillData
+  m_SkillName: "\uAC70\uBBF8 \uBA39\uC744\uB798\uC694?"
+  m_Description: 
+  m_SkillIcon: {fileID: 21300000, guid: 2745f43c965279e4da4eb6b039cf274f, type: 3}
+  m_SkillType: 0
+  m_RequiredState: 0
+  m_UsablePositions: 01010101
+  m_TargetPositions: 01010101
+  m_TargetType: 6
+  m_MoveUserAmount: 0
+  m_MoveTargetAmount: 0
+  m_LevelData:
+  - damageMultiplier: 0
+    accuracyMod: 0
+    critMod: 5
+    minHeal: 4
+    maxHeal: 4
+    eblaDamage: 0
+    eblaHealAmount: 0
+    allyEblaAmount: 3
+    onHitEffects: []
+    onSelfEffects: []
+    onAllyEffects: []
+  - damageMultiplier: 0
+    accuracyMod: 0
+    critMod: 5
+    minHeal: 5
+    maxHeal: 5
+    eblaDamage: 0
+    eblaHealAmount: 0
+    allyEblaAmount: 4
+    onHitEffects: []
+    onSelfEffects: []
+    onAllyEffects: []
+  - damageMultiplier: 0
+    accuracyMod: 0
+    critMod: 5
+    minHeal: 6
+    maxHeal: 6
+    eblaDamage: 0
+    eblaHealAmount: 0
+    allyEblaAmount: 5
+    onHitEffects: []
+    onSelfEffects: []
+    onAllyEffects: []
+  - damageMultiplier: 0
+    accuracyMod: 0
+    critMod: 5
+    minHeal: 7
+    maxHeal: 7
+    eblaDamage: 0
+    eblaHealAmount: 0
+    allyEblaAmount: 6
+    onHitEffects: []
+    onSelfEffects: []
+    onAllyEffects: []
+  - damageMultiplier: 0
+    accuracyMod: 0
+    critMod: 5
+    minHeal: 8
+    maxHeal: 8
+    eblaDamage: 0
+    eblaHealAmount: 0
+    allyEblaAmount: 6
+    onHitEffects: []
+    onSelfEffects: []
+    onAllyEffects: []
+  m_IsGuard: 0
+  m_IsForceGuard: 0
+  m_GuardDuration: 0
+  m_MarkBonus: 0
+  m_MarkDamageBonus: 0
+  m_BypassGuard: 0
+  m_ExcludeAllyEffect: 1
+  m_AttackSprite: {fileID: 0}
+  m_AttackEffect: {fileID: 0}
+  m_AttackMovement: 0
+  m_ProjectileSpeed: 20
+  m_HitEffect: {fileID: 0}

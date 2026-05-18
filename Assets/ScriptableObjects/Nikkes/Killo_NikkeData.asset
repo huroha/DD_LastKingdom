@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Killo_NikkeData
   m_EditorClassIdentifier: Assembly-CSharp::NikkeData
   m_Id: 0003_killo
-  m_NikkeName: Killo
+  m_NikkeName: "\uD0AC\uB85C"
   m_NikkeClass: 2
   m_CanVirtue: 0
   m_Manufacturer: 2
@@ -64,13 +64,13 @@ MonoBehaviour:
     damageMultiplier: 0
     eblaMultiplier: 0
   m_Skills:
-  - {fileID: 11400000, guid: 0db16968f2d832c4e852a5dea5ad2fd5, type: 2}
-  - {fileID: 11400000, guid: 95700198bc6f56446bcda1e8bdc6109e, type: 2}
-  - {fileID: 11400000, guid: 420590bbf8084e84fb1016ca5669c311, type: 2}
-  - {fileID: 11400000, guid: 996bb7aed4fd34d4cb54c4b37bee2a61, type: 2}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: e15f81e797a48564da19e4ac6f7be993, type: 2}
+  - {fileID: 11400000, guid: 6ce99586a4b2bb346b152c5f733f38e8, type: 2}
+  - {fileID: 11400000, guid: 1caf66e84c254184a8c2f49e977f2edd, type: 2}
+  - {fileID: 11400000, guid: 2d27669b58b46244a801e0d5e7f9e90b, type: 2}
+  - {fileID: 11400000, guid: f00cca8fa82bc36479254d4d00a277ac, type: 2}
+  - {fileID: 11400000, guid: 908e2cbd77008fb4ab8c2489be06d5f6, type: 2}
+  - {fileID: 11400000, guid: 8881604181d5dce4a8ecad06e82947f0, type: 2}
   m_CampSkills: []
   m_Weapon: {fileID: 11400000, guid: e5893855a996f904c8e099f2b073d2a4, type: 2}
   m_Armor: {fileID: 11400000, guid: 0d3a667ced439e74982dfa98a4f69556, type: 2}

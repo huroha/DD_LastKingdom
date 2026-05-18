@@ -35,7 +35,7 @@ public class StatusEffectData : ScriptableObject
 
     [Header("Stack")]
     [SerializeField] private bool m_IsStackable;
-    [SerializeField] private int m_MaxStack = 1;    // 스택 가능일때만 유효
+    [SerializeField] private int m_MaxStack = 1;    // 스택 가능일때만 유효 Block만 사용
 
     [Header("Apply Rate")]
     [Range(0f, 200f)]

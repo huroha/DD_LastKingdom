@@ -54,7 +54,6 @@ public static class TooltipHelper
     }
     public static void AppendStat(StringBuilder sb, string statName, int value, int turns = 0)
     {
-        sb.Append('\n');
         sb.Append(statName);
         sb.Append(' ');
         if (value > 0)
@@ -66,10 +65,10 @@ public static class TooltipHelper
             sb.Append(turns);
             sb.Append("차례)");
         }
+        sb.Append('\n');
     }
     public static void AppendStatPercent(StringBuilder sb, string statName, int value, int turns =0)
     {
-        sb.Append('\n');
         sb.Append(statName);
         sb.Append(' ');
         if (value > 0)
@@ -82,6 +81,7 @@ public static class TooltipHelper
             sb.Append(turns);
             sb.Append("차례)");
         }
+        sb.Append('\n');
     }
     public static string GetEffectColorTag(StatusEffectType effectType)
     {
@@ -110,7 +110,7 @@ public static class TooltipHelper
         if (mod.speed != 0)
             AppendStat(sb, STAT_SPEED, mod.speed, turns);
         if (mod.critChance != 0f)
-            AppendStat(sb, STAT_CRIT, (int)mod.critChance, turns);
+            AppendStatPercent(sb, STAT_CRIT, (int)mod.critChance, turns);
 
         if (mod.resistance.stun != 0)
             AppendStatPercent(sb, STAT_RES_STUN, (int)mod.resistance.stun, turns);

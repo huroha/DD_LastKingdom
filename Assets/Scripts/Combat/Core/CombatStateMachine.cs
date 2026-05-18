@@ -366,7 +366,8 @@ public class CombatStateMachine : MonoBehaviour
         {
             SetState(CombatState.ExecuteSkill);
             SnapshotNikkeEbla();
-            SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, m_SelectedSkill, m_SelectedTarget);
+            int skillLevel = m_ActiveUnit.NikkeInstance?.GetSkillLevel(m_SelectedSkill) ?? 1;
+            SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, m_SelectedSkill, skillLevel, m_SelectedTarget);
             if (m_CombatHUD != null)
                 m_CombatHUD.SnapNikkeHpBarsToSlots();
             List<CombatUnit> targets = ExtractTargets(result);
@@ -395,7 +396,7 @@ public class CombatStateMachine : MonoBehaviour
 
             SetState(CombatState.ExecuteSkill);
             SnapshotNikkeEbla();
-            SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, action.Skill, action.Target);
+            SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, action.Skill, 1, action.Target);
             if (m_CombatHUD != null)
                 m_CombatHUD.SnapNikkeHpBarsToSlots();
             List<CombatUnit> targets = ExtractTargets(result);
@@ -435,7 +436,8 @@ public class CombatStateMachine : MonoBehaviour
 
     public AttackPreview PreviewAttack(CombatUnit target)
     {
-        return m_SkillExecutor.PreviewAttack(m_ActiveUnit, m_SelectedSkill, target);
+        int skillLevel = m_ActiveUnit.NikkeInstance?.GetSkillLevel(m_SelectedSkill) ?? 1;
+        return m_SkillExecutor.PreviewAttack(m_ActiveUnit, m_SelectedSkill, skillLevel, target);
     }
 
     // 죽은 유닛 이벤트 발생

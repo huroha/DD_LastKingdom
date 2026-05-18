@@ -24,45 +24,76 @@ public class SkillTooltip : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void Show(SkillData skill, Vector2 screenPosition, Vector2 offset)
+    public void Show(SkillData skill, int skillLevel, Vector2 screenPosition, Vector2 offset)
     {
         if (m_CurrentSkill == skill && gameObject.activeSelf)
             return;
+        SkillLevelData ld = skill.GetLevelData(skillLevel);
         m_CurrentSkill = skill;
+        string prefix = (skill.TargetType == TargetType.AllyAll) ? "스쿼드 " : "";
         m_SB.Clear();
         // 스킬명 + Lv
-        m_SB.Append("<b>").Append(skill.SkillName).Append("</b>1\n"); // 숫자는 추후 skilldata 멤버 추가해서 가져올것.
-
+        m_SB.Append("<b>").Append(skill.SkillName).Append(" </b>").Append(skillLevel).Append("\n"); 
         // 스킬 타입
         if(skill.IsEnemyTargeting)
             m_SB.Append(TooltipHelper.TAG_SKILLTYPE).Append(skill.SkillType == SkillType.Melee ? "근접" : "원거리").Append("\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
         // 기본 스탯
-        if(skill.AccuracyMod != 0)
-            m_SB.Append("명중 보정: ").Append(skill.AccuracyMod).Append("\n");
-        if(skill.DamageMultiplier != 1 && skill.DamageMultiplier != 0)
-            m_SB.Append("피해 보정: ").Append((int)(skill.DamageMultiplier * 100f) - 100).Append("%").Append("\n");
-        if (skill.MaxHeal != 0)
-            m_SB.Append(skill.MinHeal).Append("-").Append(skill.MaxHeal).Append(TooltipHelper.TAG_HEAL).Append(" 회복\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
-        if (skill.EblaHealAmount != 0)
-            m_SB.Append("에블라 : -").Append(skill.EblaHealAmount).Append("\n");
-
-        if (skill.CritMod != 0)
-            m_SB.Append("치명타 보정: ").Append((int)skill.CritMod).Append("%\n");
+        if(ld.accuracyMod != 0)
+            m_SB.Append("명중 : ").Append(ld.accuracyMod).Append("\n");
+        if(ld.damageMultiplier != 1 && ld.damageMultiplier != 0)
+            m_SB.Append("피해 보정: ").Append((int)(ld.damageMultiplier * 100f) - 100).Append("%").Append("\n");
+        if (ld.maxHeal != 0)
+            m_SB.Append(prefix).Append(ld.minHeal).Append("-").Append(ld.maxHeal).Append(TooltipHelper.TAG_HEAL).Append("회복\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
+        if (ld.eblaHealAmount != 0)
+            m_SB.Append(prefix).Append("에블라 : -").Append(ld.eblaHealAmount).Append("\n");
+        if (ld.allyEblaAmount != 0)
+        {
+            string allyLabel = skill.ExcludeAllyEffect ? "자신 제외 스쿼드 에블라 : " : "스쿼드 에블라 : ";
+            m_SB.Append(allyLabel).Append(ld.allyEblaAmount > 0 ? "+" : "").Append(ld.allyEblaAmount).Append("\n");
+        }
+        if (ld.critMod != 0)
+            m_SB.Append("치명타 보정: ").Append((int)ld.critMod).Append("%\n");
         if (skill.MarkBonus)
             m_SB.Append(TooltipHelper.TAG_NORMAL_OPEN).Append("표식 추가 데미지: +").Append((int)(skill.MarkDamageBonus * 100f)).Append("%\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
+        if (skill.IsGuard)
+            m_SB.Append("아군 보호 (").Append(skill.GuardDuration).Append("차례)\n");
+        else if (skill.IsForceGuard)
+            m_SB.Append("강제 보호 대상 지정 (").Append(skill.GuardDuration).Append("차례)\n");
 
         // OnHitEffects
-        if (skill.OnHitEffects != null && skill.OnHitEffects.Count > 0)
+        if (ld.onHitEffects != null && ld.onHitEffects.Length > 0)
         {
-            m_SB.Append("\n");
-            for (int i = 0; i < skill.OnHitEffects.Count; ++i)
+            m_SB.Append("\n").Append(prefix).Append("대상:\n");
+            for (int i = 0; i < ld.onHitEffects.Length; ++i)
             {
-                if (skill.OnHitEffects[i] == null) continue;
-                BuildEffectText(m_SB, skill.OnHitEffects[i]);
+                if (ld.onHitEffects[i] == null) continue;
+                BuildEffectText(m_SB, ld.onHitEffects[i]);   // label 인자 생략
             }
         }
 
- 
+        // OnSelfEffects
+        if (ld.onSelfEffects != null && ld.onSelfEffects.Length > 0)
+        {
+            m_SB.Append("\n자신:\n");
+            for (int i = 0; i < ld.onSelfEffects.Length; ++i)
+            {
+                if (ld.onSelfEffects[i] == null) continue;
+                BuildEffectText(m_SB, ld.onSelfEffects[i]);
+            }
+        }
+
+        // OnAllyEffects
+        if (ld.onAllyEffects != null && ld.onAllyEffects.Length > 0)
+        {
+            string header = skill.ExcludeAllyEffect ? "자신 제외 스쿼드:" : "스쿼드:";
+            m_SB.Append("\n").Append(header).Append("\n");
+            for (int i = 0; i < ld.onAllyEffects.Length; ++i)
+            {
+                if (ld.onAllyEffects[i] == null) continue;
+                BuildEffectText(m_SB, ld.onAllyEffects[i]);
+            }
+        }
+
         m_TooltipText.SetText(m_SB);
 
         m_RectTransform.sizeDelta = Vector2.zero;
@@ -95,6 +126,11 @@ public class SkillTooltip : MonoBehaviour
     private void BuildEffectText(StringBuilder sb, StatusEffectData effect)
     {
         string effectColor = TooltipHelper.GetEffectColorTag(effect.EffectType);
+        if (effect.EffectType == StatusEffectType.Block)
+        {
+            sb.Append("피해 차단 ").Append(effect.MaxStack).Append("회\n");
+            return;
+        }
         // 효과명 (기본 100%)
         sb.Append(effectColor).Append(effect.EffectName).Append(TooltipHelper.TAG_COLOR_CLOSE)
           .Append(" (기본 ").Append(effect.BaseApplyRate).Append("%)\n");

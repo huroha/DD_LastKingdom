@@ -4,10 +4,15 @@ public struct SkillResult
     public CombatUnit       User;
     public SkillData        Skill;
     public TargetResult[]   TargetResults;
+    public AllyEffectResult[] AllyResults;
     public IReadOnlyList<StatusEffectData> SelfAppliedEffects;
 }
 
-
+public struct AllyEffectResult
+{
+    public CombatUnit Unit;
+    public StatusEffectData[] AppliedEffects;
+}
 public struct TargetResult
 {
     public CombatUnit Target;

@@ -164,7 +164,7 @@ public abstract class NikkePanelBase : MonoBehaviour
             m_SkillIcons[i].gameObject.SetActive(hasSkill);
             if (!hasSkill) continue;
             m_SkillIcons[i].sprite = allSkills[i].SkillIcon;
-            SetupSkillTooltip(m_SkillIcons[i].gameObject, allSkills[i]);
+            SetupSkillTooltip(m_SkillIcons[i].gameObject, allSkills[i], inst.SkillLevels[i]);
         }
         RefreshSkillUI(inst);
     }
@@ -347,11 +347,11 @@ public abstract class NikkePanelBase : MonoBehaviour
         trigger.Initialize(m_Tooltip, builder, new Vector2(10f, 0f));
     }
 
-    protected void SetupSkillTooltip(GameObject go, SkillData skill)
+    protected void SetupSkillTooltip(GameObject go, SkillData skill, int skillLevel)
     {
         SkillTooltipTrigger trigger = go.GetComponent<SkillTooltipTrigger>();
         if (trigger == null) trigger = go.AddComponent<SkillTooltipTrigger>();
-        trigger.Initialize(m_SkillTooltip, skill, new Vector2(0f, -24f));
+        trigger.Initialize(m_SkillTooltip, skill,skillLevel, new Vector2(0f, -24f));
     }
 
     protected static Button EnsureButton(GameObject go)

@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cead30f8b213ad443a5387d8789ed940, type: 3}
+  m_Name: mot1
+  m_EditorClassIdentifier: Assembly-CSharp::NikkeData
+  m_Id: 0004_modernia
+  m_NikkeName: "\uBAA8\uB354\uB2C8\uC544"
+  m_NikkeClass: 0
+  m_CanVirtue: 0
+  m_Manufacturer: 0
+  m_Element: 0
+  m_Squad: {fileID: 11400000, guid: 2367d89cc0adfe842a478227bd2f8f28, type: 2}
+  m_BaseStats:
+    maxHp: 0
+    minDamage: 0
+    maxDamage: 0
+    accuracyMod: 0
+    critChance: 0
+    defense: 0
+    dodge: 0
+    deathBlowResist: 67
+    speed: 0
+    moveRange: 2
+    resistance:
+      stun: 30
+      move: 40
+      poison: 30
+      disease: 50
+      bleed: 30
+      debuff: 40
+      trap: 50
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  m_MaxLevel: 6
+  m_ExpThresholds: 14000000280000003c000000640000008c000000c8000000
+  m_StatGrowthPerLevel:
+    maxHp: 3
+    minDamage: 0
+    maxDamage: 1
+    accuracyMod: 0
+    critChance: 0
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 0
+    moveRange: 0
+    resistance:
+      stun: 10
+      move: 10
+      poison: 10
+      disease: 10
+      bleed: 10
+      debuff: 10
+      trap: 10
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  m_Skills:
+  - {fileID: 11400000, guid: 38e48e1492e0c1d4589fe5dc3f7211a3, type: 2}
+  - {fileID: 11400000, guid: 93a29c3e02bb50449b9fbf9a174853a3, type: 2}
+  - {fileID: 11400000, guid: 9ad395485412bd8468b76b4b34ab3b44, type: 2}
+  - {fileID: 11400000, guid: eccd48784c0a89541ab980cf3a7480c1, type: 2}
+  - {fileID: 11400000, guid: 60908cc5ac6ae9f42b9b781ab30c017f, type: 2}
+  - {fileID: 11400000, guid: 003fa19b285d84b4facf8185b1e4b2a3, type: 2}
+  - {fileID: 11400000, guid: 1513834abf80f1e439018230e1021d83, type: 2}
+  m_CampSkills: []
+  m_Weapon: {fileID: 11400000, guid: 2fc940a44c3e92f46bb74a16dc676936, type: 2}
+  m_Armor: {fileID: 11400000, guid: 4f80dde1349fe644ba1c8967c7ca2e5a, type: 2}
+  m_PortraitSprite: {fileID: 21300000, guid: b9672712443016242931e44a48416cda, type: 3}
+  m_CombatIdleSprite: {fileID: 21300000, guid: 3929cfac9e6e9cc4f94fe98baaf94a00, type: 3}
+  m_CombatPrefab: {fileID: 2556627444221727513, guid: b9644b12f6a0e7e45b2e09f3a61af3a7, type: 3}
+  m_AttackSprite: {fileID: 21300000, guid: 7082b3ed386bfba4fb9cf17cc7042c40, type: 3}
+  m_HitSprite: {fileID: 21300000, guid: 83bee85d30f206f428ccc0fb7fce03cb, type: 3}
+  m_ScaleOffset: 1.05
+  m_HeaderSprite: {fileID: 21300000, guid: ccd451f6648aa7b48ab4266ebe3bb35f, type: 3}
+  m_AfflictionArt: {fileID: 21300000, guid: 4fb24118a70a41348a0782ecdf7b5b31, type: 3}
+  m_VirtueArt: {fileID: 0}
+  m_ForcedAfflictionType: {fileID: 0}
+  m_OnCritSelfEffects: []
+  m_OnReceiveCritSelfEffects: []

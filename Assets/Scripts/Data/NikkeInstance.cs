@@ -54,7 +54,7 @@ public class NikkeInstance
         set { m_Level = Mathf.Clamp(value, 0, m_Data.MaxLevel); InvalidateStats(); }
     }
     public int WeaponLevel
-    {   get => m_WeaponLevel;
+    { get => m_WeaponLevel;
         set { m_WeaponLevel = Mathf.Clamp(value, 1, 5); InvalidateStats(); }
     }
     public int ArmorLevel
@@ -87,7 +87,7 @@ public class NikkeInstance
     public IReadOnlyList<SkillData> GetActiveSkills()
     {
         SkillData[] result = new SkillData[4];
-        for (int i=0; i<4; ++i)
+        for (int i = 0; i < 4; ++i)
         {
             int idx = m_ActiveSkillIndices[i];
             result[i] = (idx >= 0 && idx < m_Data.Skills.Count) ? m_Data.Skills[idx] : null;
@@ -100,6 +100,15 @@ public class NikkeInstance
     {
         if (skillIdx < 0 || skillIdx >= m_SkillLevels.Length) return;
         m_SkillLevels[skillIdx] = Mathf.Max(1, level);
+    }
+    public int GetSkillLevel(SkillData skill)
+    {
+        IReadOnlyList<SkillData> skills = m_Data.Skills;
+        for (int i=0; i< skills.Count; ++i)
+        {
+            if (skills[i] == skill) return m_SkillLevels[i];
+        }
+        return 1;
     }
     public StatBlock GetEffectiveBaseStats()
     {

@@ -44,7 +44,7 @@ public struct StatBlock
     public ResistanceBlock resistance;
 
     [Header("배율 보정")]
-    public float damageMultiplier;              // 피해 배율 보정
+    public float damageMultiplier;              // 피해 배율 보정 5 = 5%임
     public float eblaMultiplier;
 
     // 필드 추가 시 Apply/Scale 동시 수정 필요

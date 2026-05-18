@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf8234ddd9a51424a99679d27d50c99b, type: 3}
+  m_Name: cr_sk_7
+  m_EditorClassIdentifier: Assembly-CSharp::SkillData
+  m_SkillName: "\uC655\uC758 \uC218\uD638"
+  m_Description: 
+  m_SkillIcon: {fileID: 21300000, guid: 874eff97648dbbf4b9f7236673b9d9b9, type: 3}
+  m_SkillType: 0
+  m_RequiredState: 0
+  m_UsablePositions: 01010000
+  m_TargetPositions: 01010101
+  m_TargetType: 3
+  m_MoveUserAmount: 0
+  m_MoveTargetAmount: 0
+  m_LevelData:
+  - damageMultiplier: 0
+    accuracyMod: 0
+    critMod: 0
+    minHeal: 0
+    maxHeal: 0
+    eblaDamage: 0
+    eblaHealAmount: 0
+    allyEblaAmount: 0
+    onHitEffects: []
+    onSelfEffects:
+    - {fileID: 11400000, guid: 0afcb70b442350b43a5d15fe7c5a23bc, type: 2}
+    onAllyEffects: []
+  - damageMultiplier: 0
+    accuracyMod: 0
+    critMod: 0
+    minHeal: 0
+    maxHeal: 0
+    eblaDamage: 0
+    eblaHealAmount: 0
+    allyEblaAmount: 0
+    onHitEffects: []
+    onSelfEffects:
+    - {fileID: 11400000, guid: 512c515d274f57548991d31cf99b4a10, type: 2}
+    onAllyEffects: []
+  - damageMultiplier: 0
+    accuracyMod: 0
+    critMod: 0
+    minHeal: 0
+    maxHeal: 0
+    eblaDamage: 0
+    eblaHealAmount: 0
+    allyEblaAmount: 0
+    onHitEffects: []
+    onSelfEffects:
+    - {fileID: 11400000, guid: 1a66a7ad5bf096e4395b9240f5488efb, type: 2}
+    onAllyEffects: []
+  - damageMultiplier: 0
+    accuracyMod: 0
+    critMod: 0
+    minHeal: 0
+    maxHeal: 0
+    eblaDamage: 0
+    eblaHealAmount: 0
+    allyEblaAmount: 0
+    onHitEffects: []
+    onSelfEffects:
+    - {fileID: 11400000, guid: 43a8cbaedbee9274786596cf70f01da1, type: 2}
+    onAllyEffects: []
+  - damageMultiplier: 0
+    accuracyMod: 0
+    critMod: 0
+    minHeal: 0
+    maxHeal: 0
+    eblaDamage: 0
+    eblaHealAmount: 0
+    allyEblaAmount: 0
+    onHitEffects: []
+    onSelfEffects:
+    - {fileID: 11400000, guid: 3ecee1e382203ea4fa7cbcced6b036ee, type: 2}
+    onAllyEffects: []
+  m_IsGuard: 1
+  m_IsForceGuard: 0
+  m_GuardDuration: 3
+  m_MarkBonus: 0
+  m_MarkDamageBonus: 0
+  m_BypassGuard: 0
+  m_AttackSprite: {fileID: 0}
+  m_AttackEffect: {fileID: 0}
+  m_AttackMovement: 0
+  m_ProjectileSpeed: 20
+  m_HitEffect: {fileID: 0}

@@ -247,6 +247,23 @@ public class CombatDirector : MonoBehaviour
                 yield return m_WaitStatusPopup;
             }
         }
+        // AllyResults 순회 추가
+        if (result.AllyResults != null)
+        {
+            for (int i = 0; i < result.AllyResults.Length; ++i)
+            {
+                CombatUnit ally = result.AllyResults[i].Unit;
+                Vector3 pos = m_FieldView.GetSlotPosition(ally);
+                bool isNikke = ally.UnitType == CombatUnitType.Nikke;
+                StatusEffectData[] effects = result.AllyResults[i].AppliedEffects;
+                for (int j = 0; j < effects.Length; ++j)
+                {
+                    m_PopupPool.SpawnEffect(pos, isNikke, effects[j].EffectName,
+                                            GetEffectColor(effects[j].EffectType), effects[j].Icon);
+                    yield return m_WaitStatusPopup;
+                }
+            }
+        }
 
         // 10. 후딜레이
         yield return m_WaitPostSequence;
@@ -289,7 +306,7 @@ public class CombatDirector : MonoBehaviour
         {
             m_PopupPool.SpawnDamage(pos, isNikke, POPUP_BLOCK, COLOR_BLOCK);
         }
-        else if (skill.MaxHeal > 0)
+        else if (result.HealAmount > 0)
         {
             m_PopupPool.SpawnDamage(pos, isNikke, result.HealAmount.ToString(), COLOR_HEAL);
         }

@@ -26,6 +26,8 @@ public class SkillExecutor
     private List<StatusEffectData> m_AppliedBuffer = new List<StatusEffectData>();
     private List<StatusEffectData> m_ResistedBuffer = new List<StatusEffectData>();
     private List<CombatUnit> m_ActualTargetBuffer = new List<CombatUnit>();
+    private List<StatusEffectData> m_AllyAppliedBuffer = new List<StatusEffectData>();
+    private List<AllyEffectResult> m_AllyResultList = new List<AllyEffectResult>();
 
     public SkillExecutor(PositionSystem positionSystem, EblaSystem eblaSystem, StatusEffectData deathsDoorDebuff, StatusEffectData deathsDoorRecovery)
     {
@@ -54,13 +56,16 @@ public class SkillExecutor
         return true;
     }
 
-    public SkillResult Execute(CombatUnit user, SkillData skill, CombatUnit selectedTarget = null)
+    public SkillResult Execute(CombatUnit user, SkillData skill, int skillLevel, CombatUnit selectedTarget = null)
     {
         // ValidateSkill 실패 시 빈 SkillResult 반환 (early return)
-        SkillResult finalResult = new SkillResult();
-
         if (!ValidateSkill(user, skill))
             return new SkillResult();
+
+        SkillResult finalResult = new SkillResult();
+        // 스킬 레밸
+        SkillLevelData ld = skill.GetLevelData(skillLevel);
+
         // ResolveTargets로 최종 타겟 리스트 결정
         ResolveTargets(user, skill, selectedTarget, m_TargetsBuffer);
         List<CombatUnit> targets = m_TargetsBuffer;
@@ -88,13 +93,13 @@ public class SkillExecutor
             CombatUnit actualTarget = m_ActualTargetBuffer[i];
 
             // [명중 판정]
-            result[i].IsHit = skill.IsAllyTargeting || RollHit(user, actualTarget, skill);
+            result[i].IsHit = skill.IsAllyTargeting || RollHit(user, actualTarget, ld.accuracyMod);
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log($"[Skill] {user.UnitName} → {actualTarget.UnitName} | Hit:{result[i].IsHit}");
 #endif
             if (result[i].IsHit)
-                ApplyHit(user, actualTarget, skill, ref result[i], ref allNikkesFetched);
+                ApplyHit(user, actualTarget, skill, ld, ref result[i], ref allNikkesFetched);
 
             // [위치 이동] ApplyPositionMove 호출 (명중 여부 무관)
             ApplyPositionMove(user, skill, actualTarget, result[i].IsHit);
@@ -110,7 +115,7 @@ public class SkillExecutor
                 result[i].ResistedEffects[j] = m_ResistedBuffer[j];
         }
 
-        IReadOnlyList<StatusEffectData> selfEffects = skill.OnSelfEffects;
+        IReadOnlyList<StatusEffectData> selfEffects = ld.onSelfEffects ?? System.Array.Empty<StatusEffectData>();
         for (int i = 0; i < selfEffects.Count; ++i)
         {
             StatusEffectData effect = selfEffects[i];
@@ -129,6 +134,10 @@ public class SkillExecutor
         if (selfEffects.Count > 0)
             user.RecalculateStats();
 
+        // 아군에게 버프나 디버프 부여
+        ApplyAllyEffects(user, skill, ld);
+        if (m_AllyResultList.Count > 0)
+            finalResult.AllyResults = m_AllyResultList.ToArray();
         // SkillResult 반환 (User, Skill, TargetResults 채워서)
         finalResult.User = user;
         finalResult.Skill = skill;
@@ -167,37 +176,37 @@ public class SkillExecutor
         // TargetType이 EnemyMulti, AllyMulti, Self이면: GetValidTargets 결과 반환
     }
 
-    private float CalcHitChance(CombatUnit attacker, CombatUnit target, SkillData skill)
+    private float CalcHitChance(CombatUnit attacker, CombatUnit target, int accuracyMod)
     {
         float dodge = (target.State == UnitState.Corpse) ? 0f : target.CurrentStats.dodge;
-        float result = (attacker.CurrentStats.accuracyMod + skill.AccuracyMod) - dodge;
+        float result = (attacker.CurrentStats.accuracyMod + accuracyMod) - dodge;
         return result;
     }
 
     // 명중 판정: roll < (user.CurrentStats.accuracyMod + skill.AccuracyMod) - target.CurrentStats.dodge
-    private bool RollHit(CombatUnit user, CombatUnit target, SkillData skill)
+    private bool RollHit(CombatUnit user, CombatUnit target, int accuracyMod)
     {
-        float hitChance = CalcHitChance(user, target, skill);
+        float hitChance = CalcHitChance(user, target, accuracyMod);
         float roll = Random.Range(0f, 100f);
         return roll < hitChance;
     }
 
 
-    private (int min, int max) CalcDamageRange(CombatUnit attacker, CombatUnit target, SkillData skill)
+    private (int min, int max) CalcDamageRange(CombatUnit attacker, CombatUnit target, SkillLevelData ld)
     {
         float defence = (target.State == UnitState.Corpse) ? 0f : target.CurrentStats.defense;
         float damageMul = 1f + attacker.CurrentStats.damageMultiplier / 100f;
-        int rawMin = (int)(attacker.CurrentStats.minDamage * skill.DamageMultiplier * damageMul);
-        int rawMax = (int)(attacker.CurrentStats.maxDamage * skill.DamageMultiplier * damageMul);
+        int rawMin = (int)(attacker.CurrentStats.minDamage * ld.damageMultiplier * damageMul);
+        int rawMax = (int)(attacker.CurrentStats.maxDamage * ld.damageMultiplier * damageMul);
         int min = Mathf.Max((int)(rawMin * (1f - defence / 100f)), 0);
         int max = Mathf.Max((int)(rawMax * (1f - defence / 100f)), 0);
 
         return (min, max);
     }
     // 데미지 계산: BaseDamage -> RawDamage -> finalDamage (defense % 감소)
-    private int CalcDamage(CombatUnit user, CombatUnit target, SkillData skill)
+    private int CalcDamage(CombatUnit user, CombatUnit target, SkillData skill, SkillLevelData ld)
     {
-        (int min, int max) range = CalcDamageRange(user, target, skill);
+        (int min, int max) range = CalcDamageRange(user, target, ld);
         int finalDamage = Random.Range(range.min, range.max + 1);
         if (skill.MarkBonus && target.FindEffectByType(StatusEffectType.Mark) != null)
         {
@@ -206,30 +215,30 @@ public class SkillExecutor
 
         return finalDamage;
     }
-    private float CalcCritChance(CombatUnit attacker, SkillData skill)
+    private float CalcCritChance(CombatUnit attacker, float critMod)
     {
-        float critchance = attacker.CurrentStats.critChance + skill.CritMod;
+        float critchance = attacker.CurrentStats.critChance + critMod;
         return critchance;
     }
     // 크리티컬 판정: roll < user.CurrentStats.critChance + skill.CritMod
-    private bool RollCrit(CombatUnit user, SkillData skill)
+    private bool RollCrit(CombatUnit user, float critMod)
     {
-        float critchance = CalcCritChance(user, skill);
+        float critchance = CalcCritChance(user, critMod);
         return Random.Range(0f, 100f) < critchance;
     }
 
 
     // 상태이상 저항 판정 -> target.ActiveEffects에 실제 추가 + applied/resisted 분류
-    private void ApplyOnHitEffects(CombatUnit target, SkillData skill,
+    private void ApplyOnHitEffects(CombatUnit target, IReadOnlyList<StatusEffectData> effects,
                                    List<StatusEffectData> applied,
                                    List<StatusEffectData> resisted,
                                    bool isCrit)
     {
         float roll = 0f;
-        // skill.OnHitEffects를 for 루프로 순회
-        for (int i = 0; i < skill.OnHitEffects.Count; ++i)
+
+        for (int i = 0; i < effects.Count; ++i)
         {
-            StatusEffectData effect = skill.OnHitEffects[i];
+            StatusEffectData effect = effects[i];
             float resistance = GetResistance(target, effect.EffectType);
             float effectiveResist = Mathf.Max(0f, resistance - (effect.BaseApplyRate - 100f));
             roll = Random.Range(0f, 100f);
@@ -361,16 +370,17 @@ public class SkillExecutor
     }
 
     //  Enemy Info 용도
-    public AttackPreview PreviewAttack(CombatUnit attacker, SkillData skill, CombatUnit target)
+    public AttackPreview PreviewAttack(CombatUnit attacker, SkillData skill, int skillLevel, CombatUnit target)
     {
         AttackPreview preview = new AttackPreview();
+        SkillLevelData ld = skill.GetLevelData(skillLevel);
         if (attacker == null)
             return preview;
 
 
-        float hitChance = CalcHitChance(attacker, target, skill);
-        float critChance = CalcCritChance(attacker, skill);
-        (int min, int max) range = CalcDamageRange(attacker, target, skill);
+        float hitChance = CalcHitChance(attacker, target, ld.accuracyMod);
+        float critChance = CalcCritChance(attacker, ld.critMod);
+        (int min, int max) range = CalcDamageRange(attacker, target, ld);
         preview.HitChance = hitChance;
         preview.CritChance = critChance;
         preview.MinDamage = range.min;
@@ -411,12 +421,12 @@ public class SkillExecutor
         else if (originalTargets.Contains(guardian)) return target;
         else return guardian;
     }
-    private void ApplyHit(CombatUnit user, CombatUnit target, SkillData skill, ref TargetResult result, ref bool allNikkesFetched)
+    private void ApplyHit(CombatUnit user, CombatUnit target, SkillData skill, SkillLevelData ld, ref TargetResult result, ref bool allNikkesFetched)
     {
         result.PreviousHp = target.CurrentHp;
 
         // 직접 공격만 Block 소모 — 힐·아군 스킬은 통과
-        if (skill.MaxHeal <= 0 && !skill.IsAllyTargeting)
+        if (ld.maxHeal <= 0 && !skill.IsAllyTargeting)
         {
             ActiveStatusEffect blockEffect = target.FindEffectByType(StatusEffectType.Block);
             if (blockEffect != null)
@@ -430,19 +440,19 @@ public class SkillExecutor
         }
 
         int damage = 0;
-        if (skill.MaxHeal > 0)
-            result.HealAmount = Random.Range(skill.MinHeal, skill.MaxHeal + 1);
+        if (ld.minHeal > 0)
+            result.HealAmount = Random.Range(ld.minHeal, ld.maxHeal + 1);
         else
-            damage = CalcDamage(user, target, skill);
+            damage = CalcDamage(user, target, skill, ld);
 
-        result.IsCrit = RollCrit(user, skill);
+        result.IsCrit = RollCrit(user, ld.critMod);
         if (result.IsCrit)
         {
             damage = (int)(damage * CRIT_DAMAGE_MULTI);
             result.HealAmount = (int)(result.HealAmount * CRIT_DAMAGE_MULTI);
         }
 
-        if (skill.MaxHeal > 0)
+        if (ld.maxHeal > 0)
         {
             UnitState preHealState = target.State;
             target.Heal(result.HealAmount);
@@ -462,13 +472,13 @@ public class SkillExecutor
             }
         }
 
-        if (skill.EblaDamage > 0)
-            m_EblaSystem.ModifyEbla(target, skill.EblaDamage);
-        if (skill.EblaHealAmount > 0)
-            m_EblaSystem.ModifyEbla(target, -skill.EblaHealAmount);
+        if (ld.eblaDamage > 0)
+            m_EblaSystem.ModifyEbla(target, ld.eblaDamage);
+        if (ld.eblaHealAmount > 0)
+            m_EblaSystem.ModifyEbla(target, -ld.eblaHealAmount);
 
         if (target.IsAlive)
-            ApplyOnHitEffects(target, skill, m_AppliedBuffer, m_ResistedBuffer, result.IsCrit);
+            ApplyOnHitEffects(target, ld.onHitEffects ?? System.Array.Empty<StatusEffectData>(), m_AppliedBuffer, m_ResistedBuffer, result.IsCrit);
 
         if (result.IsCrit)
         {
@@ -491,6 +501,52 @@ public class SkillExecutor
             target.Protecting?.SetGuardedBy(null, 0);
             target.SetProtecting(user);
             user.SetGuardedBy(target, skill.GuardDuration);
+        }
+    }
+    private void ApplyAllyEffects(CombatUnit user, SkillData skill, SkillLevelData ld)
+    {
+        m_AllyResultList.Clear();
+        if ((ld.onAllyEffects == null || ld.onAllyEffects.Length == 0) && ld.allyEblaAmount == 0)
+            return;
+        m_PositionSystem.GetAllTargetable(user.UnitType, m_AllNikkesBuffer);
+
+        for (int i = 0; i < m_AllNikkesBuffer.Count; ++i)
+        {
+            CombatUnit unit = m_AllNikkesBuffer[i];
+            if (skill.ExcludeAllyEffect && unit == user) continue;
+
+            m_AllyAppliedBuffer.Clear();
+
+            if (ld.allyEblaAmount != 0)
+                m_EblaSystem.ModifyEbla(unit, ld.allyEblaAmount);
+
+            if (ld.onAllyEffects != null && ld.onAllyEffects.Length > 0)
+            {
+                for (int j = 0; j < ld.onAllyEffects.Length; ++j)
+                {
+                    StatusEffectData effect = ld.onAllyEffects[j];
+                    ActiveStatusEffect existing = unit.FindEffect(effect);
+                    if (existing != null)
+                    {
+                        if (effect.IsStackable && existing.CurrentStacks < effect.MaxStack)
+                            existing.CurrentStacks++;
+                        else
+                            existing.RemainingTurns = Mathf.Max(existing.RemainingTurns, effect.Duration);
+                    }
+                    else
+                        unit.AddEffect(new ActiveStatusEffect(effect));
+                    m_AllyAppliedBuffer.Add(effect);
+                }
+                unit.RecalculateStats();
+            }
+
+            if (m_AllyAppliedBuffer.Count > 0)
+            {
+                AllyEffectResult allyResult = new AllyEffectResult();
+                allyResult.Unit = unit;
+                allyResult.AppliedEffects = m_AllyAppliedBuffer.ToArray();
+                m_AllyResultList.Add(allyResult);
+            }
         }
     }
 }

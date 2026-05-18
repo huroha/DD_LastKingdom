@@ -215,7 +215,8 @@ public class SkillSelectPanel : MonoBehaviour
             return;
 
         Vector2 screenPos = m_SkillButtons[index].transform.position;
-        m_SkillTooltip.Show(m_CurrentUnit.Skills[index], screenPos, m_TooltipOffset);
+        int skillLevel = m_CurrentUnit.NikkeInstance?.GetSkillLevel(m_CurrentUnit.Skills[index]) ?? 1;
+        m_SkillTooltip.Show(m_CurrentUnit.Skills[index], skillLevel, screenPos, m_TooltipOffset);
     }
 
     private void OnSkillHoverExit()

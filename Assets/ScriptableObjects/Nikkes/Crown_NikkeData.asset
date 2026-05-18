@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Crown_NikkeData
   m_EditorClassIdentifier: Assembly-CSharp::NikkeData
   m_Id: 0002_crown
-  m_NikkeName: Crown
+  m_NikkeName: "\uD06C\uB77C\uC6B4"
   m_NikkeClass: 2
   m_CanVirtue: 0
   m_Manufacturer: 0
@@ -64,13 +64,13 @@ MonoBehaviour:
     damageMultiplier: 0
     eblaMultiplier: 0
   m_Skills:
-  - {fileID: 11400000, guid: 1af9adf875143234ea659f8e9ac6e0f9, type: 2}
-  - {fileID: 11400000, guid: 6bfc8192882314a49973a1cca8b1f05e, type: 2}
-  - {fileID: 11400000, guid: 696598c6e05f0824c93937068cff509d, type: 2}
-  - {fileID: 11400000, guid: 1bd52a3750960ad4d9cc9704be96fc0a, type: 2}
-  - {fileID: 11400000, guid: 0db16968f2d832c4e852a5dea5ad2fd5, type: 2}
-  - {fileID: 11400000, guid: 95700198bc6f56446bcda1e8bdc6109e, type: 2}
-  - {fileID: 11400000, guid: 420590bbf8084e84fb1016ca5669c311, type: 2}
+  - {fileID: 11400000, guid: 04bdccecbb80ee3499afe9d55fadd146, type: 2}
+  - {fileID: 11400000, guid: 0e405da4ab3ea144b9f20526d3114644, type: 2}
+  - {fileID: 11400000, guid: d8170fb5f17fe144fa163cdaf8dd26d4, type: 2}
+  - {fileID: 11400000, guid: 51965c4f87c0ab24dac17270667eb758, type: 2}
+  - {fileID: 11400000, guid: b207595f70da88242bc7dc81a91388ee, type: 2}
+  - {fileID: 11400000, guid: 5311fd06fb31ec74f99a075c88f03c51, type: 2}
+  - {fileID: 11400000, guid: 309da69b455e3624cac068dcf36a042d, type: 2}
   m_CampSkills: []
   m_Weapon: {fileID: 11400000, guid: 5395d7dd418a9a14799cd7547218650b, type: 2}
   m_Armor: {fileID: 11400000, guid: 90729043f6a97094c9fe0445212f78d9, type: 2}

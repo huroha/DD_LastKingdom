@@ -30,6 +30,26 @@ public enum EffectMovement
     Static,
     Projectile,
 }
+[System.Serializable]
+public struct SkillLevelData
+{
+    [Header("Damage")]
+    public float damageMultiplier;      // 피해 배율 1.0 == 100%
+    public int accuracyMod;             // 명중 보정
+    public float critMod;               // 크확 보정
+
+    [Header("Heal & Ebla")]
+    public int minHeal;
+    public int maxHeal;
+    public int eblaDamage;
+    public int eblaHealAmount;
+    public int allyEblaAmount;
+
+    [Header("Effects")]
+    public StatusEffectData[] onHitEffects;
+    public StatusEffectData[] onSelfEffects;
+    public StatusEffectData[] onAllyEffects;
+}
 
 [CreateAssetMenu(fileName = "New Skill", menuName = "LastKingdom/Skill Data")]
 public class SkillData : ScriptableObject
@@ -46,21 +66,12 @@ public class SkillData : ScriptableObject
     [SerializeField] private bool[]     m_TargetPositions = new bool[4]; // 타겟 가능한 포지션
     [SerializeField] private TargetType m_TargetType;
 
-    [Header("Damage")]
-    [SerializeField] private float m_DamageMultiplier = 1.0f;        // 피해 배율 (1.0 == 100%)
-    [SerializeField] private int m_AccuracyMod;                     // 명중 보정
-    [Range(-100f, 100f)]
-    [SerializeField] private float m_CritMod;                       // 치명 보정
-
-    [Header("Heal & Ebla")]
-    [SerializeField] private int m_MinHeal;                  // hp 회복량
-    [SerializeField] private int m_MaxHeal;                  // hp 회복량
-    [SerializeField] private int m_EblaDamage;                  // 에블라 피해량
-    [SerializeField] private int m_EblaHealAmount;              // 에블라 감소량
-
     [Header("Move")]
     [SerializeField] private int m_MoveUserAmount;      //  사용자 위치 이동 (양수 = 후방, 음수 = 전방)
     [SerializeField] private int m_MoveTargetAmount;        // 대상 강제 이동
+
+    [Header("Level Data")]
+    [SerializeField] private SkillLevelData[] m_LevelData = new SkillLevelData[5];
 
     [Header("Special")]
     [SerializeField] private bool m_IsGuard;                    // 호위 스킬 여부
@@ -70,12 +81,8 @@ public class SkillData : ScriptableObject
     [Range(0f, 2f)]
     [SerializeField] private float m_MarkDamageBonus;        // 마크 대상 추가피해 배율 
     [SerializeField] private bool m_BypassGuard;
+    [SerializeField] private bool m_ExcludeAllyEffect;
 
-
-
-    [Header("Effects")]
-    [SerializeField] private StatusEffectData[] m_OnHitEffects;     // 적중 시 타겟에 적용
-    [SerializeField] private StatusEffectData[] m_OnSelfEffects;    // 자기 자신에게 적용
 
     [Header("Combat Effects")]
     [SerializeField] private Sprite m_AttackSprite;
@@ -99,13 +106,6 @@ public class SkillData : ScriptableObject
     public IReadOnlyList<bool> UsablePositions => m_UsablePositions;
     public IReadOnlyList<bool> TargetPositions => m_TargetPositions;
     public TargetType TargetType => m_TargetType;
-    public float DamageMultiplier => m_DamageMultiplier;
-    public int AccuracyMod => m_AccuracyMod;
-    public float CritMod => m_CritMod;
-    public int MaxHeal => m_MaxHeal;
-    public int MinHeal => m_MinHeal;
-    public int EblaDamage => m_EblaDamage;
-    public int EblaHealAmount => m_EblaHealAmount;
     public int MoveUserAmount => m_MoveUserAmount;
     public int MoveTargetAmount => m_MoveTargetAmount;
     public bool IsGuard => m_IsGuard;
@@ -114,14 +114,18 @@ public class SkillData : ScriptableObject
     public bool MarkBonus => m_MarkBonus;
     public float MarkDamageBonus => m_MarkDamageBonus;
     public bool BypassGuard => m_BypassGuard;
-    public IReadOnlyList<StatusEffectData> OnHitEffects => m_OnHitEffects ?? System.Array.Empty<StatusEffectData>();
-    public IReadOnlyList<StatusEffectData> OnSelfEffects => m_OnSelfEffects ?? System.Array.Empty<StatusEffectData>();
+    public bool ExcludeAllyEffect => m_ExcludeAllyEffect;
     public Sprite AttackSprite => m_AttackSprite;
     public CombatEffectData AttackEffect => m_AttackEffect;
     public EffectMovement AttackMovement => m_AttackMovement;
     public float ProjectileSpeed => m_ProjectileSpeed;
     public CombatEffectData HitEffect => m_HitEffect;
 
+    public SkillLevelData GetLevelData(int level)
+    {
+        int idx = Mathf.Clamp(level - 1, 0, m_LevelData.Length - 1);
+        return m_LevelData[idx];
+    }
     private void OnValidate()
     {
         if (m_IsGuard && m_IsForceGuard)
