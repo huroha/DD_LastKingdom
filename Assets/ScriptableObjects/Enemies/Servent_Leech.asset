@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d3451d3a4df902f4492fbf42b744e5ec, type: 3}
-  m_Name: Rapture_EnemyData
+  m_Name: Servent_Leech
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  m_EnemyName: "Test\uB7A9\uCCD0"
+  m_EnemyName: "\uBE14\uB77C\uB354"
   m_EnemyType: 0
   m_Element: 0
   m_SlotSize: 1
   m_ActionsPerRound: 1
   m_BaseStats:
     maxHp: 30
-    minDamage: 3
-    maxDamage: 8
+    minDamage: 0
+    maxDamage: 0
     accuracyMod: 0
-    critChance: 6
+    critChance: 0
     defense: 0
     dodge: 0
     deathBlowResist: 0
@@ -33,13 +33,14 @@ MonoBehaviour:
       move: 20
       poison: 10
       disease: 0
-      bleed: 0
+      bleed: 50
       debuff: 15
       trap: 0
     damageMultiplier: 0
     eblaMultiplier: 0
   m_Skills:
-  - {fileID: 11400000, guid: aa0bba7d332e50e46b083318c321aeb2, type: 2}
+  - {fileID: 11400000, guid: 12acb6791206f0142942c9af460ac11f, type: 2}
+  - {fileID: 11400000, guid: 950d227a15eb87749922ec035ead9aa3, type: 2}
   m_DropTable:
     MinCredit: 100
     MaxCredit: 200

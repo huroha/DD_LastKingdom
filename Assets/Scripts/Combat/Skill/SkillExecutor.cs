@@ -37,7 +37,7 @@ public class SkillExecutor
         m_DeathsDoorRecovery = deathsDoorRecovery;
     }
 
-    public bool ValidateSkill(CombatUnit user, SkillData skill)
+    public bool ValidateSkill(CombatUnit user, BaseSkillData skill)
     {
         // 유저가 살아있지 않으면 false
         if (!user.IsAlive)
@@ -47,7 +47,7 @@ public class SkillExecutor
         if (!m_PositionSystem.CanUseSkill(user, skill))
             return false;
         // 각성 스킬이면 flase
-        if (skill.RequiredState == SkillRequiredState.Awakened)
+        if (skill is SkillData ns && ns.RequiredState == SkillRequiredState.Awakened)
             return false;
         m_PositionSystem.GetValidTargets(user, skill, m_TargetsBuffer);
         if (m_TargetsBuffer.Count == 0)
@@ -147,8 +147,163 @@ public class SkillExecutor
         return finalResult;
     }
 
+    public SkillResult ExecuteEnemy(CombatUnit user, EnemySkillData skill, CombatUnit selectedTarget = null)
+    {
+        if (!ValidateSkill(user, skill))
+            return new SkillResult();
+
+        SkillResult finalResult = new SkillResult();
+        bool allNikkesFetched = false;
+
+        ResolveTargets(user, skill, selectedTarget, m_TargetsBuffer);
+
+        m_ActualTargetBuffer.Clear();
+        for (int i = 0; i < m_TargetsBuffer.Count; ++i)
+        {
+            CombatUnit actual = ResolveGuardTarget(m_TargetsBuffer[i], skill, m_TargetsBuffer);
+            if (!m_ActualTargetBuffer.Contains(actual))
+                m_ActualTargetBuffer.Add(actual);
+        }
+
+        TargetResult[] result = new TargetResult[m_ActualTargetBuffer.Count];
+
+        for (int i = 0; i < result.Length; ++i)
+        {
+            m_AppliedBuffer.Clear();
+            m_ResistedBuffer.Clear();
+
+            CombatUnit actualTarget = m_ActualTargetBuffer[i];
+            result[i].IsHit = skill.IsAllyTargeting || RollHit(user, actualTarget, skill.AccuracyMod);
+
+            if (result[i].IsHit)
+            {
+                result[i].PreviousHp = actualTarget.CurrentHp;
+
+                bool wasBlocked = false;
+                if (!skill.IsAllyTargeting)
+                {
+                    ActiveStatusEffect blockEffect = actualTarget.FindEffectByType(StatusEffectType.Block);
+                    if (blockEffect != null)
+                    {
+                        result[i].WasBlocked = true;
+                        wasBlocked = true;
+                        blockEffect.CurrentStacks--;
+                        if (blockEffect.CurrentStacks <= 0)
+                            actualTarget.RemoveEffect(blockEffect.Data);
+                    }
+                }
+
+                if (!wasBlocked)
+                {
+                    int damage = Random.Range(skill.MinDamage, skill.MaxDamage + 1);
+                    float defence = (actualTarget.State == UnitState.Corpse) ? 0f : actualTarget.CurrentStats.defense;
+                    damage = Mathf.Max((int)(damage * (1f - defence / 100f)), 0);
+
+                    result[i].IsCrit = RollCrit(user, skill.CritMod);
+                    if (result[i].IsCrit)
+                        damage = (int)(damage * CRIT_DAMAGE_MULTI);
+
+                    result[i].PreviousState = actualTarget.State;
+                    actualTarget.TakeDamage(damage, isCrit: result[i].IsCrit);
+                    result[i].DamageDealt = damage;
+
+                    if (skill.EblaDamage > 0)
+                        m_EblaSystem.ModifyEbla(actualTarget, skill.EblaDamage);
+
+                    if (actualTarget.IsAlive)
+                        ApplyOnHitEffects(actualTarget, skill.OnHitEffects ?? System.Array.Empty<StatusEffectData>(),
+                                          m_AppliedBuffer, m_ResistedBuffer, result[i].IsCrit);
+
+                    if (result[i].IsCrit)
+                    {
+                        if (!allNikkesFetched)
+                        {
+                            m_PositionSystem.GetAllUnits(CombatUnitType.Nikke, m_AllNikkesBuffer);
+                            allNikkesFetched = true;
+                        }
+                        ApplyCritEffects(user, actualTarget, m_AllNikkesBuffer);
+                    }
+                }
+            }
+
+            ApplyPositionMove(user, skill, actualTarget, result[i].IsHit);
+
+            result[i].Target = actualTarget;
+            result[i].ResultState = actualTarget.State;
+            result[i].AppliedEffects = new StatusEffectData[m_AppliedBuffer.Count];
+            for (int j = 0; j < m_AppliedBuffer.Count; ++j)
+                result[i].AppliedEffects[j] = m_AppliedBuffer[j];
+            result[i].ResistedEffects = new StatusEffectData[m_ResistedBuffer.Count];
+            for (int j = 0; j < m_ResistedBuffer.Count; ++j)
+                result[i].ResistedEffects[j] = m_ResistedBuffer[j];
+        }
+
+        // onSelfEffects
+        IReadOnlyList<StatusEffectData> selfEffects = skill.OnSelfEffects ?? System.Array.Empty<StatusEffectData>();
+        for (int i = 0; i < selfEffects.Count; ++i)
+        {
+            StatusEffectData effect = selfEffects[i];
+            ActiveStatusEffect existing = user.FindEffect(effect);
+            if (existing != null)
+            {
+                if (effect.IsStackable)
+                { if (existing.CurrentStacks < effect.MaxStack) existing.CurrentStacks++; }
+                else
+                    existing.RemainingTurns = Mathf.Max(existing.RemainingTurns, effect.Duration);
+            }
+            else
+                user.AddEffect(new ActiveStatusEffect(effect));
+        }
+        if (selfEffects.Count > 0)
+            user.RecalculateStats();
+
+        // onAllyEffects
+        IReadOnlyList<StatusEffectData> allyEffects = skill.OnAllyEffects ?? System.Array.Empty<StatusEffectData>();
+        if (allyEffects.Count > 0)
+        {
+            m_PositionSystem.GetAllTargetable(user.UnitType, m_AllNikkesBuffer);
+            m_AllyResultList.Clear();
+            for (int i = 0; i < m_AllNikkesBuffer.Count; ++i)
+            {
+                CombatUnit unit = m_AllNikkesBuffer[i];
+                m_AllyAppliedBuffer.Clear();
+                for (int j = 0; j < allyEffects.Count; ++j)
+                {
+                    StatusEffectData effect = allyEffects[j];
+                    ActiveStatusEffect existing = unit.FindEffect(effect);
+                    if (existing != null)
+                    {
+                        if (effect.IsStackable && existing.CurrentStacks < effect.MaxStack)
+                            existing.CurrentStacks++;
+                        else
+                            existing.RemainingTurns = Mathf.Max(existing.RemainingTurns, effect.Duration);
+                    }
+                    else
+                        unit.AddEffect(new ActiveStatusEffect(effect));
+                    m_AllyAppliedBuffer.Add(effect);
+                }
+                unit.RecalculateStats();
+                if (m_AllyAppliedBuffer.Count > 0)
+                {
+                    AllyEffectResult allyResult = new AllyEffectResult();
+                    allyResult.Unit = unit;
+                    allyResult.AppliedEffects = m_AllyAppliedBuffer.ToArray();
+                    m_AllyResultList.Add(allyResult);
+                }
+            }
+            if (m_AllyResultList.Count > 0)
+                finalResult.AllyResults = m_AllyResultList.ToArray();
+        }
+
+        finalResult.User = user;
+        finalResult.Skill = skill;
+        finalResult.TargetResults = result;
+        if (selfEffects.Count > 0)
+            finalResult.SelfAppliedEffects = selfEffects;
+        return finalResult;
+    }
     // 타겟 리스트 결정
-    private void ResolveTargets(CombatUnit user, SkillData skill, CombatUnit selectedTarget, List<CombatUnit> result)
+    private void ResolveTargets(CombatUnit user, BaseSkillData skill, CombatUnit selectedTarget, List<CombatUnit> result)
     {
         result.Clear();
         // TargetType이 EnemyAll이면: 살아있는 모든 적 반환 (TargetPositions 무시)
@@ -351,7 +506,7 @@ public class SkillExecutor
     }
 
     // skill.MoveUserAmount -> user 이동, skill.MoveTargetAmount -> target 이동
-    private void ApplyPositionMove(CombatUnit user, SkillData skill, CombatUnit target, bool isHit)
+    private void ApplyPositionMove(CombatUnit user, BaseSkillData skill, CombatUnit target, bool isHit)
     {
         if (skill.MoveUserAmount != 0)
         {
@@ -413,7 +568,7 @@ public class SkillExecutor
 
         unit.RecalculateStats();
     }
-    private CombatUnit ResolveGuardTarget(CombatUnit target, SkillData skill, List<CombatUnit> originalTargets)
+    private CombatUnit ResolveGuardTarget(CombatUnit target, BaseSkillData skill, List<CombatUnit> originalTargets)
     {
         CombatUnit guardian = target.GuardedBy;
         if (skill.IsAllyTargeting || skill.BypassGuard) return target;

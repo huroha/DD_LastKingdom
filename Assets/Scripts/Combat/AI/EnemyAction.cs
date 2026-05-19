@@ -1,12 +1,12 @@
-
+﻿
 public struct EnemyAction
 {
-    public SkillData Skill;
+    public EnemySkillData Skill;
     public CombatUnit Target;
     public bool IsPass;
 
 
-    public EnemyAction(SkillData skill, CombatUnit target)
+    public EnemyAction(EnemySkillData skill, CombatUnit target)
     {
         Skill = skill;
         Target = target;

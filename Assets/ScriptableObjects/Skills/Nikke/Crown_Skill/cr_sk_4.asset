@@ -13,15 +13,21 @@ MonoBehaviour:
   m_Name: cr_sk_4
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   m_SkillName: "\uB85C\uC584 \uC5D0\uD0C0\uC774\uC5B4"
-  m_Description: 
-  m_SkillIcon: {fileID: 21300000, guid: b2d1c76ad9fb43348801d48766771614, type: 3}
   m_SkillType: 0
-  m_RequiredState: 0
   m_UsablePositions: 01010000
   m_TargetPositions: 01010101
   m_TargetType: 6
   m_MoveUserAmount: 0
   m_MoveTargetAmount: 0
+  m_BypassGuard: 0
+  m_AttackSprite: {fileID: 21300000, guid: 933aeb62fcdf6c746aa59ea0867eccea, type: 3}
+  m_AttackEffect: {fileID: 0}
+  m_AttackMovement: 0
+  m_ProjectileSpeed: 20
+  m_HitEffect: {fileID: 0}
+  m_Description: 
+  m_SkillIcon: {fileID: 21300000, guid: b2d1c76ad9fb43348801d48766771614, type: 3}
+  m_RequiredState: 0
   m_LevelData:
   - damageMultiplier: 0
     accuracyMod: 0
@@ -88,9 +94,4 @@ MonoBehaviour:
   m_GuardDuration: 0
   m_MarkBonus: 0
   m_MarkDamageBonus: 0
-  m_BypassGuard: 0
-  m_AttackSprite: {fileID: 0}
-  m_AttackEffect: {fileID: 0}
-  m_AttackMovement: 0
-  m_ProjectileSpeed: 20
-  m_HitEffect: {fileID: 0}
+  m_ExcludeAllyEffect: 0

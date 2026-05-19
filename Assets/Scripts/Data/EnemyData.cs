@@ -50,7 +50,7 @@ public class EnemyData : ScriptableObject
     [SerializeField] private StatBlock m_BaseStats;
 
     [Header("Skills")]
-    [SerializeField] private SkillData[] m_Skills = new SkillData[0];
+    [SerializeField] private EnemySkillData[] m_Skills = new EnemySkillData[0];
 
     [Header("Drop")]
     [SerializeField] private DropTable m_DropTable;
@@ -69,7 +69,7 @@ public class EnemyData : ScriptableObject
     public EnemyType EnemyType => m_EnemyType;
     public ElementType Element => m_Element;
     public StatBlock BaseStats => m_BaseStats;
-    public IReadOnlyList<SkillData> Skills => m_Skills;
+    public IReadOnlyList<EnemySkillData> Skills => m_Skills;
     public DropTable DropTable => m_DropTable;
     public int CorpseHp => m_CorpseHp;
     public int CorpseDecayTurns => m_CorpseDecayTurns;

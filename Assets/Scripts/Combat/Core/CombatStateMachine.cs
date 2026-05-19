@@ -347,6 +347,8 @@ public class CombatStateMachine : MonoBehaviour
                     SetState(CombatState.PlayerSelectTarget);
                     m_SelectedTarget = null;
                     m_PositionSystem.GetValidTargets(m_ActiveUnit, m_SelectedSkill, m_ValidTargetBuffer);
+                    if ((m_SelectedSkill.IsGuard || m_SelectedSkill.IsForceGuard) && m_SelectedSkill.TargetType == TargetType.AllySingle)
+                        m_ValidTargetBuffer.Remove(m_ActiveUnit);
                     m_SkillSelectPanel.Hide();
                     m_TargetSelectPanel.Show(m_ValidTargetBuffer, m_SelectedSkill, OnTargetSelected, OnTargetCancel);
                     yield return WaitForCommand();
@@ -396,7 +398,7 @@ public class CombatStateMachine : MonoBehaviour
 
             SetState(CombatState.ExecuteSkill);
             SnapshotNikkeEbla();
-            SkillResult result = m_SkillExecutor.Execute(m_ActiveUnit, action.Skill, 1, action.Target);
+            SkillResult result = m_SkillExecutor.ExecuteEnemy(m_ActiveUnit, action.Skill, action.Target);
             if (m_CombatHUD != null)
                 m_CombatHUD.SnapNikkeHpBarsToSlots();
             List<CombatUnit> targets = ExtractTargets(result);

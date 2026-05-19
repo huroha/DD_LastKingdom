@@ -13,15 +13,21 @@ MonoBehaviour:
   m_Name: cr_sk_3
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   m_SkillName: "\uC6D0 \uD3EC \uC62C"
-  m_Description: 
-  m_SkillIcon: {fileID: 21300000, guid: 7eebf4b8dacc6604f8fc872fc8b5c3d9, type: 3}
   m_SkillType: 0
-  m_RequiredState: 0
   m_UsablePositions: 01010101
   m_TargetPositions: 01010101
   m_TargetType: 5
   m_MoveUserAmount: 0
   m_MoveTargetAmount: 0
+  m_BypassGuard: 0
+  m_AttackSprite: {fileID: 21300000, guid: 26eefd6dd5ee48644a30f0943e88974e, type: 3}
+  m_AttackEffect: {fileID: 0}
+  m_AttackMovement: 0
+  m_ProjectileSpeed: 20
+  m_HitEffect: {fileID: 0}
+  m_Description: 
+  m_SkillIcon: {fileID: 21300000, guid: 7eebf4b8dacc6604f8fc872fc8b5c3d9, type: 3}
+  m_RequiredState: 0
   m_LevelData:
   - damageMultiplier: 0
     accuracyMod: 0
@@ -88,10 +94,4 @@ MonoBehaviour:
   m_GuardDuration: 0
   m_MarkBonus: 0
   m_MarkDamageBonus: 0
-  m_BypassGuard: 0
   m_ExcludeAllyEffect: 0
-  m_AttackSprite: {fileID: 0}
-  m_AttackEffect: {fileID: 0}
-  m_AttackMovement: 0
-  m_ProjectileSpeed: 20
-  m_HitEffect: {fileID: 0}

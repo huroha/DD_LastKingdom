@@ -53,6 +53,10 @@ public class SkillTooltip : MonoBehaviour
         }
         if (ld.critMod != 0)
             m_SB.Append("치명타 보정: ").Append((int)ld.critMod).Append("%\n");
+        if (skill.MoveUserAmount != 0)
+            m_SB.Append("자신 이동: ").Append(skill.MoveUserAmount > 0 ? "후퇴 " :"전진 ").Append(skill.MoveUserAmount > 0 ? skill.MoveUserAmount : -skill.MoveUserAmount).Append("칸\n");
+        if (skill.MoveTargetAmount != 0)
+            m_SB.Append("대상 강제이동: ").Append(skill.MoveTargetAmount > 0 ? "밀치기 " :"당기기 ").Append(skill.MoveTargetAmount > 0 ? skill.MoveTargetAmount : -skill.MoveTargetAmount).Append("칸\n");
         if (skill.MarkBonus)
             m_SB.Append(TooltipHelper.TAG_NORMAL_OPEN).Append("표식 추가 데미지: +").Append((int)(skill.MarkDamageBonus * 100f)).Append("%\n").Append(TooltipHelper.TAG_COLOR_CLOSE);
         if (skill.IsGuard)

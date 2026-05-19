@@ -80,11 +80,11 @@ public class CombatDirector : MonoBehaviour
         StopAllCoroutines();
         m_AnimParamCache.Clear();
     }
-    public Coroutine PlaySkillSequence(CombatUnit user, SkillData skill, List<CombatUnit> targets, SkillResult result)
+    public Coroutine PlaySkillSequence(CombatUnit user, BaseSkillData skill, List<CombatUnit> targets, SkillResult result)
     {
         return StartCoroutine(SkillSequence(user, skill, targets, result));
     }
-    private IEnumerator SkillSequence(CombatUnit user, SkillData skill, List<CombatUnit> targets, SkillResult result)
+    private IEnumerator SkillSequence(CombatUnit user, BaseSkillData skill, List<CombatUnit> targets, SkillResult result)
     {
         m_FocusController.SetupFocus(user, targets);
         m_FieldView.SetFocusLock(true);
@@ -269,7 +269,7 @@ public class CombatDirector : MonoBehaviour
         yield return m_WaitPostSequence;
     }
 
-    private void ProcessSingleHit(TargetResult targetResult, SkillData skill)
+    private void ProcessSingleHit(TargetResult targetResult, BaseSkillData skill)
     {
         ProcessOneTarget(targetResult, skill);
         if (targetResult.IsHit && !skill.IsAllyTargeting)
@@ -277,7 +277,7 @@ public class CombatDirector : MonoBehaviour
         if(!skill.IsAllyTargeting)
             m_Feedback.PlayHitStop(targetResult.IsCrit);
     }
-    private void ProcessHitBatch(TargetResult[] results, SkillData skill)
+    private void ProcessHitBatch(TargetResult[] results, BaseSkillData skill)
     {
         bool anyCrit = false;
         bool anyHit = false;
@@ -296,7 +296,7 @@ public class CombatDirector : MonoBehaviour
         if(!skill.IsAllyTargeting)
             m_Feedback.PlayHitStop(anyCrit);
     }
-    private void SpawnDamagePopup(CombatUnit target, TargetResult result, SkillData skill)
+    private void SpawnDamagePopup(CombatUnit target, TargetResult result, BaseSkillData skill)
     {
         CombatFieldView.UnitView view = m_FieldView.GetView(target);
         Vector3 pos = view.Renderer.transform.position;
@@ -371,7 +371,7 @@ public class CombatDirector : MonoBehaviour
         m_AttackEndReceived = true;
     }
 
-    private void ProcessOneTarget(TargetResult result, SkillData skill)
+    private void ProcessOneTarget(TargetResult result, BaseSkillData skill)
     {
         CombatFieldView.UnitView targetView = m_FieldView.GetView(result.Target);
         if (result.IsHit)
@@ -387,7 +387,7 @@ public class CombatDirector : MonoBehaviour
             m_PopupPool.SpawnEffect(m_FieldView.GetSlotPosition(result.Target), isNikke, POPUP_DODGE, COLOR_MISS);
         }
     }
-    private Sprite ResolveAttackSprite(CombatUnit user, SkillData skill)
+    private Sprite ResolveAttackSprite(CombatUnit user, BaseSkillData skill)
     {
         if (skill.AttackSprite != null)
             return skill.AttackSprite;
@@ -490,7 +490,7 @@ public class CombatDirector : MonoBehaviour
         yield return co;
         m_EffectPool.Return(go, effect);
     }
-    private void PlayAttackEffect(CombatUnit user, SkillData skill, List<CombatUnit> targets)
+    private void PlayAttackEffect(CombatUnit user, BaseSkillData skill, List<CombatUnit> targets)
     {
         CombatEffectData effect = skill.AttackEffect;
         if (effect == null)
@@ -514,7 +514,7 @@ public class CombatDirector : MonoBehaviour
             StartCoroutine(ProjectileMove(go, from, to, skill.ProjectileSpeed, playCo, effect));
         }
     }
-    private void PlayHitEffect(CombatUnit target, SkillData skill)
+    private void PlayHitEffect(CombatUnit target, BaseSkillData skill)
     {
         CombatEffectData effect = skill.HitEffect;
         if (effect == null)

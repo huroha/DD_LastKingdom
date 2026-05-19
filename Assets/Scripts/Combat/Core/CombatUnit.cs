@@ -51,6 +51,7 @@ public class CombatUnit
 
     // 스킬
     public IReadOnlyList<SkillData> Skills { get; }
+    public IReadOnlyList<EnemySkillData> EnemySkills { get; }
 
     // 런타임 상태
     public UnitState State { get; private set; }
@@ -139,7 +140,7 @@ public class CombatUnit
         UnitName = data.EnemyName;
         SlotIndex = slotIndex;
         EnemyData = data;
-        Skills = data.Skills;
+        EnemySkills = data.Skills;
         SlotSize = data.SlotSize;
 
         MaxHp = data.BaseStats.maxHp;

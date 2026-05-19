@@ -13,15 +13,21 @@ MonoBehaviour:
   m_Name: cr_sk_1
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   m_SkillName: "\uD718\uB450\uB974\uAE30"
-  m_Description: 
-  m_SkillIcon: {fileID: 21300000, guid: 32a4a4edff15fa74b857cdfc919b934d, type: 3}
   m_SkillType: 0
-  m_RequiredState: 0
   m_UsablePositions: 01010000
   m_TargetPositions: 01010000
   m_TargetType: 0
   m_MoveUserAmount: 0
   m_MoveTargetAmount: 0
+  m_BypassGuard: 0
+  m_AttackSprite: {fileID: 21300000, guid: a666be5903c1cb3488cb56cb03b9e140, type: 3}
+  m_AttackEffect: {fileID: 11400000, guid: c820bae5e79853540b3454f088bbcd1c, type: 2}
+  m_AttackMovement: 0
+  m_ProjectileSpeed: 20
+  m_HitEffect: {fileID: 11400000, guid: 1f0e70335cdaead418d0c3f13bd08c8c, type: 2}
+  m_Description: 
+  m_SkillIcon: {fileID: 21300000, guid: 32a4a4edff15fa74b857cdfc919b934d, type: 3}
+  m_RequiredState: 0
   m_LevelData:
   - damageMultiplier: 1
     accuracyMod: 80
@@ -83,9 +89,4 @@ MonoBehaviour:
   m_GuardDuration: 0
   m_MarkBonus: 0
   m_MarkDamageBonus: 0
-  m_BypassGuard: 0
-  m_AttackSprite: {fileID: 21300000, guid: a666be5903c1cb3488cb56cb03b9e140, type: 3}
-  m_AttackEffect: {fileID: 0}
-  m_AttackMovement: 0
-  m_ProjectileSpeed: 20
-  m_HitEffect: {fileID: 11400000, guid: 1f0e70335cdaead418d0c3f13bd08c8c, type: 2}
+  m_ExcludeAllyEffect: 0

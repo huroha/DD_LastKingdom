@@ -2,7 +2,7 @@
 public struct SkillResult
 {
     public CombatUnit       User;
-    public SkillData        Skill;
+    public BaseSkillData    Skill;
     public TargetResult[]   TargetResults;
     public AllyEffectResult[] AllyResults;
     public IReadOnlyList<StatusEffectData> SelfAppliedEffects;
