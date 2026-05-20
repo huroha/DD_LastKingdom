@@ -119,14 +119,13 @@ public class CombatDirector : MonoBehaviour
             bool anyHit = false;
             for (int i = 0; i < result.TargetResults.Length; ++i)
             {
-                if (result.TargetResults[i].IsHit) { anyHit = true; break; }
-            }
-            if (anyHit)
-                PlayAttackEffect(user, skill, targets);
-            for (int i = 0; i < result.TargetResults.Length; ++i)
-            {
-                if (result.TargetResults[i].IsHit)
-                    PlayHitEffect(result.TargetResults[i].Target, skill);
+                if (!result.TargetResults[i].IsHit) continue;
+                if (!anyHit)
+                {
+                    anyHit = true;
+                    PlayAttackEffect(user, skill, targets);
+                }
+                PlayHitEffect(result.TargetResults[i].Target, skill);
             }
             if (targets.Count > 1)
                 ProcessHitBatch(result.TargetResults, skill);
