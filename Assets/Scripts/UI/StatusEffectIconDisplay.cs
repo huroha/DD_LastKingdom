@@ -111,7 +111,7 @@ public class StatusEffectIconDisplay : MonoBehaviour
             sb.Append(effect.AccumulatedTickDamage);
             sb.Append(" 피해 (");
             sb.Append(turns);
-            sb.Append("차례)");
+            sb.Append("차례)\n");
             sb.Append(TooltipHelper.TAG_COLOR_CLOSE);
 
         }

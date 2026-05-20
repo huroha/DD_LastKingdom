@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -12,7 +12,8 @@ public class CombatFocusController : MonoBehaviour
     [SerializeField] private float m_EnemyFocusMinXMargin;
 
     [Header("Focus Points")]
-    [SerializeField] private Transform m_NikkeFocusPoint;
+    [SerializeField] private Transform m_NikkeMeleeFocusPoint;
+    [SerializeField] private Transform m_NikkeRangeFocusPoint;
     [SerializeField] private Transform m_EnemyFocusPoint;
 
     [Header("Camera")]
@@ -37,7 +38,7 @@ public class CombatFocusController : MonoBehaviour
     private Coroutine m_BgTiltCoroutine;
     private float m_CurrentBgTiltZ;
 
-    // Focus Ä³½Ã (Drift¿¡¼­µµ Á¢±Ù ÇÊ¿ä)
+    // Focus ìºì‹œ (Driftì—ì„œë„ ì ‘ê·¼ í•„ìš”)
     private Dictionary<CombatUnit, Vector3> m_OriginalScales;
     private Dictionary<CombatUnit, Vector3> m_OriginalPositions;
     private Dictionary<CombatUnit, Vector3> m_DriftedPositions;
@@ -48,16 +49,17 @@ public class CombatFocusController : MonoBehaviour
     private List<CombatUnit> m_NikkeFocusBuffer;
     private List<CombatUnit> m_EnemyFocusBuffer;
     private CombatUnit m_FocusUser;
+    private Transform m_ActiveNikkeFocusPoint;
     private float m_OriginalFOV;
     private int m_FocusLayer;
     private int m_DefaultLayer;
 
-    // Drift, Director¿¡¼­ Á¢±ÙÇÒ ÇÁ·ÎÆÛÆ¼
+    // Drift, Directorì—ì„œ ì ‘ê·¼í•  í”„ë¡œí¼í‹°
     public IReadOnlyCollection<CombatUnit> FocusBuffer => m_FocusBuffer;
-    public Transform NikkeFocusPoint => m_NikkeFocusPoint;
     public Transform EnemyFocusPoint => m_EnemyFocusPoint;
     public Camera FocusCamera => m_Camera;
     public float FocusOutDuration => m_FocusOutDuration;
+    public Transform NikkeFocusPoint => m_ActiveNikkeFocusPoint;
     private void Awake()
     {
         m_OriginalScales = new Dictionary<CombatUnit, Vector3>();
@@ -75,9 +77,10 @@ public class CombatFocusController : MonoBehaviour
     }
 
     // public
-    public void SetupFocus(CombatUnit user, List<CombatUnit> targets)
+    public void SetupFocus(CombatUnit user, List<CombatUnit> targets, SkillType skillType)
     {
-        // Æ÷Ä¿½º ´ë»ó ±¸¼º
+        m_ActiveNikkeFocusPoint = (skillType == SkillType.Melee) ? m_NikkeMeleeFocusPoint : m_NikkeRangeFocusPoint;
+        // í¬ì»¤ìŠ¤ ëŒ€ìƒ êµ¬ì„±
         m_FocusBuffer.Clear();
         m_FocusBuffer.Add(user);
         for (int i = 0; i < targets.Count; ++i)
@@ -126,7 +129,7 @@ public class CombatFocusController : MonoBehaviour
             else
                 m_EnemyFocusBuffer.Add(unit);
         }
-        Vector3 screenCenter = (m_NikkeFocusPoint.position + m_EnemyFocusPoint.position) * 0.5f;
+        Vector3 screenCenter = (m_ActiveNikkeFocusPoint.position + m_EnemyFocusPoint.position) * 0.5f;
 
         bool allSameTeam = m_NikkeFocusBuffer.Count == 0 || m_EnemyFocusBuffer.Count == 0;
 
@@ -138,7 +141,7 @@ public class CombatFocusController : MonoBehaviour
         }
         else
         {
-            AssignFocusPositions(m_NikkeFocusBuffer, m_NikkeFocusPoint.position, m_NikkeFocusLayoutScale);
+            AssignFocusPositions(m_NikkeFocusBuffer, m_ActiveNikkeFocusPoint.position, m_NikkeFocusLayoutScale);
             AssignFocusPositions(m_EnemyFocusBuffer, m_EnemyFocusPoint.position, m_EnemyFocusLayoutScale, screenCenter.x +
             m_EnemyFocusMinXMargin);
         }
@@ -210,7 +213,7 @@ public class CombatFocusController : MonoBehaviour
         m_BlurController.SetBlurStrength(0f);
         m_CombatHUD.SetHpBarsVisible(true);
     }
-    // ÇïÆÛ
+    // í—¬í¼
     private void AssignFocusPositions(List<CombatUnit> units, Vector3 focusCenter, float layoutScale, float minX = float.MinValue)
     {
         Vector3[] slotPositions = new Vector3[units.Count];
@@ -258,7 +261,7 @@ public class CombatFocusController : MonoBehaviour
         m_OriginalSortingOrders[unit] = view.Renderer.sortingOrder;
     }
 
-    // Bg Tilt°ü·Ã
+    // Bg Tiltê´€ë ¨
     private void StartBgTilt(CombatUnitType attackerType)
     {
         float targetAngle = (attackerType == CombatUnitType.Nikke) ? -m_BgTiltAngle : m_BgTiltAngle;

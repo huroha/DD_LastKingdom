@@ -1421,6 +1421,37 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8333598524925732860, guid: 076eeb649484f24438d25c4512faa185, type: 3}
   m_PrefabInstance: {fileID: 7573761023556054923}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &116743304
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 116743305}
+  m_Layer: 0
+  m_Name: NikkeFocusPoint_Range
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &116743305
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 116743304}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.4, y: -2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1064561592}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &118473945
 GameObject:
   m_ObjectHideFlags: 0
@@ -4283,8 +4314,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatStateMachine
   m_TestNikkes:
-  - {fileID: 11400000, guid: 1622f742f4aca914590a6a5dec68619a, type: 2}
-  - {fileID: 11400000, guid: 1622f742f4aca914590a6a5dec68619a, type: 2}
+  - {fileID: 11400000, guid: e31e6653538bdf74fbc74bed8093bde8, type: 2}
+  - {fileID: 11400000, guid: e31e6653538bdf74fbc74bed8093bde8, type: 2}
+  - {fileID: 11400000, guid: e31e6653538bdf74fbc74bed8093bde8, type: 2}
+  - {fileID: 11400000, guid: e31e6653538bdf74fbc74bed8093bde8, type: 2}
   m_TestEnemies:
   - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
   - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
@@ -9151,6 +9184,7 @@ Transform:
   - {fileID: 2066550581}
   - {fileID: 1310674353}
   - {fileID: 1567845931}
+  - {fileID: 116743305}
   - {fileID: 568675757}
   m_Father: {fileID: 1453125319}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -11451,7 +11485,8 @@ MonoBehaviour:
   m_NikkeFocusLayoutScale: 1.2
   m_EnemyFocusLayoutScale: 1.1
   m_EnemyFocusMinXMargin: 1.8
-  m_NikkeFocusPoint: {fileID: 1567845931}
+  m_NikkeMeleeFocusPoint: {fileID: 1567845931}
+  m_NikkeRangeFocusPoint: {fileID: 116743305}
   m_EnemyFocusPoint: {fileID: 568675757}
   m_Camera: {fileID: 51401688}
   m_FocusFOV: 51

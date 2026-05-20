@@ -21,7 +21,7 @@ MonoBehaviour:
   m_MoveTargetAmount: 0
   m_BypassGuard: 0
   m_AttackSprite: {fileID: 21300000, guid: 26eefd6dd5ee48644a30f0943e88974e, type: 3}
-  m_AttackEffect: {fileID: 0}
+  m_AttackEffect: {fileID: 11400000, guid: cb06b54bc359d2d4eb8eb4e88c9e0083, type: 2}
   m_AttackMovement: 0
   m_ProjectileSpeed: 20
   m_HitEffect: {fileID: 0}

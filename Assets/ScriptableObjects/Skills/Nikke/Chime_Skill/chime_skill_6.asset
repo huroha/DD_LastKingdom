@@ -13,15 +13,21 @@ MonoBehaviour:
   m_Name: chime_skill_6
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   m_SkillName: "\uC644\uBCBD\uD55C \uBCF4\uD544"
-  m_Description: 
-  m_SkillIcon: {fileID: 21300000, guid: 41a771b5dc83c4a44be75dd24955365e, type: 3}
   m_SkillType: 0
-  m_RequiredState: 0
   m_UsablePositions: 00010100
   m_TargetPositions: 01010101
   m_TargetType: 3
   m_MoveUserAmount: 0
   m_MoveTargetAmount: 0
+  m_BypassGuard: 0
+  m_AttackSprite: {fileID: 21300000, guid: 7f0c076e4e46fcc468b72e96f1e379a3, type: 3}
+  m_AttackEffect: {fileID: 0}
+  m_AttackMovement: 0
+  m_ProjectileSpeed: 20
+  m_HitEffect: {fileID: 0}
+  m_Description: 
+  m_SkillIcon: {fileID: 21300000, guid: 41a771b5dc83c4a44be75dd24955365e, type: 3}
+  m_RequiredState: 0
   m_LevelData:
   - damageMultiplier: 0
     accuracyMod: 0
@@ -88,9 +94,4 @@ MonoBehaviour:
   m_GuardDuration: 0
   m_MarkBonus: 0
   m_MarkDamageBonus: 0
-  m_BypassGuard: 0
-  m_AttackSprite: {fileID: 0}
-  m_AttackEffect: {fileID: 0}
-  m_AttackMovement: 0
-  m_ProjectileSpeed: 20
-  m_HitEffect: {fileID: 0}
+  m_ExcludeAllyEffect: 0

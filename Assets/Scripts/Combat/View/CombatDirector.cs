@@ -86,7 +86,7 @@ public class CombatDirector : MonoBehaviour
     }
     private IEnumerator SkillSequence(CombatUnit user, BaseSkillData skill, List<CombatUnit> targets, SkillResult result)
     {
-        m_FocusController.SetupFocus(user, targets);
+        m_FocusController.SetupFocus(user, targets, skill.SkillType);
         m_FieldView.SetFocusLock(true);
 
         if (!skill.IsAllyTargeting && result.TargetResults != null)
@@ -116,7 +116,13 @@ public class CombatDirector : MonoBehaviour
         // 3. 공격 모션
         if (result.TargetResults != null && result.TargetResults.Length > 0)
         {
-            PlayAttackEffect(user, skill, targets);
+            bool anyHit = false;
+            for (int i = 0; i < result.TargetResults.Length; ++i)
+            {
+                if (result.TargetResults[i].IsHit) { anyHit = true; break; }
+            }
+            if (anyHit)
+                PlayAttackEffect(user, skill, targets);
             for (int i = 0; i < result.TargetResults.Length; ++i)
             {
                 if (result.TargetResults[i].IsHit)
