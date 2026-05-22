@@ -2673,6 +2673,7 @@ MonoBehaviour:
   - {fileID: 5137767183532510344}
   m_PrevButton: {fileID: 824999560066612233}
   m_NextButton: {fileID: 4322516639326357407}
+  m_CloseButton: {fileID: 0}
   m_CombatStateMachine: {fileID: 0}
 --- !u!1 &1565020417803207624
 GameObject:

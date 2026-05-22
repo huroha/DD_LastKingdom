@@ -13,15 +13,21 @@ MonoBehaviour:
   m_Name: ki_sk_7
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   m_SkillName: "\uBD80\uC2DD \uB2E4\uD2B8"
-  m_Description: 
-  m_SkillIcon: {fileID: 21300000, guid: d677ce7e3a5822f4e9cff23c4dcc57ba, type: 3}
   m_SkillType: 1
-  m_RequiredState: 0
   m_UsablePositions: 00010100
   m_TargetPositions: 01010101
   m_TargetType: 0
   m_MoveUserAmount: 0
   m_MoveTargetAmount: 0
+  m_BypassGuard: 0
+  m_AttackSprite: {fileID: 21300000, guid: ff892c7483b78dd4898abe3c381bce54, type: 3}
+  m_AttackEffect: {fileID: 0}
+  m_AttackMovement: 0
+  m_ProjectileSpeed: 20
+  m_HitEffect: {fileID: 0}
+  m_Description: 
+  m_SkillIcon: {fileID: 21300000, guid: d677ce7e3a5822f4e9cff23c4dcc57ba, type: 3}
+  m_RequiredState: 0
   m_LevelData:
   - damageMultiplier: 0.2
     accuracyMod: 95
@@ -88,9 +94,4 @@ MonoBehaviour:
   m_GuardDuration: 0
   m_MarkBonus: 1
   m_MarkDamageBonus: 1
-  m_BypassGuard: 0
-  m_AttackSprite: {fileID: 0}
-  m_AttackEffect: {fileID: 0}
-  m_AttackMovement: 0
-  m_ProjectileSpeed: 20
-  m_HitEffect: {fileID: 0}
+  m_ExcludeAllyEffect: 0

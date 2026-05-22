@@ -1,7 +1,12 @@
 {
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "code-review-graph",
     "unityMCP"
   ],
-  "enableAllProjectMcpServers": true
+  "permissions": {
+    "allow": [
+      "WebSearch"
+    ]
+  }
 }

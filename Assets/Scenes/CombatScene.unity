@@ -2065,7 +2065,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1308998381718748028, guid: b8f88cd56fe4bc14794a61b63a408046, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c5eb90be5374003449695277c2644a78, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3338,7 +3338,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -92, y: -57}
-  m_SizeDelta: {x: 300, y: 100}
+  m_SizeDelta: {x: 300, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &346016800
 Animator:
@@ -3382,7 +3382,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -4212889165995664563, guid: 10adc878b23300041b72582d84a9a918, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e66b0c61488cca84bba215b9f9c9636b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4315,9 +4315,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CombatStateMachine
   m_TestNikkes:
   - {fileID: 11400000, guid: e31e6653538bdf74fbc74bed8093bde8, type: 2}
-  - {fileID: 11400000, guid: e31e6653538bdf74fbc74bed8093bde8, type: 2}
-  - {fileID: 11400000, guid: e31e6653538bdf74fbc74bed8093bde8, type: 2}
-  - {fileID: 11400000, guid: e31e6653538bdf74fbc74bed8093bde8, type: 2}
+  - {fileID: 11400000, guid: 63d803790a229e942b282d111ff49848, type: 2}
+  - {fileID: 11400000, guid: 1622f742f4aca914590a6a5dec68619a, type: 2}
+  - {fileID: 11400000, guid: 0b580711d03aa9844a2479c00e55cfdf, type: 2}
   m_TestEnemies:
   - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
   - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
@@ -15439,8 +15439,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -188, y: -57}
-  m_SizeDelta: {x: 140, y: 100}
+  m_AnchoredPosition: {x: -188, y: 80}
+  m_SizeDelta: {x: 150, y: 240}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &1851459250
 Animator:
@@ -15484,7 +15484,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4066374433333715608, guid: ce3b565ce0d531d409c83ccefd1d9122, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b814441931be7db478e3a89bcb877bea, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -18499,9 +18499,9 @@ RectTransform:
   m_Children:
   - {fileID: 474545461}
   - {fileID: 1942547673}
-  - {fileID: 97428159}
   - {fileID: 335391952}
   - {fileID: 477207078}
+  - {fileID: 97428159}
   - {fileID: 795046481}
   - {fileID: 1281108708}
   - {fileID: 1717542858}
