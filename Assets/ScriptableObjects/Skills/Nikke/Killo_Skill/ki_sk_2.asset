@@ -15,7 +15,7 @@ MonoBehaviour:
   m_SkillName: "\uAE34\uAE09 \uD6C4\uD1F4"
   m_SkillType: 1
   m_UsablePositions: 01010000
-  m_TargetPositions: 01010101
+  m_TargetPositions: 00000000
   m_TargetType: 6
   m_MoveUserAmount: 1
   m_MoveTargetAmount: 0

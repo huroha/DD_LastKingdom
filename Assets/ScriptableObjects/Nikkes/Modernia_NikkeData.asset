@@ -29,7 +29,7 @@ MonoBehaviour:
     dodge: 0
     deathBlowResist: 67
     speed: 0
-    moveRange: 2
+    moveRange: 1
     resistance:
       stun: 30
       move: 40

@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using TMPro;
 
 public class EnemyInfoPanel : MonoBehaviour
@@ -21,13 +21,13 @@ public class EnemyInfoPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_CritChanceText;
     [SerializeField] private TextMeshProUGUI m_DamageRangeText;
 
-    private const string CORPSE = "½ÃÃ¼";
+    private const string CORPSE = "ì‹œì²´";
 
     private static readonly Color COLOR_NORMAL = new Color(0.8f, 0.8f, 0.8f, 1f);
     private static readonly Color COLOR_BUFF = new Color(0.8f, 0.76f, 0.56f, 1f);
     private static readonly Color COLOR_DEBUFF = new Color(0.75f, 0.1f, 0.1f, 1f);
 
-    // Resistance Ç¥±â¿ë
+    // Resistance í‘œê¸°ìš©
     private System.Text.StringBuilder m_Sb = new System.Text.StringBuilder(128);
 
     public void Populate(CombatUnit unit)
@@ -67,7 +67,10 @@ public class EnemyInfoPanel : MonoBehaviour
             m_ResistanceText.SetText(m_Sb);
             m_Sb.Clear();
             for (int i = 0; i < unit.EnemyData.Skills.Count; ++i)
-                m_Sb.AppendLine(unit.EnemyData.Skills[i].SkillName);
+            {
+                if (unit.EnemyData.Skills[i] != null)
+                    m_Sb.AppendLine(unit.EnemyData.Skills[i].SkillName);
+            }
             m_SkillListText.SetText(m_Sb);
         }
         m_AliveOnly.SetActive(!isCorpse);

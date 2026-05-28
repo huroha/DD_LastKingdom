@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public enum LootType
 {
@@ -20,10 +20,10 @@ public struct LootItem
 
 public enum RelicType
 {
-    CommandInsignia,  // ÁöÈÖ°ü ÈÖÀå - ¹®Àå ´ëÀÀ
-    UsbData,      // USB data - Èä»ó ´ëÀÀ
-    CentralOrder, // ¹æÁÖ ¸í·É¼­ - Áõ¼­ ´ëÀÀ
-    Poster,         // Æ÷½ºÅÍ - ÃÊ»óÈ­ ´ëÀÀ
+    CommandInsignia,  // ì§€íœ˜ê´€ íœ˜ì¥ - ë¬¸ì¥ ëŒ€ì‘
+    UsbData,      // USB data - í‰ìƒ ëŒ€ì‘
+    CentralOrder, // ë°©ì£¼ ëª…ë ¹ì„œ - ì¦ì„œ ëŒ€ì‘
+    Handwriting,         // ìˆ˜ê¸° - ì´ˆìƒí™” ëŒ€ì‘
 }
 
 [System.Serializable]

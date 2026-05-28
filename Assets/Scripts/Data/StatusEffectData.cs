@@ -2,8 +2,8 @@
 
 public enum StatusEffectType
 {
-    Bleed,      // 출혈 - 턴 종료시 틱 피해
-    Poison,     // 중독 - 턴 종료시 틱 피해
+    Burn,      // 화상 - 턴 종료시 틱 피해
+    Poison,     // 부식 - 턴 종료시 틱 피해
     Disease,    // 질병 - 질병마다 고유의 효과 존재(영구 디버프 패시브 느낌)
     Stun,       // 기절 - 행동 불가
     Buff,       // 버프 - 스탯 증가
@@ -57,6 +57,6 @@ public static class StatusEffectTypeExtensions
 {
     public static bool IsDot(this StatusEffectType type)
     { 
-        return type == StatusEffectType.Bleed || type == StatusEffectType.Poison;
+        return type == StatusEffectType.Burn || type == StatusEffectType.Poison;
     }
 }

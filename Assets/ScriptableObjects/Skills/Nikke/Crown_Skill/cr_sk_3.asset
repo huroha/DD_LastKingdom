@@ -15,7 +15,7 @@ MonoBehaviour:
   m_SkillName: "\uC6D0 \uD3EC \uC62C"
   m_SkillType: 0
   m_UsablePositions: 01010101
-  m_TargetPositions: 01010101
+  m_TargetPositions: 00000000
   m_TargetType: 5
   m_MoveUserAmount: 0
   m_MoveTargetAmount: 0

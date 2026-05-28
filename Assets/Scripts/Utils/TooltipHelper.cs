@@ -90,7 +90,7 @@ public static class TooltipHelper
             case StatusEffectType.Stun: return TAG_STUN;
             case StatusEffectType.Poison: return TAG_POISON;
             case StatusEffectType.Debuff: return TAG_DEBUFF;
-            case StatusEffectType.Bleed: return TAG_BLEED;
+            case StatusEffectType.Burn: return TAG_BLEED;
             case StatusEffectType.Buff: return TAG_BUFF_OPEN;
             case StatusEffectType.Block: return TAG_NORMAL_OPEN;
             default: return TAG_NORMAL_OPEN;

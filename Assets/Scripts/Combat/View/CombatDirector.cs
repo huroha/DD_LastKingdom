@@ -331,7 +331,7 @@ public class CombatDirector : MonoBehaviour
     {
         switch (type)
         {
-            case StatusEffectType.Bleed:
+            case StatusEffectType.Burn:
                 return COLOR_DAMAGE_RED;
             case StatusEffectType.Poison:
                 return COLOR_POISON;

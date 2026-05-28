@@ -451,7 +451,7 @@ public class SkillExecutor
         // effectType이 Buff, Guard, Mark이면 0 반환 (항상 적용)
         switch (effectType)
         {
-            case StatusEffectType.Bleed:
+            case StatusEffectType.Burn:
                 return target.CurrentStats.resistance.bleed;
             case StatusEffectType.Poison:
                 return target.CurrentStats.resistance.poison;

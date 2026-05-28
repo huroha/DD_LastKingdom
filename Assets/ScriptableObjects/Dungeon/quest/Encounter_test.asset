@@ -19,7 +19,7 @@ MonoBehaviour:
   m_QuestType: 0
   m_RewardGold: 0
   m_BgIconSprite: {fileID: 21300000, guid: d13bbe12fd744b04fa53eba09ec241cf, type: 3}
-  m_IconSprite: {fileID: 21300000, guid: 9c6afd6f2b4bfb24eb0fe402d263a242, type: 3}
+  m_IconSprite: {fileID: 21300000, guid: 2e302c10d81308649846c77e42942cd5, type: 3}
   m_Enemies:
   - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
   - {fileID: 11400000, guid: 597dfa92b6a61b0408211a9473517f39, type: 2}

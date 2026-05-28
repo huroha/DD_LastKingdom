@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: chime_buff 1
   m_EditorClassIdentifier: Assembly-CSharp::StatusEffectData
   m_EffectName: "\uBC84\uD504"
-  m_Icon: {fileID: 21300000, guid: b6ecb4d48f403c04c84fe027d7e1431c, type: 3}
+  m_Icon: {fileID: 21300000, guid: ccf986bfecef7b0459fa76cee2beeb0b, type: 3}
   m_EffectType: 4
   m_Description: 
   m_ShowName: 0

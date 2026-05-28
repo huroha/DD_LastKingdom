@@ -31,6 +31,10 @@ public class NikkeInfoPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_ProtText;
     [SerializeField] private TextMeshProUGUI m_SpeedText;
 
+    [Header("Gear")]
+    [SerializeField] private Image m_Weapon;
+    [SerializeField] private Image m_Armor;
+
     private static readonly Color COLOR_NORMAL = new Color(0.8f, 0.8f, 0.8f, 1f);
     private static readonly Color COLOR_BUFF = new Color(0.8f, 0.76f, 0.56f, 1f);
     private static readonly Color COLOR_DEBUFF = new Color(0.75f, 0.1f, 0.1f, 1f);
@@ -45,6 +49,7 @@ public class NikkeInfoPanel : MonoBehaviour
         m_CurrentUnit = unit;
         NikkeData data = unit.NikkeData;
         StatBlock stats = unit.CurrentStats;
+        NikkeInstance inst = unit.NikkeInstance;
 
         //Portrait & Identity
         m_Portrait.sprite = data.PortraitSprite;
@@ -52,6 +57,9 @@ public class NikkeInfoPanel : MonoBehaviour
         m_Sb.Clear();
         m_Sb.Append(GetManufacturerDisplayName(data.Manufacturer)).Append("  ").Append(GetClassDisplayName(data.NikkeClass));
         m_ClassText.SetText(m_Sb);
+
+        m_Weapon.sprite = data.Weapon.GetSprite(inst.WeaponLevel);
+        m_Armor.sprite = data.Armor.GetSprite(inst.ArmorLevel);
         // Skill Icon
         for (int i=0; i< m_SkillIcons.Length; ++i)
         {

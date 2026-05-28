@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 public class BgAttackOverlay : MonoBehaviour
 {
@@ -27,7 +27,7 @@ public class BgAttackOverlay : MonoBehaviour
         m_Renderer.sprite = isCrit ? m_CritSprite : m_NormalSprite;
         m_Renderer.flipX = targetIsNikke ? m_NikkeTargetFlipX : m_EnemyTargetFlipX;
         transform.localScale = Vector3.one * m_Scale;
-        m_Renderer.sortingOrder = 20;
+        m_Renderer.sortingOrder = 5;
         if(targetIsNikke)
             transform.localPosition = new Vector3(-2.8f, 1.3f, 0f);
         else

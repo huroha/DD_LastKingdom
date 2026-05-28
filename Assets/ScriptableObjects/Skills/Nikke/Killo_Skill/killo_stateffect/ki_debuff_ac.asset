@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ki_debuff_ac
   m_EditorClassIdentifier: Assembly-CSharp::StatusEffectData
   m_EffectName: "\uC57D\uD654"
-  m_Icon: {fileID: 21300000, guid: cebfd94240ff0cb4dae5fb9261398587, type: 3}
+  m_Icon: {fileID: 21300000, guid: 6ec1fbb52bdeacf46898d235d4931a5a, type: 3}
   m_EffectType: 5
   m_Description: 
   m_ShowName: 0
