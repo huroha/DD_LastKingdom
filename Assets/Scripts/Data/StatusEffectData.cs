@@ -7,7 +7,7 @@ public enum StatusEffectType
     Disease,    // 질병 - 질병마다 고유의 효과 존재(영구 디버프 패시브 느낌)
     Stun,       // 기절 - 행동 불가
     Buff,       // 버프 - 스탯 증가
-    Debuff,      // 디버프 - 스탯 감소
+    Debuff,      // 디버프 - 스탯 감소 
     Mark,        // 표식된 유닛 추가피해
     Block,
 }
