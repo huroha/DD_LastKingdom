@@ -59,6 +59,15 @@ public class CombatHUD : MonoBehaviour
     [Header("Ebla Resolution")]
     [SerializeField] private AfflictionNarrationPanel m_NarrationPanel;
 
+    [Header("Retreat")]
+    [SerializeField] private Button m_RetreatButton;
+    [SerializeField] private ConfirmPopup m_RetreatPopup;
+
+    [Header("Quest Info")]
+    [SerializeField] private TextMeshProUGUI m_QuestNameText;
+    [SerializeField] private TextMeshProUGUI m_QuestDescText;
+
+
 
 
     private CombatUnit[] m_CurrentEnemyBarUnits;
@@ -76,6 +85,7 @@ public class CombatHUD : MonoBehaviour
     private void Awake()
     {
         Initialize(m_CombatStateMachine);
+        m_RetreatButton.onClick.AddListener(OnRetreatClicked);
     }
     public void Initialize(CombatStateMachine stateMachine)
     {
@@ -84,7 +94,13 @@ public class CombatHUD : MonoBehaviour
         m_CombatStateMachine = stateMachine;
     }
 
-
+    private void Start()
+    {
+        EncounterData encounter = ExpeditionManager.Instance.Encounter;
+        if (encounter == null) return;
+        m_QuestNameText.text = encounter.EncounterName;
+        m_QuestDescText.text = encounter.Description;
+    }
 
     private void OnEnable()
     {
@@ -536,5 +552,9 @@ public class CombatHUD : MonoBehaviour
     {
         if (m_NikkeDetailPanel == null) return;
         m_NikkeDetailPanel.Show(unit);
+    }
+    private void OnRetreatClicked()
+    {
+        m_RetreatPopup.Show("퇴각하시겠습니까?", () => GameManager.Instance.ChangeState(GameState.Town));
     }
 }

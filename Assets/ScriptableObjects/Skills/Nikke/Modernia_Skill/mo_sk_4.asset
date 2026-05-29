@@ -14,17 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   m_SkillName: "\uB300\uB3C4\uC57D"
   m_SkillType: 1
-  m_UsablePositions: 01010000
+  m_UsablePositions: 00000101
   m_TargetPositions: 01010101
   m_TargetType: 0
   m_MoveUserAmount: 0
   m_MoveTargetAmount: 0
   m_BypassGuard: 0
   m_AttackSprite: {fileID: 21300000, guid: e024f722dab49324082382992f2ddb46, type: 3}
-  m_AttackEffect: {fileID: 0}
+  m_AttackEffect: {fileID: 11400000, guid: 0c74c31bedacfad4ab997efd5c6a276d, type: 2}
   m_AttackMovement: 0
   m_ProjectileSpeed: 20
-  m_HitEffect: {fileID: 0}
+  m_HitEffect: {fileID: 11400000, guid: 909fdb0202c59c24eac304edddeb4ed2, type: 2}
   m_Description: 
   m_SkillIcon: {fileID: 21300000, guid: 799f3869a8d57c543be4fb99a258ef02, type: 3}
   m_RequiredState: 0

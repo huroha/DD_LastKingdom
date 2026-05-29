@@ -1,13 +1,13 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections;
 
 [System.Serializable]
 public struct SpriteEntry
 {
     public Sprite Sprite;
-    public Vector3 Offset;      // local offset ¿¡ ´õÇØÁö´Â Ãß°¡À§Ä¡
-    public float Rotation;      // z Ãà È¸Àü
-    public float Delay;         // pop in ½ÃÀÛ Àü ´ë±â
+    public Vector3 Offset;      // local offset ì— ë”í•´ì§€ëŠ” ì¶”ê°€ìœ„ì¹˜
+    public float Rotation;      // z ì¶• íšŒì „
+    public float Delay;         // pop in ì‹œì‘ ì „ ëŒ€ê¸°
     public float Scale;
 }
 
@@ -30,7 +30,7 @@ public class SpriteCombatEffect : CombatEffectData
 
     private WaitForSeconds m_WaitHold;
     private WaitForSeconds m_WaitPopInTotal;    // maxDelay + m_PopinDuration
-    private WaitForSeconds[] m_WaitDelays;    // entryº° delay
+    private WaitForSeconds[] m_WaitDelays;    // entryë³„ delay
 
 
     public override Coroutine Play(MonoBehaviour runner, GameObject instance, Transform parent, int sortingOrder, bool flipX)
@@ -72,17 +72,15 @@ public class SpriteCombatEffect : CombatEffectData
     }
     private IEnumerator SequentialRoutine(SpriteRenderer sr)
     {
-        float interval = m_HoldDuration / m_Entries.Length;
         for (int i = 0; i < m_Entries.Length; ++i)
         {
             sr.sprite = m_Entries[i].Sprite;
             float t = 0f;
-            while (t < interval)
-            {
-                t += Time.deltaTime;
-                yield return null;
-            }
+            float interval = m_Entries[i].Delay;
+            while (t < interval) { t += Time.deltaTime; yield return null; }
         }
+        if (m_WaitHold == null) m_WaitHold = new WaitForSeconds(m_HoldDuration);
+        yield return m_WaitHold;
         yield return CoroutineHelper.FadeAlpha(sr, 1f, 0f, m_FadeDuration);
     }
     private IEnumerator PopInRoutine(SpriteRenderer rootSr, GameObject root, MonoBehaviour runner)
@@ -147,7 +145,7 @@ public class SpriteCombatEffect : CombatEffectData
         for (int i=0; i< m_Entries.Length; ++i)
         {
             if (m_Entries[i].Scale == 0f)
-                Debug.LogWarning($"{name}: Entries[{i}].Scale = 0 - sprite°¡ º¸ÀÌÁö¾ÊÀ½");
+                Debug.LogWarning($"{name}: Entries[{i}].Scale = 0 - spriteê°€ ë³´ì´ì§€ì•ŠìŒ");
         }
     }
 }

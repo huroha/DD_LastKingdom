@@ -24,7 +24,7 @@ MonoBehaviour:
   m_AttackEffect: {fileID: 0}
   m_AttackMovement: 0
   m_ProjectileSpeed: 20
-  m_HitEffect: {fileID: 0}
+  m_HitEffect: {fileID: 11400000, guid: 4689e9eeab3409249bc55fa01613ec8c, type: 2}
   m_Description: 
   m_SkillIcon: {fileID: 21300000, guid: 1082612cad8d03b46810f31a78742022, type: 3}
   m_RequiredState: 0

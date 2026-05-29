@@ -134,7 +134,8 @@ public class CombatStateMachine : MonoBehaviour
     {
         if (!ExpeditionManager.Instance.IsActive) return;
         ExpeditionManager.Instance.EndExpedition();
-        GameManager.Instance.ChangeState(GameState.Town);
+        if (!e.IsVictory)
+            GameManager.Instance.ChangeState(GameState.Town);
     }
 
     public bool ValidateSkill(CombatUnit unit, SkillData skill)

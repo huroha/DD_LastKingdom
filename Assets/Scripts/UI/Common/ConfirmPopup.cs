@@ -1,6 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class ConfirmPopup : MonoBehaviour
 {
@@ -20,6 +21,11 @@ public class ConfirmPopup : MonoBehaviour
         AddHoverListeners(m_ConfirmButton);
         AddHoverListeners(m_CancelButton);
         gameObject.SetActive(false);
+    }
+    private void Update()
+    {
+        if (Keyboard.current[Key.Escape].wasPressedThisFrame)
+            Hide();
     }
     public void Show(string message, System.Action onConfirm)
     {

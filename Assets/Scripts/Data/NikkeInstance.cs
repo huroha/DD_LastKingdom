@@ -92,6 +92,19 @@ public class NikkeInstance
             int idx = m_ActiveSkillIndices[i];
             result[i] = (idx >= 0 && idx < m_Data.Skills.Count) ? m_Data.Skills[idx] : null;
         }
+        // 빈 슬롯 자동 채우기: 아직 배정 안 된 앞번 스킬로
+        for (int i = 0; i < 4; ++i)
+        {
+            if (result[i] != null) continue;
+            for (int j = 0; j < m_Data.Skills.Count; ++j)
+            {
+                SkillData candidate = m_Data.Skills[j];
+                bool used = false;
+                for (int k = 0; k < 4; ++k)
+                    if (result[k] == candidate) { used = true; break; }
+                if (!used) { result[i] = candidate; break; }
+            }
+        }
         return result;
     }
 

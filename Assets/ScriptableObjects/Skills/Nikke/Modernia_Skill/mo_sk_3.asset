@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   m_SkillName: "\uC18C\uC911\uD55C \uB2E4\uC9D0"
   m_SkillType: 1
-  m_UsablePositions: 01010000
-  m_TargetPositions: 00000000
+  m_UsablePositions: 00000101
+  m_TargetPositions: 01010101
   m_TargetType: 6
   m_MoveUserAmount: 0
   m_MoveTargetAmount: 0
   m_BypassGuard: 0
   m_AttackSprite: {fileID: 21300000, guid: cb898bdd0740e1d41bf2b053002c6599, type: 3}
-  m_AttackEffect: {fileID: 0}
+  m_AttackEffect: {fileID: 11400000, guid: a6da6159b0b170544b6879eed0e15b3a, type: 2}
   m_AttackMovement: 0
   m_ProjectileSpeed: 20
   m_HitEffect: {fileID: 0}

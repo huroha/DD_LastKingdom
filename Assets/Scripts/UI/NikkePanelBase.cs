@@ -200,7 +200,7 @@ public abstract class NikkePanelBase : MonoBehaviour
             for (int p = 0; p < 4; ++p)
             {
                 if (skill.UsablePositions[p]) ++m_PosCount[p];
-                if (skill.TargetPositions[p]) ++m_TgtCount[p];
+                if (skill.IsEnemyTargeting && skill.TargetPositions[p]) ++m_TgtCount[p];
             }
         }
         for (int p = 0; p < 4; ++p)

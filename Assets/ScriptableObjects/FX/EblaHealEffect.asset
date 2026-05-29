@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2869b03e452000d4582049ced09c2ba0, type: 3}
+  m_Name: EblaHealEffect
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteCombatEffect
+  m_LocalOffset: {x: 0, y: 5.2, z: 0}
+  m_FlipXOnNikkeTarget: 0
+  m_FlipXOnEnemyTarget: 1
+  m_Entries:
+  - Sprite: {fileID: -5008899776265047841, guid: 636d46c9e8db4f64ab5d802788f57961, type: 3}
+    Offset: {x: 0, y: 0, z: 0}
+    Rotation: 0
+    Delay: 0
+    Scale: 1
+  m_PlayMode: 0
+  m_HoldDuration: 0.4
+  m_FadeDuration: 0.4
+  m_Scale: 3
+  m_PopInStartMul: 1
+  m_PopInDuration: 0.1

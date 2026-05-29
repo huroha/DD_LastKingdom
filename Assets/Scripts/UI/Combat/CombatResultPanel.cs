@@ -140,6 +140,6 @@ public class CombatResultPanel : MonoBehaviour
     private void OnContinueClicked()
     {
         m_Content.SetActive(false);
-        GameManager.Instance.ChangeState(GameState.Dungeon);
+        GameManager.Instance.ChangeState(GameState.Town);
     }
 }

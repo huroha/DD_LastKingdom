@@ -131,6 +131,11 @@ public class CombatDirector : MonoBehaviour
                 ProcessHitBatch(result.TargetResults, skill);
             else
                 ProcessSingleHit(result.TargetResults[0], skill);
+            if (skill.IsAllyTargeting && result.AllyResults != null)
+            {
+                for (int i = 0; i < result.AllyResults.Length; ++i)
+                    PlayHitEffect(result.AllyResults[i].Unit, skill);
+            }
         }
 
         // 사망 overlay 동작

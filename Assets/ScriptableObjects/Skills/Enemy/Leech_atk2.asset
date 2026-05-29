@@ -27,7 +27,7 @@ MonoBehaviour:
   m_HitEffect: {fileID: 11400000, guid: 35e41748d3deef449aca776dc32ad280, type: 2}
   m_MinDamage: 2
   m_MaxDamage: 5
-  m_AccuracyMod: 100
+  m_AccuracyMod: 65
   m_CritMod: 0
   m_EblaDamage: 0
   m_OnHitEffects: []
