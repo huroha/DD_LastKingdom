@@ -250,6 +250,25 @@ public class CombatStateMachine : MonoBehaviour
                 m_StatusEffectManager.ProcessTurnEnd(m_ActiveUnit);
                 m_TurnManager.EndCurrentTurn();
                 yield return m_WaitBetweenTurn;
+
+                SetState(CombatState.CheckBattleEnd);
+                m_PositionSystem.GetAllUnits(CombatUnitType.Enemy, m_UnitBuffer);
+                if (m_UnitBuffer.Count == 0)
+                {
+                    ApplyPostBattleEbla();
+                    yield return StartCoroutine(FlushPendingResolutions());
+                    SetState(CombatState.Victory);
+                    CombatResult combatResult = LootRoller.Roll(m_DefeatedEnemies);
+                    EventBus.Publish(new BattleEndedEvent(true, combatResult));
+                    yield break;
+                }
+                m_PositionSystem.GetAllUnits(CombatUnitType.Nikke, m_UnitBuffer);
+                if (m_UnitBuffer.Count == 0)
+                {
+                    SetState(CombatState.Defeat);
+                    EventBus.Publish(new BattleEndedEvent(false, null));
+                    yield break;
+                }
                 continue;
             }
 

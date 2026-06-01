@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b02c02e8574be34f93cfe11a9efdfcf, type: 3}
+  m_Name: InventoryConfig
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryConfig
+  m_SlotCount: 16
+  m_CreditCap: 10000
+  m_BattleDataCap: 1000
+  m_CoreCap: 1000
+  m_GemsCap: 1000
+  m_RelicCap: 100
+  m_CreditIcon: {fileID: 21300000, guid: 36ff607ce1eef09418e7ed676fa5f51c, type: 3}
+  m_BattleDataIcon: {fileID: 21300000, guid: b3f6126782156b54091cd7ba9dea0cc7, type: 3}
+  m_CoreIcon: {fileID: 21300000, guid: 52f5396ab159f42428ff5f62cd396bfa, type: 3}
+  m_GemsIcon: {fileID: 21300000, guid: f1feb6a9651bde34ba7c55e9b1a3617c, type: 3}
+  m_RelicIcons:
+  - {fileID: 21300000, guid: 6824c07b8c71e514a884c91ec41fc9cf, type: 3}
+  - {fileID: 21300000, guid: 02e7a5f6bf77caf4985caab2fe5281f8, type: 3}
+  - {fileID: 21300000, guid: ec617f06b8d73f5449195e20aa1f8997, type: 3}
+  - {fileID: 21300000, guid: 5ee780b3279e7c14f80fc66a7e483827, type: 3}

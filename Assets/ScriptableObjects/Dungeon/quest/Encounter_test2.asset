@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Encounter_test2
   m_EditorClassIdentifier: Assembly-CSharp::EncounterData
   m_EncounterName: test2
-  m_Description: 
+  m_Description: "\uC801\uC744 \uBAA8\uB450 \uBB34\uCC0C\uB974\uC138\uC694"
   m_Difficulty: 0
   m_Length: 0
   m_QuestType: 0

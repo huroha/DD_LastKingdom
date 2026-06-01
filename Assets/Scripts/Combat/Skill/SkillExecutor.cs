@@ -98,6 +98,7 @@ public class SkillExecutor
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log($"[Skill] {user.UnitName} → {actualTarget.UnitName} | Hit:{result[i].IsHit}");
 #endif
+            result[i].PreviousState = actualTarget.State;
             if (result[i].IsHit)
                 ApplyHit(user, actualTarget, skill, ld, ref result[i], ref allNikkesFetched);
 
@@ -175,6 +176,7 @@ public class SkillExecutor
             CombatUnit actualTarget = m_ActualTargetBuffer[i];
             result[i].IsHit = skill.IsAllyTargeting || RollHit(user, actualTarget, skill.AccuracyMod);
 
+            result[i].PreviousState = actualTarget.State;       // 시체 sprite 오류 방지
             if (result[i].IsHit)
             {
                 result[i].PreviousHp = actualTarget.CurrentHp;

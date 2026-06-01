@@ -6,11 +6,14 @@ public class DataManager : Singleton<DataManager>
     [SerializeField] private TrinketData[] m_TrinketDatas;
     [SerializeField] private QuirkData[] m_QuirkDatas;
     [SerializeField] private DiseaseData[] m_DiseaseDatas;
+    [SerializeField] private InventoryConfig m_InventoryConfig;
 
     private Dictionary<string, NikkeData> m_NikkeMap;
     private Dictionary<string, TrinketData> m_TrinketMap;
     private Dictionary<string, QuirkData> m_QuirkMap;
     private Dictionary<string , DiseaseData> m_DiseaseMap;
+
+    public InventoryConfig InventoryConfig => m_InventoryConfig;
 
     protected override void Awake()
     {

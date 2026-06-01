@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
-public class CombatResultPanel : MonoBehaviour
+public class CombatResultPanel : MonoBehaviour, IDropHandler
 {
     [Header("Content Root")]
     [SerializeField] private GameObject m_Content;
@@ -20,12 +21,6 @@ public class CombatResultPanel : MonoBehaviour
     [SerializeField] private Button m_TakeAllBtn;
     [SerializeField] private Button m_ContinueBtn;
 
-    [Header("Icons")]
-    [SerializeField] private Sprite m_CreditIcon;
-    [SerializeField] private Sprite m_BattleDataIcon;
-    [SerializeField] private Sprite m_CoreIcon;
-    [SerializeField] private Sprite m_GemsIcon;
-    [SerializeField] private Sprite[] m_RelicIcons;
 
     private List<LootSlot> m_ActiveSlots = new List<LootSlot>();
     private List<LootSlot> m_DynamicSlots = new List<LootSlot>();
@@ -66,11 +61,13 @@ public class CombatResultPanel : MonoBehaviour
                 Destroy(m_DynamicSlots[i].gameObject);
         m_DynamicSlots.Clear();
 
+        InventoryConfig cfg = DataManager.Instance.InventoryConfig;
         //--- 고정 재화 슬롯 (수량 0이면 비활성) ---
-        SetupFixedSlot(m_CreditSlot, LootType.Credit, result.TotalCredit, m_CreditIcon);
-        SetupFixedSlot(m_BattleDataSlot, LootType.BattleData, result.TotalBattleData, m_BattleDataIcon);
-        SetupFixedSlot(m_CoreSlot, LootType.Core, result.TotalCore, m_CoreIcon);
-        SetupFixedSlot(m_GemsSlot, LootType.Gems, result.TotalGems, m_GemsIcon);
+        SetupFixedSlot(m_CreditSlot, LootType.Credit, result.TotalCredit, cfg.Icon(LootType.Credit));
+        SetupFixedSlot(m_BattleDataSlot, LootType.BattleData, result.TotalBattleData, cfg.Icon(LootType.BattleData));
+        SetupFixedSlot(m_CoreSlot, LootType.Core, result.TotalCore, cfg.Icon(LootType.Core));
+        SetupFixedSlot(m_GemsSlot, LootType.Gems, result.TotalGems, cfg.Icon(LootType.Gems));
+
         
          //--- Relic 슬롯 ---
          for (int i = 0;  i < m_RelicSlots.Length; ++i)
@@ -82,7 +79,7 @@ public class CombatResultPanel : MonoBehaviour
                 Quantity = qty,
                 Relic = (RelicType)i
             };
-            m_RelicSlots[i].Setup(item, m_RelicIcons[i]);
+            m_RelicSlots[i].Setup(item, cfg.Icon(LootType.Relics, (RelicType)i));
             m_RelicSlots[i].OnCollected += OnSlotCollected;
             m_ActiveSlots.Add(m_RelicSlots[i]);
             if (qty == 0) m_RelicSlots[i].gameObject.SetActive(false);
@@ -106,31 +103,6 @@ public class CombatResultPanel : MonoBehaviour
         m_ActiveSlots.Add(slot);
         if (quantity == 0) slot.gameObject.SetActive(false);
     }
-    private void OnSlotCollected(LootSlot slot)
-    {
-        switch (slot.Item.Type)
-        {
-            case LootType.Credit:
-                ResourceManager.Instance.AddCredit(slot.Item.Quantity);
-                break;
-            case LootType.BattleData:
-                ResourceManager.Instance.AddBattleData(slot.Item.Quantity);
-                break;
-            case LootType.Core:
-                ResourceManager.Instance.AddCore(slot.Item.Quantity);
-                break;
-            case LootType.Gems:
-                ResourceManager.Instance.AddGems(slot.Item.Quantity);
-                break;
-            case LootType.Relics:
-                ResourceManager.Instance.AddRelic(slot.Item.Relic, slot.Item.Quantity);
-                break;
-            default:
-                Debug.Log("획득: " + slot.Item.Type);
-                break;
-
-        }
-    }
     private void OnTakeAllClicked()
     {
         for (int i = 0; i < m_ActiveSlots.Count; ++i)
@@ -140,6 +112,31 @@ public class CombatResultPanel : MonoBehaviour
     private void OnContinueClicked()
     {
         m_Content.SetActive(false);
+        ExpeditionManager.Instance.EndExpedition();
         GameManager.Instance.ChangeState(GameState.Town);
     }
+    private void OnSlotCollected(LootSlot slot)
+    {
+        bool ok = ExpeditionManager.Instance.Inventory.TryAdd(slot.Item);
+        if (!ok) slot.Restore();   // 가방 가득 → 슬롯 되살림 (미수집 유지)
+    }
+    public void OnDrop(PointerEventData eventData)
+    {
+        if (!LootDragState.IsDragging) return;
+        if (LootDragState.From != DragSource.Inventory) return;
+
+        LootItem taken = ExpeditionManager.Instance.Inventory.TakeAt(LootDragState.InventoryIndex);
+        DropToGround(taken);
+        LootDragState.IsDragging = false;
+    }
+    public void DropToGround(LootItem item)
+    {
+        LootSlot slot = Instantiate(m_SlotPrefab, m_ItemSlotRoot);
+        Sprite icon = DataManager.Instance.InventoryConfig.Icon(item.Type, item.Relic);
+        slot.Setup(item, icon);
+        slot.OnCollected += OnSlotCollected;
+        m_DynamicSlots.Add(slot);
+        m_ActiveSlots.Add(slot);
+    }
+
 }

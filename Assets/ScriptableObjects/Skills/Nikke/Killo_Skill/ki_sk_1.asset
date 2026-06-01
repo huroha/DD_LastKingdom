@@ -15,7 +15,7 @@ MonoBehaviour:
   m_SkillName: "\uC870\uC900 \uC0AC\uACA9"
   m_SkillType: 1
   m_UsablePositions: 00000101
-  m_TargetPositions: 00010101
+  m_TargetPositions: 01010101
   m_TargetType: 0
   m_MoveUserAmount: 0
   m_MoveTargetAmount: 0

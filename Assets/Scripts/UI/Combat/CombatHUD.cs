@@ -446,6 +446,8 @@ public class CombatHUD : MonoBehaviour
     }
     public void ShowEnemyInfo(CombatUnit unit)
     {
+        if (m_CombatStateMachine.CurrentState == CombatState.Victory || m_CombatStateMachine.CurrentState == CombatState.Defeat)
+            return;
         m_HoveredUnit = unit;
         m_EnemyInfoPanel.gameObject.SetActive(true);
         m_EnemyInfoPanel.Populate(unit);
