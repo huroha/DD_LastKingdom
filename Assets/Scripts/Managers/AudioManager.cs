@@ -28,23 +28,11 @@ public class AudioManager : Singleton<AudioManager>
     {
         if (sound == null) return;
         if (m_BgmSource.clip == sound.Clip && m_BgmSource.isPlaying) return;
-        if (m_FadeRoutine != null)
-        {
-            StopCoroutine(m_FadeRoutine);
-            m_FadeRoutine = null;
-        }
-        m_FadeRoutine = StartCoroutine(FadeBgm(sound, fadeSec));
+        CoroutineHelper.Restart(this, ref m_FadeRoutine, FadeBgm(sound, fadeSec));
     }
     public void StopBgm(float fadeSec = 1f)
     {
-        if (m_FadeRoutine != null)
-        {
-            StopCoroutine(m_FadeRoutine);
-            m_FadeRoutine = null;
-        }
-
-        // sound = null → FadeBgm 내부에서 페이드 아웃 후 Stop만 하고 yield break
-        m_FadeRoutine = StartCoroutine(FadeBgm(null, fadeSec));
+        CoroutineHelper.Restart(this, ref m_FadeRoutine, FadeBgm(null, fadeSec));
     }
     public void PlaySfx(SoundData sound)
     {

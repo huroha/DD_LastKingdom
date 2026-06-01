@@ -71,6 +71,13 @@ public class ExpeditionInventory
         m_Slots[index] = loot;
         OnChanged?.Invoke();
     }
+    public void Swap(int a, int b)
+    {
+        LootItem tmp = m_Slots[a];
+        m_Slots[a] = m_Slots[b];
+        m_Slots[b] = tmp;
+        OnChanged?.Invoke();
+    }
     public void Clear()
     {
         for (int i=0; i<Capacity; ++i)

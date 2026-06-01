@@ -205,7 +205,6 @@ public class SkillExecutor
                     if (result[i].IsCrit)
                         damage = (int)(damage * CRIT_DAMAGE_MULTI);
 
-                    result[i].PreviousState = actualTarget.State;
                     actualTarget.TakeDamage(damage, isCrit: result[i].IsCrit);
                     result[i].DamageDealt = damage;
 

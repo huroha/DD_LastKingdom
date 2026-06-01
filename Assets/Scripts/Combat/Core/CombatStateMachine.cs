@@ -67,6 +67,7 @@ public class CombatStateMachine : MonoBehaviour
     private CombatUnit m_ActiveUnit;
     private SkillData m_SelectedSkill;
     private CombatUnit m_SelectedTarget;
+    private bool m_BattleEnded;
 
     // 커멘트 관련
     private PlayerCommand m_PendingCmd;
@@ -251,24 +252,8 @@ public class CombatStateMachine : MonoBehaviour
                 m_TurnManager.EndCurrentTurn();
                 yield return m_WaitBetweenTurn;
 
-                SetState(CombatState.CheckBattleEnd);
-                m_PositionSystem.GetAllUnits(CombatUnitType.Enemy, m_UnitBuffer);
-                if (m_UnitBuffer.Count == 0)
-                {
-                    ApplyPostBattleEbla();
-                    yield return StartCoroutine(FlushPendingResolutions());
-                    SetState(CombatState.Victory);
-                    CombatResult combatResult = LootRoller.Roll(m_DefeatedEnemies);
-                    EventBus.Publish(new BattleEndedEvent(true, combatResult));
-                    yield break;
-                }
-                m_PositionSystem.GetAllUnits(CombatUnitType.Nikke, m_UnitBuffer);
-                if (m_UnitBuffer.Count == 0)
-                {
-                    SetState(CombatState.Defeat);
-                    EventBus.Publish(new BattleEndedEvent(false, null));
-                    yield break;
-                }
+                yield return StartCoroutine(CheckBattleEnd());
+                if (m_BattleEnded) yield break;
                 continue;
             }
 
@@ -301,28 +286,36 @@ public class CombatStateMachine : MonoBehaviour
                 while (m_FieldView.IsMoving)
                     yield return null;
 
-            SetState(CombatState.CheckBattleEnd);
-            m_PositionSystem.GetAllUnits(CombatUnitType.Enemy, m_UnitBuffer);
-            if (m_UnitBuffer.Count == 0)
-            {
-                ApplyPostBattleEbla();
-                yield return StartCoroutine(FlushPendingResolutions());
-                SetState(CombatState.Victory);
-                CombatResult combatResult = LootRoller.Roll(m_DefeatedEnemies);
-                EventBus.Publish(new BattleEndedEvent(true, combatResult));
-                yield break;
-            }
-            m_PositionSystem.GetAllUnits(CombatUnitType.Nikke, m_UnitBuffer);
-            if (m_UnitBuffer.Count == 0)
-            {
-                SetState(CombatState.Defeat);
-                EventBus.Publish(new BattleEndedEvent(false, null));
-                yield break;
-            }
+            yield return StartCoroutine(CheckBattleEnd());
+            if (m_BattleEnded) yield break;
 
         }
     }
+    private IEnumerator CheckBattleEnd()
+    {
+        SetState(CombatState.CheckBattleEnd);
+        m_BattleEnded = false;
 
+        m_PositionSystem.GetAllUnits(CombatUnitType.Enemy, m_UnitBuffer);
+        if (m_UnitBuffer.Count == 0)
+        {
+            ApplyPostBattleEbla();
+            yield return StartCoroutine(FlushPendingResolutions());
+            SetState(CombatState.Victory);
+            CombatResult combatResult = LootRoller.Roll(m_DefeatedEnemies);
+            EventBus.Publish(new BattleEndedEvent(true, combatResult));
+            m_BattleEnded = true;
+            yield break;
+        }
+
+        m_PositionSystem.GetAllUnits(CombatUnitType.Nikke, m_UnitBuffer);
+        if (m_UnitBuffer.Count == 0)
+        {
+            SetState(CombatState.Defeat);
+            EventBus.Publish(new BattleEndedEvent(false, null));
+            m_BattleEnded = true;
+        }
+    }
     private IEnumerator HandlePlayerTurn()
     {
         bool turnHandled = false;
@@ -705,4 +698,5 @@ public class CombatStateMachine : MonoBehaviour
         }
         return units;
     }
+    
 }

@@ -38,27 +38,17 @@ public class InventorySlotView : MonoBehaviour, IBeginDragHandler, IDragHandler,
         LootDragState.Item = m_Item;
         LootDragState.From = DragSource.Inventory;
         LootDragState.InventoryIndex = m_SlotIndex;
-
-        Sprite sprite = m_Icon.sprite;
-        m_Icon.enabled = false;
-        m_QuantityText.enabled = false;
-        LootDragGhost.Instance.Show(sprite, eventData.position);
+        LootDragHelper.BeginVisual(m_Icon, m_QuantityText, eventData.position);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        LootDragGhost.Instance.Move(eventData.position);
+        LootDragHelper.Move(eventData.position);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        LootDragGhost.Instance.Hide();
-        if (LootDragState.IsDragging)
-        {
-            m_Icon.enabled = true;
-            m_QuantityText.enabled = true;
-        }
-        LootDragState.Clear();
+        LootDragHelper.EndVisual(m_Icon, m_QuantityText);
     }
     public void OnDrop(PointerEventData eventData)
     {
@@ -91,10 +81,7 @@ public class InventorySlotView : MonoBehaviour, IBeginDragHandler, IDragHandler,
             int fromIndex = LootDragState.InventoryIndex;
             if (fromIndex == m_SlotIndex) { LootDragState.IsDragging = false; return; }
 
-            LootItem fromItem = inv.TakeAt(fromIndex);
-            LootItem toItem = inv.TakeAt(m_SlotIndex);
-            inv.PlaceAt(m_SlotIndex, fromItem);
-            if (toItem.Quantity > 0) inv.PlaceAt(fromIndex, toItem);
+            inv.Swap(fromIndex, m_SlotIndex);
         }
 
         LootDragState.IsDragging = false;

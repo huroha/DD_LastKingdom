@@ -64,27 +64,16 @@ public class LootSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         LootDragState.Item = m_Item;
         LootDragState.From = DragSource.Ground;
         LootDragState.GroundSlot = this;
-
-        Sprite sprite = m_Icon.sprite;
-        m_Icon.enabled = false;
-        m_QuantityText.enabled = false;
-        LootDragGhost.Instance.Show(sprite, eventData.position);
+        LootDragHelper.BeginVisual(m_Icon, m_QuantityText, eventData.position);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        LootDragGhost.Instance.Move(eventData.position);
+        LootDragHelper.Move(eventData.position);
     }
-
     public void OnEndDrag(PointerEventData eventData)
     {
-        LootDragGhost.Instance.Hide();
-        if (LootDragState.IsDragging)
-        {
-            m_Icon.enabled = true;
-            m_QuantityText.enabled = true;
-        }
-        LootDragState.Clear();
+        LootDragHelper.EndVisual(m_Icon, m_QuantityText);
     }
     private void OnDisable()
     {
