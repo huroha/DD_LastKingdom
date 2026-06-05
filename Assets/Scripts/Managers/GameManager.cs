@@ -5,7 +5,8 @@ public enum GameState
     Title,
     Town,
     Dungeon,
-    Combat
+    Combat,
+    Settlement
 }
 
 public delegate void StateChangedHandler(GameState previous, GameState current);

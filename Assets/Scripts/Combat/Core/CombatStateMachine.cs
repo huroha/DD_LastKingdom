@@ -134,9 +134,15 @@ public class CombatStateMachine : MonoBehaviour
     private void OnBattleEnded(BattleEndedEvent e)
     {
         if (!ExpeditionManager.Instance.IsActive) return;
-        ExpeditionManager.Instance.EndExpedition();
-        if (!e.IsVictory)
-            GameManager.Instance.ChangeState(GameState.Town);
+        if (e.IsVictory)
+        {
+            ExpeditionManager.Instance.RecordBattleWon();   // 원정 유지, 전투 승수만 기록
+        }
+        else
+        {
+            ExpeditionManager.Instance.SetOutcome(ExpeditionOutcome.Wiped);
+            GameManager.Instance.ChangeState(GameState.Settlement);
+        }
     }
 
     public bool ValidateSkill(CombatUnit unit, SkillData skill)

@@ -7,6 +7,7 @@ public class DataManager : Singleton<DataManager>
     [SerializeField] private QuirkData[] m_QuirkDatas;
     [SerializeField] private DiseaseData[] m_DiseaseDatas;
     [SerializeField] private InventoryConfig m_InventoryConfig;
+    [SerializeField] private SettlementConfig m_SettlementConfig;
 
     private Dictionary<string, NikkeData> m_NikkeMap;
     private Dictionary<string, TrinketData> m_TrinketMap;
@@ -14,6 +15,7 @@ public class DataManager : Singleton<DataManager>
     private Dictionary<string , DiseaseData> m_DiseaseMap;
 
     public InventoryConfig InventoryConfig => m_InventoryConfig;
+    public SettlementConfig SettlementConfig => m_SettlementConfig;
 
     protected override void Awake()
     {

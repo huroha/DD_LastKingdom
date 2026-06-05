@@ -26,6 +26,7 @@ public class CombatInventoryPanel : MonoBehaviour, IDropHandler
     }
     private void OnDisable()
     {
+        if (ExpeditionManager.Instance == null) return;
         ExpeditionInventory inv = ExpeditionManager.Instance.Inventory;
         if (inv == null) return;
         inv.OnChanged -= Refresh;

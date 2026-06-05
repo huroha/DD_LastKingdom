@@ -18,10 +18,9 @@ MonoBehaviour:
   m_Length: 0
   m_QuestType: 0
   m_RewardGold: 0
+  m_GoalType: 0
+  m_GoalCount: 1
   m_BgIconSprite: {fileID: 21300000, guid: ca6bf6f41e8ad5a41a411aa3627e8e09, type: 3}
   m_IconSprite: {fileID: 21300000, guid: 2e8c103e511b70349931ca32e5ad4d44, type: 3}
   m_Enemies:
-  - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
-  - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
-  - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
   - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}

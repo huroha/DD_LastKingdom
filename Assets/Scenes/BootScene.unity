@@ -554,6 +554,7 @@ MonoBehaviour:
   m_QuirkDatas: []
   m_DiseaseDatas: []
   m_InventoryConfig: {fileID: 11400000, guid: e472dafac839bb340a67724c94fcdd5e, type: 2}
+  m_SettlementConfig: {fileID: 11400000, guid: d90b00248541de743bc9fda2873bd2cf, type: 2}
 --- !u!4 &843732581
 Transform:
   m_ObjectHideFlags: 0
@@ -1805,7 +1806,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1909689715
 MonoBehaviour:
   m_ObjectHideFlags: 0

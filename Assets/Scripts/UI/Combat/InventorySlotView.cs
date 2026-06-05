@@ -79,7 +79,7 @@ public class InventorySlotView : MonoBehaviour, IBeginDragHandler, IDragHandler,
         else  // DragSource.Inventory → 가방 내 재배치
         {
             int fromIndex = LootDragState.InventoryIndex;
-            if (fromIndex == m_SlotIndex) { LootDragState.IsDragging = false; return; }
+            if (fromIndex == m_SlotIndex) return;
 
             inv.Swap(fromIndex, m_SlotIndex);
         }

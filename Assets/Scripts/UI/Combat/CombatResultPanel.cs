@@ -112,8 +112,7 @@ public class CombatResultPanel : MonoBehaviour, IDropHandler
     private void OnContinueClicked()
     {
         m_Content.SetActive(false);
-        ExpeditionManager.Instance.EndExpedition();
-        GameManager.Instance.ChangeState(GameState.Town);
+        EventBus.Publish(new LootDismissedEvent());
     }
     private void OnSlotCollected(LootSlot slot)
     {

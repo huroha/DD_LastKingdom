@@ -44,13 +44,25 @@ MonoBehaviour:
   m_DropTable:
     MinCredit: 100
     MaxCredit: 200
-    MinGems: 0
-    MaxGems: 2
-    MinBattleData: 0
-    MaxBattleData: 2
-    MinCore: 0
-    MaxCore: 1
-    Relics: []
+    MinGems: 4
+    MaxGems: 4
+    MinBattleData: 4
+    MaxBattleData: 4
+    MinCore: 4
+    MaxCore: 4
+    Relics:
+    - Type: 0
+      Min: 4
+      Max: 4
+    - Type: 1
+      Min: 4
+      Max: 4
+    - Type: 2
+      Min: 4
+      Max: 4
+    - Type: 3
+      Min: 4
+      Max: 4
   m_CorpseHp: 20
   m_CorpseDecayTurns: 3
   m_Sprite: {fileID: -7382081116707789574, guid: 36dce3df22a4e2c4ca85e503dc0195d9, type: 3}

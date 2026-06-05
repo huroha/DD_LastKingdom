@@ -207,6 +207,11 @@ public class SkillExecutor
 
                     actualTarget.TakeDamage(damage, isCrit: result[i].IsCrit);
                     result[i].DamageDealt = damage;
+                    if (result[i].PreviousState == UnitState.Alive && actualTarget.State == UnitState.DeathsDoor)
+                    {
+                        m_EblaSystem.ModifyEbla(actualTarget, CombatUnit.DEATHS_DOOR_EBLA);
+                        ApplyDeathsDoorDebuff(actualTarget);
+                    }
 
                     if (skill.EblaDamage > 0)
                         m_EblaSystem.ModifyEbla(actualTarget, skill.EblaDamage);

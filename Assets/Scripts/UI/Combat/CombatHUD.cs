@@ -62,6 +62,7 @@ public class CombatHUD : MonoBehaviour
     [Header("Retreat")]
     [SerializeField] private Button m_RetreatButton;
     [SerializeField] private ConfirmPopup m_RetreatPopup;
+    [SerializeField] private GameObject m_RetreatQuestFx;
 
     [Header("Quest Info")]
     [SerializeField] private TextMeshProUGUI m_QuestNameText;
@@ -77,6 +78,7 @@ public class CombatHUD : MonoBehaviour
     private CombatUnit m_HoveredUnit;
     private HashSet<CombatUnit> m_HiddenTickers;
 
+    private bool m_QuestComplete;
 
     private System.Text.StringBuilder m_TurnOrderBuilder = new System.Text.StringBuilder(128);
 
@@ -139,14 +141,16 @@ public class CombatHUD : MonoBehaviour
             m_HpBarController.RemoveHidden(e.Unit);
             m_HiddenTickers.Remove(e.Unit);
             if (e.Unit.UnitType == CombatUnitType.Nikke)
+            {
+                ExpeditionManager.Instance.AddDead(e.Unit.NikkeInstance);
                 RefreshNikkeSlots();
+            }
             else
                 RefreshEnemySlots();
         }
         else if (e.Unit.State == UnitState.Corpse)
             RefreshHpBar(e.Unit);
     }
-
     private void OnTurnEnded(TurnEndedEvent e)
     {
         for (int i = 0; i < m_HpBarController.NikkeCount; ++i)
@@ -285,6 +289,11 @@ public class CombatHUD : MonoBehaviour
 
     private void OnCombatStateChanged(CombatState newState)
     {
+        if (newState == CombatState.Victory || newState == CombatState.Defeat)
+        {
+            HideEnemyInfo();
+            return;
+        }
         if (newState != CombatState.PlayerSelectTarget)
             m_EnemyInfoPanel.HidePreviewSection();
     }
@@ -557,6 +566,21 @@ public class CombatHUD : MonoBehaviour
     }
     private void OnRetreatClicked()
     {
-        m_RetreatPopup.Show("퇴각하시겠습니까?", () => GameManager.Instance.ChangeState(GameState.Town));
+        if (m_QuestComplete)
+        {
+            ExpeditionManager.Instance.SetOutcome(ExpeditionOutcome.Cleared);
+            GameManager.Instance.ChangeState(GameState.Settlement);
+            return;
+        }
+        m_RetreatPopup.Show("정말로 퇴각하시겠습니까?\n 전리품은 얻지 못합니다.", () =>
+        {
+            ExpeditionManager.Instance.SetOutcome(ExpeditionOutcome.Retreated);
+            GameManager.Instance.ChangeState(GameState.Settlement);
+        });
+    }
+    public void ArmQuestComplete()
+    {
+        m_QuestComplete = true;
+        if (m_RetreatQuestFx != null) m_RetreatQuestFx.SetActive(true);
     }
 }
