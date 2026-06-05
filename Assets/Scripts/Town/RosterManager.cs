@@ -5,7 +5,15 @@ public class RosterManager : Singleton<RosterManager>
     [SerializeField] private NikkeData[] m_InitialRoster;
     private List<NikkeInstance> m_Roster;
 
+    public delegate void RosterChangedHandler();
+    public event RosterChangedHandler OnRosterChanged;
+
+    [SerializeField] private int m_MaxRoster = 20;
+
     public IReadOnlyList<NikkeInstance> Roster => m_Roster;
+    public int MaxRoster => m_MaxRoster;
+    public int Count => m_Roster.Count;
+    public bool IsFull => m_Roster.Count >= m_MaxRoster;
     protected override void Awake()
     {
         base.Awake();
@@ -62,5 +70,23 @@ public class RosterManager : Singleton<RosterManager>
         ResourceManager.Instance.FillSaveData(save);  
 
         SaveSystem.Save(save);
+    }
+
+    public NikkeInstance HireNikke(NikkeData data)
+    {
+        if (data == null || IsFull) return null;
+        NikkeInstance inst = new NikkeInstance(data);
+        m_Roster.Add(inst);
+        OnRosterChanged?.Invoke();
+        SaveGame();
+        return inst;
+    }
+    public bool FireNikke(NikkeInstance inst)
+    {
+        if (inst == null || !m_Roster.Contains(inst)) return false;
+        m_Roster.Remove(inst);
+        OnRosterChanged?.Invoke();
+        SaveGame();
+        return true;
     }
 }

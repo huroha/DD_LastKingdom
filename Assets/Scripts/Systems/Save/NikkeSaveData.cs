@@ -4,6 +4,7 @@
 public class NikkeSaveData
 {
     public string nikkeId;
+    public string uid;
     public string nameOverride;
     public int level;
     public int exp;

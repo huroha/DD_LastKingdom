@@ -1,22 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UI;
 public class TownNikkePanel : NikkePanelBase
 {
     private IReadOnlyList<NikkeInstance> m_NavInstances;
-    private int m_CurrentNavIndex;
     private bool m_NavReversed;
+    [SerializeField] private Button m_FireButton;
+    [SerializeField] private ConfirmPopup m_ConfirmPopup;
+    private const string MSG_FIRE = "정말 작별하시겠습니까?";
 
+
+    protected override void Awake()
+    {
+        base.Awake();
+        if (m_FireButton != null) m_FireButton.onClick.AddListener(OnFireClicked);
+    }
     public void Show(NikkeInstance inst, IReadOnlyList<NikkeInstance> navList = null, bool reverseNav = false)
     {
         m_CurrentInstance = inst;
         m_NavInstances = navList;
-        m_CurrentNavIndex = -1;
         m_NavReversed = reverseNav;
-        if (navList != null)
-        {
-            for (int i = 0; i < navList.Count; ++i)
-                if (navList[i] == inst) { m_CurrentNavIndex = i; break; }
-        }
         PopulateIdentity(inst);
         PopulateSkills(inst);
         RefreshRecommendation(inst);
@@ -72,9 +75,13 @@ public class TownNikkePanel : NikkePanelBase
 
     protected override void Navigate(int delta)
     {
-        if (m_NavInstances == null || m_CurrentNavIndex < 0) return;
+        if (m_NavInstances == null || m_NavInstances.Count == 0) return;
+        int curIdx = -1;
+        for (int i = 0; i < m_NavInstances.Count; ++i)
+            if (m_NavInstances[i] == m_CurrentInstance) { curIdx = i; break; }
+        if (curIdx < 0) return;
         int actualDelta = m_NavReversed ? -delta : delta;
-        int nextIdx = (m_CurrentNavIndex + actualDelta + m_NavInstances.Count) % m_NavInstances.Count;
+        int nextIdx = (curIdx + actualDelta + m_NavInstances.Count) % m_NavInstances.Count;
         Show(m_NavInstances[nextIdx], m_NavInstances, m_NavReversed);
     }
 
@@ -95,5 +102,15 @@ public class TownNikkePanel : NikkePanelBase
         if (slot < 0) return;
         m_CurrentInstance.SetCampSkillIndex(slot, deactivate ? -1 : skillIdx);
         RefreshCampSkillUI(m_CurrentInstance);
+    }
+    private void OnFireClicked()
+    {
+        if (m_CurrentInstance == null) return;
+        m_ConfirmPopup.Show(MSG_FIRE, DoFire);
+    }
+    private void DoFire()
+    {
+        RosterManager.Instance.FireNikke(m_CurrentInstance);
+        Hide();
     }
 }

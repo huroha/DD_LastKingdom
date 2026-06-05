@@ -5,6 +5,7 @@ using System;
 public class NikkeInstance
 {
     private NikkeData m_Data;
+    private string m_Uid;
     private string m_NameOverride;
     private int[] m_ActiveSkillIndices;
     private int[] m_ActiveCampSkillIndices;
@@ -22,6 +23,7 @@ public class NikkeInstance
     private bool m_StatsDirty = true;
     private void InvalidateStats() => m_StatsDirty = true;
     public NikkeData Data => m_Data;
+    public string Uid => m_Uid;
     public string DisplayName => m_NameOverride ?? m_Data.NikkeName;
     public string NameOverride { get => m_NameOverride; set => m_NameOverride = value; }
     public IReadOnlyList<int> ActiveSkillIndices => m_ActiveSkillIndices;
@@ -70,6 +72,7 @@ public class NikkeInstance
     public NikkeInstance(NikkeData data)
     {
         m_Data = data;
+        m_Uid = Guid.NewGuid().ToString("N");
         m_ActiveSkillIndices = new int[] { 0, 1, 2, 3 };
         m_ActiveCampSkillIndices = new int[] { 0, 1, 2 };
         m_Level = 0;
@@ -183,6 +186,7 @@ public class NikkeInstance
     {
         NikkeSaveData save = new NikkeSaveData();
         save.nikkeId = m_Data.Id;
+        save.uid = m_Uid;
         save.nameOverride = m_NameOverride;
         save.level = m_Level;
         save.exp = m_Exp;
@@ -227,6 +231,7 @@ public class NikkeInstance
     public NikkeInstance(NikkeData data, NikkeSaveData save)
     {
         m_Data = data;
+        m_Uid = string.IsNullOrEmpty(save.uid) ? Guid.NewGuid().ToString("N") : save.uid;
         m_NameOverride = save.nameOverride;
         m_Level = Mathf.Clamp(save.level, 0, data.MaxLevel);
         Exp = save.exp;   // setter로 threshold 검증
