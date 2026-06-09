@@ -58,6 +58,9 @@ public class EnemyData : ScriptableObject
     [Header("Corpse")]
     [SerializeField] private int m_CorpseHp;
     [SerializeField] private int m_CorpseDecayTurns = 2;
+
+    [Header("Structure")]
+    [SerializeField] private bool m_IsStructure;    // 시체와 턴 x
     
     [Header("Visuals")]
     [SerializeField] private Sprite m_Sprite;
@@ -73,6 +76,7 @@ public class EnemyData : ScriptableObject
     public DropTable DropTable => m_DropTable;
     public int CorpseHp => m_CorpseHp;
     public int CorpseDecayTurns => m_CorpseDecayTurns;
+    public bool IsStructure => m_IsStructure;
     public Sprite Sprite => m_Sprite;
     public Sprite CorpseSprite => m_CorpseSprite;
     public Sprite HitSprite => m_HitSprite;

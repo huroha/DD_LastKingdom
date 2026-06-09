@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class PositionSystem
 {
@@ -9,6 +10,10 @@ public class PositionSystem
     // 버퍼
     private CombatUnit[] m_DisplacedBuffer = new CombatUnit[4];
     private int[] m_TargetSlotsBuffer = new int[4];
+    private List<CombatUnit> m_ReshuffleBuffer = new List<CombatUnit>(4);
+    private int[] m_RandomSlotBuffer = new int[4];
+    private int[] m_FreeSlotBuffer = new int[4];     // 비-시체(섞을 수 있는) 칸
+    private bool[] m_FreeUsedBuffer = new bool[4];
 
     // 초기화
     public void Initialize(List<CombatUnit> nikkes, List<CombatUnit> enemies)
@@ -64,9 +69,6 @@ public class PositionSystem
         }
         return;
     }
-
-
-
     public void GetCorpses(CombatUnitType team, List<CombatUnit> result)
     {
         result.Clear();
@@ -78,7 +80,6 @@ public class PositionSystem
         }
         return;
     }
-
     public void GetValidTargets(CombatUnit user, BaseSkillData skill, List<CombatUnit> result)
     {
         result.Clear();
@@ -225,8 +226,97 @@ public class PositionSystem
         {
             return MoveLargeUnit(unit, steps, slots);
         }
+    }
+    public bool RandomMove(CombatUnit unit)
+    {
+        CombatUnit[] slots = GetTeamSlots(unit.UnitType);
 
+        int count = 0;
+        for (int i=0; i < slots.Length; ++i)
+        {
+            if (slots[i] == null || !slots[i].IsAlive)
+                continue;
+            if (slots[i].SlotIndex != i)    // 대표 칸만
+                continue;
+            if (i == unit.SlotIndex)        // 현재 칸 제외
+                continue;
+            m_RandomSlotBuffer[count] = i;
+            ++count;
+        }
+        if (count == 0)
+            return false;
+        int dest = m_RandomSlotBuffer[Random.Range(0, count)];
+        int steps = dest - unit.SlotIndex;
+        return Move(unit, steps);
+    }
+    public bool Reshuffle(CombatUnitType team)
+    {
+        CombatUnit[] slots = GetTeamSlots(team);
 
+        GetAllUnits(team, m_ReshuffleBuffer);       // 살아있는 대표 유닛만
+        if (m_ReshuffleBuffer.Count < 2)
+            return false;
+
+        // 1. 비-시체 칸 목록 작성 + 해당 칸 비우기 (시체 칸은 건드리지 않음)
+        int freeCount = 0;
+        for (int i = 0; i < slots.Length; ++i)
+        {
+            if (slots[i] != null && slots[i].State == UnitState.Corpse)
+                continue;                            // 시체 칸 고정
+            m_FreeSlotBuffer[freeCount] = i;
+            m_FreeUsedBuffer[freeCount] = false;
+            ++freeCount;
+            slots[i] = null;                         // 살아있는 유닛이 있던 칸 비움
+        }
+
+        // 2. Fisher-Yates 셔플
+        for (int i = m_ReshuffleBuffer.Count - 1; i > 0; --i)
+        {
+            int j = Random.Range(0, i + 1);
+            CombatUnit temp = m_ReshuffleBuffer[i];
+            m_ReshuffleBuffer[i] = m_ReshuffleBuffer[j];
+            m_ReshuffleBuffer[j] = temp;
+        }
+
+        // 3. 대형(size-2) 먼저 배치 — 연속된 두 비-시체 칸 필요
+        for (int u = 0; u < m_ReshuffleBuffer.Count; ++u)
+        {
+            CombatUnit unit = m_ReshuffleBuffer[u];
+            if (unit.SlotSize != 2)
+                continue;
+            for (int k = 0; k + 1 < freeCount; ++k)
+            {
+                if (m_FreeUsedBuffer[k] || m_FreeUsedBuffer[k + 1])
+                    continue;
+                if (m_FreeSlotBuffer[k + 1] != m_FreeSlotBuffer[k] + 1)
+                    continue;                        // 연속 칸인지 확인
+                int s0 = m_FreeSlotBuffer[k];
+                unit.SetSlotIndex(s0);
+                slots[s0] = unit;
+                slots[s0 + 1] = unit;
+                m_FreeUsedBuffer[k] = true;
+                m_FreeUsedBuffer[k + 1] = true;
+                break;
+            }
+        }
+
+        // 4. 소형(size-1)을 남은 빈칸에 순서대로 배치
+        int cursor = 0;
+        for (int u = 0; u < m_ReshuffleBuffer.Count; ++u)
+        {
+            CombatUnit unit = m_ReshuffleBuffer[u];
+            if (unit.SlotSize != 1)
+                continue;
+            while (cursor < freeCount && m_FreeUsedBuffer[cursor])
+                ++cursor;
+            int s0 = m_FreeSlotBuffer[cursor];
+            unit.SetSlotIndex(s0);
+            slots[s0] = unit;
+            m_FreeUsedBuffer[cursor] = true;
+            ++cursor;
+        }
+
+        return true;
     }
     private bool MoveLargeUnit(CombatUnit unit, int steps, CombatUnit[] slots)
     {

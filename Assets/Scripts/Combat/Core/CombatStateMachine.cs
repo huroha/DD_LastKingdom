@@ -242,6 +242,7 @@ public class CombatStateMachine : MonoBehaviour
                     m_ActiveUnit.SetProtecting(null);
                 }
             }
+            m_ActiveUnit.TickSkillCooldowns();
             // Dot 틱
             List<DotTickResult> dotResults = m_StatusEffectManager.ApplyDotDamage(m_ActiveUnit);
             yield return StartCoroutine(ProcessDotResultsRoutine(dotResults));
@@ -303,7 +304,17 @@ public class CombatStateMachine : MonoBehaviour
         m_BattleEnded = false;
 
         m_PositionSystem.GetAllUnits(CombatUnitType.Enemy, m_UnitBuffer);
-        if (m_UnitBuffer.Count == 0)
+        bool anyThreat = false;
+        for (int i = 0; i < m_UnitBuffer.Count; ++i)
+        {
+            EnemyData data = m_UnitBuffer[i].EnemyData;
+            if (data == null || !data.IsStructure)   // 구조물이 아닌 적이 하나라도 살아있으면 위협
+            {
+                anyThreat = true;
+                break;
+            }
+        }
+        if (!anyThreat)
         {
             ApplyPostBattleEbla();
             yield return StartCoroutine(FlushPendingResolutions());
@@ -514,7 +525,7 @@ public class CombatStateMachine : MonoBehaviour
         int total = 0;
         for (int i = m_EblaFreeRounds + 1; i <= roundCheck; ++i)
         {
-            total += i * m_EblaRoundMultiplier;
+            total += m_EblaRoundMultiplier*5;
         }
         ApplyEblaToAllNikkes(total);
     }

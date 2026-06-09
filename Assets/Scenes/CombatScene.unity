@@ -3747,6 +3747,7 @@ MonoBehaviour:
   m_FloatingLabel: {fileID: 2020028444}
   m_RoundText: {fileID: 285528909}
   m_PendingRound: 0
+  m_RoundUI: {fileID: 1942547674}
   m_NikkeHpBarRoot: {fileID: 1409718596}
   m_EnemyHpBarRoot: {fileID: 1101408381}
   m_SelectBar: {fileID: 97428158}
@@ -4940,10 +4941,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0b580711d03aa9844a2479c00e55cfdf, type: 2}
   - {fileID: 11400000, guid: 0b580711d03aa9844a2479c00e55cfdf, type: 2}
   m_TestEnemies:
-  - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
-  - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
-  - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
-  - {fileID: 11400000, guid: a8bf4396ae234184a887f2915643cd8b, type: 2}
+  - {fileID: 11400000, guid: 2ce80a07af5690a478cc992ff086a187, type: 2}
+  - {fileID: 11400000, guid: 2ce80a07af5690a478cc992ff086a187, type: 2}
+  - {fileID: 11400000, guid: 3ed94efa5a575d74f8ba18c9b815b48e, type: 2}
   m_EnemyActionDelay: 1
   m_SkillSelectPanel: {fileID: 1281108709}
   m_TargetSelectPanel: {fileID: 1148400936}
@@ -4951,7 +4951,7 @@ MonoBehaviour:
   m_FieldView: {fileID: 1064561593}
   m_CombatHUD: {fileID: 335391953}
   m_HaloController: {fileID: 1686950629}
-  m_EblaFreeRounds: 4
+  m_EblaFreeRounds: 8
   m_EblaRoundMultiplier: 1
   m_AfflictionTypes:
   - {fileID: 11400000, guid: d8109a3e22abc6447aa96f243d671c9d, type: 2}
@@ -10366,6 +10366,8 @@ MonoBehaviour:
   m_UnitScale: 0.3
   m_LargeUnitScale: 0.5
   m_CombatHUD: {fileID: 335391953}
+  m_SlotPositionController: {fileID: 1620039173}
+  m_CameraTilt: {fileID: 51401691}
   m_PopScale: 1.05
   m_PopDuration: 0.5
   m_CorpsePopStartMultiplier: 0.1
@@ -13214,6 +13216,7 @@ MonoBehaviour:
   m_NikkeFocusLayoutScale: 1.2
   m_EnemyFocusLayoutScale: 1.1
   m_EnemyFocusMinXMargin: 1.8
+  m_LargeUnitFocusOffset: {x: 2.2, y: 0}
   m_NikkeMeleeFocusPoint: {fileID: 1567845931}
   m_NikkeRangeFocusPoint: {fileID: 116743305}
   m_EnemyFocusPoint: {fileID: 568675757}
@@ -18082,6 +18085,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1942547673}
+  - component: {fileID: 1942547674}
   m_Layer: 5
   m_Name: RoundUI
   m_TagString: Untagged
@@ -18112,6 +18116,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 424}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &1942547674
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942547672}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &1943457400 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6201390270507030065, guid: 79100821ef085244f990f3710fca897f, type: 3}

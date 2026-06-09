@@ -28,6 +28,7 @@ public class SkillExecutor
     private List<CombatUnit> m_ActualTargetBuffer = new List<CombatUnit>();
     private List<StatusEffectData> m_AllyAppliedBuffer = new List<StatusEffectData>();
     private List<AllyEffectResult> m_AllyResultList = new List<AllyEffectResult>();
+    private List<CombatUnit> m_ReshuffleRollBuffer = new List<CombatUnit>(4);
 
     public SkillExecutor(PositionSystem positionSystem, EblaSystem eblaSystem, StatusEffectData deathsDoorDebuff, StatusEffectData deathsDoorRecovery)
     {
@@ -115,22 +116,10 @@ public class SkillExecutor
             for (int j = 0; j < m_ResistedBuffer.Count; ++j)
                 result[i].ResistedEffects[j] = m_ResistedBuffer[j];
         }
-
+        ApplyReshuffle(user, skill);
         IReadOnlyList<StatusEffectData> selfEffects = ld.onSelfEffects ?? System.Array.Empty<StatusEffectData>();
         for (int i = 0; i < selfEffects.Count; ++i)
-        {
-            StatusEffectData effect = selfEffects[i];
-            ActiveStatusEffect existing = user.FindEffect(effect);
-            if (existing != null)
-            {
-                if (effect.IsStackable)
-                { if (existing.CurrentStacks < effect.MaxStack) existing.CurrentStacks++; }
-                else
-                    existing.RemainingTurns = Mathf.Max(existing.RemainingTurns, effect.Duration);
-            }
-            else
-                user.AddEffect(new ActiveStatusEffect(effect));
-        }
+            ApplyEffect(user, selfEffects[i]);
 
         if (selfEffects.Count > 0)
             user.RecalculateStats();
@@ -243,23 +232,12 @@ public class SkillExecutor
             for (int j = 0; j < m_ResistedBuffer.Count; ++j)
                 result[i].ResistedEffects[j] = m_ResistedBuffer[j];
         }
-
+        ApplyReshuffle(user, skill);
         // onSelfEffects
         IReadOnlyList<StatusEffectData> selfEffects = skill.OnSelfEffects ?? System.Array.Empty<StatusEffectData>();
         for (int i = 0; i < selfEffects.Count; ++i)
-        {
-            StatusEffectData effect = selfEffects[i];
-            ActiveStatusEffect existing = user.FindEffect(effect);
-            if (existing != null)
-            {
-                if (effect.IsStackable)
-                { if (existing.CurrentStacks < effect.MaxStack) existing.CurrentStacks++; }
-                else
-                    existing.RemainingTurns = Mathf.Max(existing.RemainingTurns, effect.Duration);
-            }
-            else
-                user.AddEffect(new ActiveStatusEffect(effect));
-        }
+            ApplyEffect(user, selfEffects[i]);
+
         if (selfEffects.Count > 0)
             user.RecalculateStats();
 
@@ -275,18 +253,8 @@ public class SkillExecutor
                 m_AllyAppliedBuffer.Clear();
                 for (int j = 0; j < allyEffects.Count; ++j)
                 {
-                    StatusEffectData effect = allyEffects[j];
-                    ActiveStatusEffect existing = unit.FindEffect(effect);
-                    if (existing != null)
-                    {
-                        if (effect.IsStackable && existing.CurrentStacks < effect.MaxStack)
-                            existing.CurrentStacks++;
-                        else
-                            existing.RemainingTurns = Mathf.Max(existing.RemainingTurns, effect.Duration);
-                    }
-                    else
-                        unit.AddEffect(new ActiveStatusEffect(effect));
-                    m_AllyAppliedBuffer.Add(effect);
+                    ApplyEffect(unit, allyEffects[j]);
+                    m_AllyAppliedBuffer.Add(allyEffects[j]);
                 }
                 unit.RecalculateStats();
                 if (m_AllyAppliedBuffer.Count > 0)
@@ -403,49 +371,17 @@ public class SkillExecutor
             float resistance = GetResistance(target, effect.EffectType);
             float effectiveResist = Mathf.Max(0f, resistance - (effect.BaseApplyRate - 100f));
             roll = Random.Range(0f, 100f);
-            if (roll < effectiveResist)  // 저항 성공
-                resisted.Add(effect);
-
-            else
+            if (roll < effectiveResist)   // 저항 성공
             {
-                ActiveStatusEffect existing = null;
-
-                if (effect.EffectType.IsDot())
-                {
-                    int duration = isCrit ? Mathf.CeilToInt(effect.Duration * 1.5f) : effect.Duration;
-                    ActiveStatusEffect existingDot = target.FindEffectByType(effect.EffectType);
-                    if (existingDot != null)
-                    {
-                        existingDot.AccumulatedTickDamage += effect.TickDamage;
-                        existingDot.RemainingTurns = Mathf.Max(existingDot.RemainingTurns, duration);
-                    }
-                    else
-                    {
-                        target.AddEffect(new ActiveStatusEffect(effect, duration));
-                    }
-                }
-                else
-                {
-                    existing = target.FindEffect(effect);
-                    if (existing != null)
-                    {
-                        if (effect.IsStackable)
-                        {
-                            if (existing.CurrentStacks < effect.MaxStack)
-                                existing.CurrentStacks++;
-                        }
-                        else
-                        {
-                            existing.RemainingTurns = Mathf.Max(existing.RemainingTurns, effect.Duration);
-                        }
-                    }
-                    else
-                    {
-                        target.AddEffect(new ActiveStatusEffect(effect));
-                    }
-                }
-                applied.Add(effect);
+                resisted.Add(effect);
+                continue;
             }
+
+            int duration = (effect.EffectType.IsDot() && isCrit)
+                         ? Mathf.CeilToInt(effect.Duration * 1.5f)
+                         : effect.Duration;
+            ApplyEffect(target, effect, duration);
+            applied.Add(effect);
         }
         if (applied.Count > 0)
             target.RecalculateStats();
@@ -511,23 +447,58 @@ public class SkillExecutor
         }
     }
 
-    // skill.MoveUserAmount -> user 이동, skill.MoveTargetAmount -> target 이동
     private void ApplyPositionMove(CombatUnit user, BaseSkillData skill, CombatUnit target, bool isHit)
     {
         if (skill.MoveUserAmount != 0)
-        {
             m_PositionSystem.Move(user, skill.MoveUserAmount);
-        }
-        if (skill.MoveTargetAmount != 0 && isHit)
+
+        if (!isHit)
+            return;
+        if (target.State == UnitState.Corpse || target.State == UnitState.Dead)
+            return;
+
+        switch (skill.TargetMoveMode)
         {
-            if (target.State == UnitState.Corpse || target.State == UnitState.Dead)
-                return;
-            float roll = Random.Range(0f, 100f);
-            if (roll >= target.CurrentStats.resistance.move)
-            {
-                m_PositionSystem.Move(target, skill.MoveTargetAmount);
-            }
+            case TargetMoveMode.Fixed:
+                if (skill.MoveTargetAmount != 0 && RollMoveResist(target))
+                    m_PositionSystem.Move(target, skill.MoveTargetAmount);
+                break;
+
+            case TargetMoveMode.RandomSlot:
+                if (RollMoveResist(target))
+                    m_PositionSystem.RandomMove(target);
+                break;
+
+            case TargetMoveMode.Reshuffle:
+                break;  // 진영 단위 — ApplyReshuffle에서 루프 밖 1회 처리
         }
+    }
+    // roll >= move저항 이면 이동 적용(저항 실패)
+    private bool RollMoveResist(CombatUnit target)
+    {
+        float roll = Random.Range(0f, 100f);
+        return roll >= target.CurrentStats.resistance.move;
+    }
+    private void ApplyReshuffle(CombatUnit user, BaseSkillData skill)
+    {
+        if (skill.TargetMoveMode != TargetMoveMode.Reshuffle)
+            return;
+
+        CombatUnitType targetTeam = (user.UnitType == CombatUnitType.Nikke)
+            ? CombatUnitType.Enemy : CombatUnitType.Nikke;
+
+        // 살아있는 유닛만 (시체 제외) 저항 굴림
+        m_PositionSystem.GetAllUnits(targetTeam, m_ReshuffleRollBuffer);
+
+        int failCount = 0;
+        for (int i = 0; i < m_ReshuffleRollBuffer.Count; ++i)
+        {
+            if (RollMoveResist(m_ReshuffleRollBuffer[i]))
+                ++failCount;   // 저항 실패 = 이동당함
+        }
+
+        if (failCount >= 2)
+            m_PositionSystem.Reshuffle(targetTeam);
     }
 
     //  Enemy Info 용도
@@ -685,18 +656,8 @@ public class SkillExecutor
             {
                 for (int j = 0; j < ld.onAllyEffects.Length; ++j)
                 {
-                    StatusEffectData effect = ld.onAllyEffects[j];
-                    ActiveStatusEffect existing = unit.FindEffect(effect);
-                    if (existing != null)
-                    {
-                        if (effect.IsStackable && existing.CurrentStacks < effect.MaxStack)
-                            existing.CurrentStacks++;
-                        else
-                            existing.RemainingTurns = Mathf.Max(existing.RemainingTurns, effect.Duration);
-                    }
-                    else
-                        unit.AddEffect(new ActiveStatusEffect(effect));
-                    m_AllyAppliedBuffer.Add(effect);
+                    ApplyEffect(unit, ld.onAllyEffects[j]);
+                    m_AllyAppliedBuffer.Add(ld.onAllyEffects[j]);
                 }
                 unit.RecalculateStats();
             }
@@ -709,5 +670,34 @@ public class SkillExecutor
                 m_AllyResultList.Add(allyResult);
             }
         }
+    }
+    // 효과 하나를 유닛에 적용/중첩. durationOverride < 0 이면 effect.Duration 사용.
+    private void ApplyEffect(CombatUnit unit, StatusEffectData effect, int durationOverride = -1)
+    {
+        int duration = durationOverride >= 0 ? durationOverride : effect.Duration;
+
+        if (effect.EffectType.IsDot())
+        {
+            ActiveStatusEffect dot = unit.FindEffectByType(effect.EffectType);
+            if (dot != null)
+            {
+                dot.AccumulatedTickDamage += effect.TickDamage;
+                dot.RemainingTurns = Mathf.Max(dot.RemainingTurns, duration);
+            }
+            else
+                unit.AddEffect(new ActiveStatusEffect(effect, duration));
+            return;
+        }
+
+        ActiveStatusEffect existing = unit.FindEffect(effect);
+        if (existing == null)
+        {
+            unit.AddEffect(new ActiveStatusEffect(effect, duration));
+            return;
+        }
+
+        if (effect.IsStackable && existing.CurrentStacks < effect.MaxStack)
+            existing.CurrentStacks++;
+        existing.RemainingTurns = Mathf.Max(existing.RemainingTurns, duration);   // 스택 여부 무관 항상 갱신
     }
 }

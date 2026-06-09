@@ -22,6 +22,7 @@ public class CombatHUD : MonoBehaviour
     [Header("Round")]
     [SerializeField] private TextMeshProUGUI m_RoundText;
     [SerializeField] private int m_PendingRound;
+    [SerializeField] private CanvasGroup m_RoundUI;
 
     [Header("Root Slots")]
     [SerializeField] private GameObject m_NikkeHpBarRoot;
@@ -531,6 +532,7 @@ public class CombatHUD : MonoBehaviour
         m_NikkeHpBarRoot.SetActive(visible);
         m_EnemyHpBarRoot.SetActive(visible);
         m_SelectBar.SetActive(visible);
+        m_RoundUI.alpha = visible ? 1f : 0f;
     }
 
     public Coroutine PlayEnemySkillAnnounce(string skillName)

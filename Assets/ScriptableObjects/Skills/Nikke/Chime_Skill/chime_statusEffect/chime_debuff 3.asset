@@ -40,6 +40,6 @@ MonoBehaviour:
       trap: 0
     damageMultiplier: 0
     eblaMultiplier: 0
-  m_IsStackable: 0
-  m_MaxStack: 1
+  m_IsStackable: 1
+  m_MaxStack: 2
   m_BaseApplyRate: 130

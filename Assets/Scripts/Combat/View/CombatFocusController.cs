@@ -6,10 +6,12 @@ public class CombatFocusController : MonoBehaviour
 {
     [Header("Focus")]
     [SerializeField] private float m_FocusScale;
+    [SerializeField] private float m_LargeUnitFocusScale = 1f;
     [SerializeField] private float m_FocusOutDuration;
     [SerializeField] private float m_NikkeFocusLayoutScale;
     [SerializeField] private float m_EnemyFocusLayoutScale;
     [SerializeField] private float m_EnemyFocusMinXMargin;
+    [SerializeField] private Vector2 m_LargeUnitFocusOffset;
 
     [Header("Focus Points")]
     [SerializeField] private Transform m_NikkeMeleeFocusPoint;
@@ -167,6 +169,7 @@ public class CombatFocusController : MonoBehaviour
         Vector3[] snapScales = new Vector3[m_FocusBuffer.Count];
         Vector3[] snapFrom = new Vector3[m_FocusBuffer.Count];
         Vector3[] snapTo = new Vector3[m_FocusBuffer.Count];
+        float[] snapFocusScales = new float[m_FocusBuffer.Count];
 
         foreach (CombatUnit unit in m_FocusBuffer)
         {
@@ -174,6 +177,7 @@ public class CombatFocusController : MonoBehaviour
             snapScales[snapCount] = m_OriginalScales[unit];
             snapFrom[snapCount] = m_DriftedPositions[unit];
             snapTo[snapCount] = m_OriginalPositions[unit];
+            snapFocusScales[snapCount] = FocusScaleFor(unit);
             ++snapCount;
         }
 
@@ -186,7 +190,7 @@ public class CombatFocusController : MonoBehaviour
             for (int i = 0; i < snapCount; ++i)
             {
                 snapViews[i].Renderer.transform.localScale = Vector3.Lerp(
-                    snapScales[i] * m_FocusScale, snapScales[i], t);
+                    snapScales[i] * snapFocusScales[i], snapScales[i], t);
                 snapViews[i].Renderer.transform.position = Vector3.Lerp(
                     snapFrom[i], snapTo[i], t);
             }
@@ -214,6 +218,10 @@ public class CombatFocusController : MonoBehaviour
         m_CombatHUD.SetHpBarsVisible(true);
     }
     // 헬퍼
+    private float FocusScaleFor(CombatUnit unit)
+    {
+        return unit.SlotSize >= 2 ? m_LargeUnitFocusScale : m_FocusScale;
+    }
     private void AssignFocusPositions(List<CombatUnit> units, Vector3 focusCenter, float layoutScale, float minX = float.MinValue)
     {
         Vector3[] slotPositions = new Vector3[units.Count];
@@ -242,8 +250,10 @@ public class CombatFocusController : MonoBehaviour
             Vector3 slotOffset = slotPositions[i] - layoutCenter;
             Vector3 pos = focusCenter + slotOffset * layoutScale;
             pos.x += xShift;
+            if (unit.SlotSize >= 2)
+                pos += (Vector3)m_LargeUnitFocusOffset;
             view.Renderer.transform.localPosition = m_BgTransform.InverseTransformPoint(pos);
-            view.Renderer.transform.localScale = m_OriginalScales[unit] * m_FocusScale;
+            view.Renderer.transform.localScale = m_OriginalScales[unit] * FocusScaleFor(unit);
             view.Renderer.sortingOrder = m_FocusSortingOrder;
             view.Renderer.gameObject.layer = m_FocusLayer;
             if (view.DeathOverlay != null)

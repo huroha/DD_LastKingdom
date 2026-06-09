@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3451d3a4df902f4492fbf42b744e5ec, type: 3}
+  m_Name: BarriGate
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  m_EnemyName: "\uBC14\uB9AC\uAC8C\uC774\uD2B8"
+  m_EnemyType: 0
+  m_Element: 3
+  m_SlotSize: 1
+  m_ActionsPerRound: 0
+  m_BaseStats:
+    maxHp: 5
+    minDamage: 0
+    maxDamage: 0
+    accuracyMod: 0
+    critChance: 0
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 0
+    moveRange: 0
+    resistance:
+      stun: 500
+      move: 500
+      poison: 500
+      disease: 500
+      bleed: 500
+      debuff: 500
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  m_Skills: []
+  m_DropTable:
+    MinCredit: 200
+    MaxCredit: 300
+    MinGems: 2
+    MaxGems: 2
+    MinBattleData: 0
+    MaxBattleData: 0
+    MinCore: 0
+    MaxCore: 0
+    Relics: []
+  m_CorpseHp: 0
+  m_CorpseDecayTurns: 0
+  m_IsStructure: 1
+  m_Sprite: {fileID: 21300000, guid: a44dd69167fdb514db045783a992f850, type: 3}
+  m_CorpseSprite: {fileID: 0}
+  m_HitSprite: {fileID: 0}
+  m_CombatAnimator: {fileID: 0}
+  m_ScaleOffset: 1

@@ -29,6 +29,12 @@ public enum EffectMovement
     Static,
     Projectile,
 }
+public enum TargetMoveMode
+{
+    Fixed,      // 기존 고정이동
+    RandomSlot, // 단일 대상 랜덤
+    Reshuffle   // 전체 랜덤
+}
 public abstract class BaseSkillData : ScriptableObject
 {
     [Header("Basic Info")]
@@ -43,6 +49,7 @@ public abstract class BaseSkillData : ScriptableObject
     [Header("Move")]
     [SerializeField] private int m_MoveUserAmount;
     [SerializeField] private int m_MoveTargetAmount;
+    [SerializeField] private TargetMoveMode m_TargetMoveMode;
 
     [Header("Special")]
     [SerializeField] private bool m_BypassGuard;
@@ -67,6 +74,7 @@ public abstract class BaseSkillData : ScriptableObject
     public TargetType TargetType => m_TargetType;
     public int MoveUserAmount => m_MoveUserAmount;
     public int MoveTargetAmount => m_MoveTargetAmount;
+    public TargetMoveMode TargetMoveMode => m_TargetMoveMode;
     public bool BypassGuard => m_BypassGuard;
     public CombatEffectData AttackEffect => m_AttackEffect;
     public EffectMovement AttackMovement => m_AttackMovement;

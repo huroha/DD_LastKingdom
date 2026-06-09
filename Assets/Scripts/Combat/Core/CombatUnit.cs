@@ -43,6 +43,7 @@ public class CombatUnit
    
     // 행동 수
     public int ActionsPerRound { get; }
+    private int[] m_SkillCooldowns;
 
     // 원본 데이터 참조
     public NikkeInstance NikkeInstance { get; }
@@ -148,9 +149,10 @@ public class CombatUnit
         BaseStats = data.BaseStats;
         CurrentStats = data.BaseStats;
         State = UnitState.Alive;
-        ActionsPerRound = data.ActionsPerRound;
+        ActionsPerRound = data.IsStructure ? 0 : data.ActionsPerRound;
         m_ActiveEffects = new List<ActiveStatusEffect>();
-    }
+        m_SkillCooldowns = new int[data.Skills.Count];
+}
 
     // 데미지
     public UnitState TakeDamage(int damage, bool isDot = false, bool isCrit = false)
@@ -184,7 +186,7 @@ public class CombatUnit
                 CurrentHp -= damage;
                 if(CurrentHp <= 0)
                 {
-                    if(isDot || isCrit)
+                    if (isDot || isCrit || EnemyData.IsStructure)
                     {
                         CurrentHp = 0;
                         State = UnitState.Dead;
@@ -249,9 +251,10 @@ public class CombatUnit
     public void RecalculateStats()
     {
         StatBlock stats = BaseStats;
-        for (int i=0; i< ActiveEffects.Count; ++i)
+        for (int i = 0; i < ActiveEffects.Count; ++i)
         {
-            stats = stats.Apply(ActiveEffects[i].Data.StatModifier);
+            ActiveStatusEffect e = ActiveEffects[i];
+            stats = stats.Apply(e.Data.StatModifier.Scale(e.CurrentStacks));
         }
         CurrentStats = stats;
     }
@@ -313,5 +316,29 @@ public class CombatUnit
     public void DecrementGuardTurns()
     {
         GuardTurnsRemaining--;
+    }
+    public bool IsSkillOnCooldown(int index)
+    {
+        if (m_SkillCooldowns == null || index < 0 || index >= m_SkillCooldowns.Length)
+            return false;
+        return m_SkillCooldowns[index] > 0;
+    }
+
+    public void SetSkillCooldown(int index, int turns)
+    {
+        if (m_SkillCooldowns == null || index < 0 || index >= m_SkillCooldowns.Length)
+            return;
+        m_SkillCooldowns[index] = turns;
+    }
+
+    public void TickSkillCooldowns()
+    {
+        if (m_SkillCooldowns == null)
+            return;
+        for (int i = 0; i < m_SkillCooldowns.Length; ++i)
+        {
+            if (m_SkillCooldowns[i] > 0)
+                --m_SkillCooldowns[i];
+        }
     }
 }

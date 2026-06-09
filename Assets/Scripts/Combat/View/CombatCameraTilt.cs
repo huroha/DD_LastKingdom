@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class CombatCameraTilt : MonoBehaviour
@@ -16,6 +16,8 @@ public class CombatCameraTilt : MonoBehaviour
     private bool m_IsTilted;
     private float m_CurrentTiltY;
 
+
+    public bool IsTilted => m_IsTilted;
     private void OnEnable()
     {
         EventBus.Subscribe<TurnStartedEvent>(OnTurnStarted);

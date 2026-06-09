@@ -25,8 +25,8 @@ MonoBehaviour:
   m_AttackMovement: 0
   m_ProjectileSpeed: 20
   m_HitEffect: {fileID: 11400000, guid: 14162abe57e5ca044b27f3302e69e083, type: 2}
-  m_MinDamage: 50
-  m_MaxDamage: 50
+  m_MinDamage: 3
+  m_MaxDamage: 5
   m_AccuracyMod: 83
   m_CritMod: 6
   m_EblaDamage: 0

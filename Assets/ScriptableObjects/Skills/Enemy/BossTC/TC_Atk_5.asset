@@ -10,26 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 73eb8c2d958ea824f9300f9e22732aa2, type: 3}
-  m_Name: Ebla_injection
+  m_Name: TC_Atk_5
   m_EditorClassIdentifier: Assembly-CSharp::EnemySkillData
-  m_SkillName: "\uC5D0\uBE14\uB77C \uBD84\uC0AC"
+  m_SkillName: "\uACE0\uCD9C\uB825 \uC911\uC785\uC790\uD3EC"
   m_SkillType: 1
-  m_UsablePositions: 01010101
-  m_TargetPositions: 01010101
-  m_TargetType: 0
+  m_UsablePositions: 00000101
+  m_TargetPositions: 01010100
+  m_TargetType: 1
   m_MoveUserAmount: 0
   m_MoveTargetAmount: 0
+  m_TargetMoveMode: 0
   m_BypassGuard: 0
-  m_AttackSprite: {fileID: 0}
+  m_AttackSprite: {fileID: 21300000, guid: b89aed1b5c1c73b41b280ad4ac01d605, type: 3}
   m_AttackEffect: {fileID: 0}
   m_AttackMovement: 0
   m_ProjectileSpeed: 20
-  m_HitEffect: {fileID: 11400000, guid: c7ae45651ff4f4d46bd02b14439ba5cb, type: 2}
-  m_MinDamage: 1
-  m_MaxDamage: 1
-  m_AccuracyMod: 82
-  m_CritMod: 0
-  m_EblaDamage: 15
+  m_HitEffect: {fileID: 11400000, guid: dc129c91d742cb148ba1d8e1bd64a907, type: 2}
+  m_MinDamage: 5
+  m_MaxDamage: 7
+  m_AccuracyMod: 108
+  m_CritMod: 16
+  m_Cooldown: 2
+  m_EblaDamage: 0
   m_OnHitEffects: []
   m_OnSelfEffects: []
   m_OnAllyEffects: []

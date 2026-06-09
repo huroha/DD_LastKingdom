@@ -35,7 +35,7 @@ MonoBehaviour:
       move: 0
       poison: 0
       disease: 0
-      bleed: 35
+      bleed: -35
       debuff: 0
       trap: 0
     damageMultiplier: 0

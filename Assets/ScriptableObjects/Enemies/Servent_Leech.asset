@@ -63,8 +63,9 @@ MonoBehaviour:
     - Type: 3
       Min: 4
       Max: 4
-  m_CorpseHp: 20
+  m_CorpseHp: 15
   m_CorpseDecayTurns: 3
+  m_IsStructure: 0
   m_Sprite: {fileID: -7382081116707789574, guid: 36dce3df22a4e2c4ca85e503dc0195d9, type: 3}
   m_CorpseSprite: {fileID: 3001937120653127659, guid: 1071487d4fbc5dc41ae5759bd09631bd, type: 3}
   m_HitSprite: {fileID: 21300000, guid: 80ae983832ece794d86546e64e4fd5a1, type: 3}
