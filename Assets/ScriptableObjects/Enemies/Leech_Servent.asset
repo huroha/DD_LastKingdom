@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d3451d3a4df902f4492fbf42b744e5ec, type: 3}
-  m_Name: Servent_Leech
+  m_Name: Leech_Servent
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   m_EnemyName: "\uBE14\uB77C\uB354"
   m_EnemyType: 0

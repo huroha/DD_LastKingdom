@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3451d3a4df902f4492fbf42b744e5ec, type: 3}
+  m_Name: Ibol_Servent
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  m_EnemyName: "\uC544\uC774\uBCFC"
+  m_EnemyType: 0
+  m_Element: 0
+  m_SlotSize: 1
+  m_ActionsPerRound: 1
+  m_BaseStats:
+    maxHp: 15
+    minDamage: 0
+    maxDamage: 0
+    accuracyMod: 0
+    critChance: 0
+    defense: 0
+    dodge: 0
+    deathBlowResist: 0
+    speed: 2
+    moveRange: 0
+    resistance:
+      stun: 25
+      move: 20
+      poison: 10
+      disease: 0
+      bleed: 50
+      debuff: 15
+      trap: 0
+    damageMultiplier: 0
+    eblaMultiplier: 0
+  m_Skills: []
+  m_DropTable:
+    MinCredit: 100
+    MaxCredit: 200
+    MinGems: 4
+    MaxGems: 4
+    MinBattleData: 4
+    MaxBattleData: 4
+    MinCore: 4
+    MaxCore: 4
+    Relics:
+    - Type: 0
+      Min: 4
+      Max: 4
+    - Type: 1
+      Min: 4
+      Max: 4
+    - Type: 2
+      Min: 4
+      Max: 4
+    - Type: 3
+      Min: 4
+      Max: 4
+  m_CorpseHp: 15
+  m_CorpseDecayTurns: 3
+  m_IsStructure: 0
+  m_Sprite: {fileID: 21300000, guid: 0ecf0038fed6f584e94603cfde6f11fd, type: 3}
+  m_CorpseSprite: {fileID: 21300000, guid: 6dc3c97125c5d4e49b5f416993e39393, type: 3}
+  m_HitSprite: {fileID: 21300000, guid: c680662f4171e384e9ed210f1f0e765b, type: 3}
+  m_CombatAnimator: {fileID: 9100000, guid: 1c359b05f9be0e845b04d84e27b05d19, type: 2}
+  m_ScaleOffset: 0.9

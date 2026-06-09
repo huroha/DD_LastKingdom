@@ -523,10 +523,7 @@ public class CombatStateMachine : MonoBehaviour
         if (m_EblaFreeRounds > roundCheck)
             return;
         int total = 0;
-        for (int i = m_EblaFreeRounds + 1; i <= roundCheck; ++i)
-        {
-            total += m_EblaRoundMultiplier*5;
-        }
+        total = (roundCheck - m_EblaFreeRounds) * m_EblaRoundMultiplier * 5;
         ApplyEblaToAllNikkes(total);
     }
 

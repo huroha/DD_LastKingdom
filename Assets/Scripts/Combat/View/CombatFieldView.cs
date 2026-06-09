@@ -138,6 +138,7 @@ public class CombatFieldView : MonoBehaviour
                 if (view.AnimBridge != null)
                     view.AnimBridge.ClearCallbacks();
                 view.Renderer.sprite = e.Unit.EnemyData.CorpseSprite;
+                view.Renderer.transform.position = GetSlotPosition(e.Unit);
                 m_CorpseViews[e.Unit] = view.Renderer;
 
                 if (m_CorpsePopCoroutines.ContainsKey(e.Unit))
@@ -269,12 +270,20 @@ public class CombatFieldView : MonoBehaviour
             return m_EnemySlots;
     }
 
-    public Vector3 GetSlotPosition(CombatUnit unit)
+    public Vector3 GetSlotBasePosition(CombatUnit unit)
     {
         Transform[] unitSlots = GetSlots(unit.UnitType);
         if (unit.SlotSize == 2 && unit.SlotIndex + 1 < unitSlots.Length)
             return (unitSlots[unit.SlotIndex].position + unitSlots[unit.SlotIndex + 1].position) / 2f;
         return unitSlots[unit.SlotIndex].position;
+    }
+
+    public Vector3 GetSlotPosition(CombatUnit unit)
+    {
+        Vector3 basePos = GetSlotBasePosition(unit);
+        if (unit.UnitType == CombatUnitType.Enemy && unit.State != UnitState.Corpse)
+            basePos.y += unit.EnemyData.YOffset;
+        return basePos;
     }
 
     public void MoveAllToCurrentSlots()

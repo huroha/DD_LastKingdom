@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CombatSlotPositionController : MonoBehaviour
 {
@@ -39,7 +39,7 @@ public class CombatSlotPositionController : MonoBehaviour
             CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Nikke, i);
             if (unit == null)
                 continue;
-            Vector3 worldPos = m_FieldView.GetSlotPosition(unit);
+            Vector3 worldPos = m_FieldView.GetSlotBasePosition(unit);
             Vector3 screenPos = m_Camera.WorldToScreenPoint(worldPos);
             m_NikkeSlotRoots[i].position = screenPos;
         }
@@ -51,7 +51,7 @@ public class CombatSlotPositionController : MonoBehaviour
                 continue;
             if (unit.SlotSize == 2)
                 continue;
-            Vector3 worldPos = m_FieldView.GetSlotPosition(unit);
+            Vector3 worldPos = m_FieldView.GetSlotBasePosition(unit);
             Vector3 screenPos = m_Camera.WorldToScreenPoint(worldPos);
             m_EnemySlotRoots[i].position = screenPos;
         }
@@ -61,7 +61,7 @@ public class CombatSlotPositionController : MonoBehaviour
             CombatUnit unit = m_CombatStateMachine.PositionSystem.GetUnit(CombatUnitType.Enemy, i);
             if (unit == null || unit.SlotSize != 2 || unit.SlotIndex != i)
                 continue;
-            Vector3 worldPos = m_FieldView.GetSlotPosition(unit);
+            Vector3 worldPos = m_FieldView.GetSlotBasePosition(unit);
             Vector3 screenPos = m_Camera.WorldToScreenPoint(worldPos);
             m_LargeEnemySlotRoots[i].position = screenPos;
         }

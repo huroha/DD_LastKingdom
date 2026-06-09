@@ -68,6 +68,8 @@ public class EnemyData : ScriptableObject
     [SerializeField] private Sprite m_HitSprite;
     [SerializeField] private RuntimeAnimatorController m_CombatAnimator;
     [SerializeField] private float m_ScaleOffset;
+    [SerializeField] private float m_YOffset;
+    public float YOffset => m_YOffset;
     public string EnemyName => m_EnemyName;
     public EnemyType EnemyType => m_EnemyType;
     public ElementType Element => m_Element;

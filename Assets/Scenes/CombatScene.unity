@@ -13212,6 +13212,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatFocusController
   m_FocusScale: 1.7
+  m_LargeUnitFocusScale: 1.5
   m_FocusOutDuration: 0.3
   m_NikkeFocusLayoutScale: 1.2
   m_EnemyFocusLayoutScale: 1.1
