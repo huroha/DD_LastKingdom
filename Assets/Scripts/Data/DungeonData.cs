@@ -11,7 +11,14 @@ public class DungeonData : ScriptableObject
     [Header("Encounters")]
     [SerializeField] private EncounterData[] m_Encounters;
 
+    [Header("Background")]
+    [SerializeField] private Sprite m_CombatBg;
+    [SerializeField] private Sprite m_SettleBg;
+
+
     public DungeonType DungeonType => m_DungeonType;
     public Sprite Thumbnail => m_Thumbnail;
     public IReadOnlyList<EncounterData> Encounters => m_Encounters;
+    public Sprite CombatBg => m_CombatBg;
+    public Sprite SettleBg => m_SettleBg;
 }

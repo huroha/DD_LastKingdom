@@ -18,15 +18,15 @@ MonoBehaviour:
   m_SlotSize: 1
   m_ActionsPerRound: 1
   m_BaseStats:
-    maxHp: 15
+    maxHp: 20
     minDamage: 0
     maxDamage: 0
     accuracyMod: 0
     critChance: 0
     defense: 0
-    dodge: 0
+    dodge: 5
     deathBlowResist: 0
-    speed: 2
+    speed: 4
     moveRange: 0
     resistance:
       stun: 25
@@ -38,29 +38,19 @@ MonoBehaviour:
       trap: 0
     damageMultiplier: 0
     eblaMultiplier: 0
-  m_Skills: []
+  m_Skills:
+  - {fileID: 11400000, guid: 7fae32f407559c847a88d20bcb472a5a, type: 2}
+  - {fileID: 11400000, guid: b7185fbbf8492eb45b76d30b4905dd98, type: 2}
   m_DropTable:
     MinCredit: 100
     MaxCredit: 200
-    MinGems: 4
-    MaxGems: 4
-    MinBattleData: 4
-    MaxBattleData: 4
-    MinCore: 4
-    MaxCore: 4
-    Relics:
-    - Type: 0
-      Min: 4
-      Max: 4
-    - Type: 1
-      Min: 4
-      Max: 4
-    - Type: 2
-      Min: 4
-      Max: 4
-    - Type: 3
-      Min: 4
-      Max: 4
+    MinGems: 0
+    MaxGems: 0
+    MinBattleData: 0
+    MaxBattleData: 1
+    MinCore: 0
+    MaxCore: 1
+    Relics: []
   m_CorpseHp: 15
   m_CorpseDecayTurns: 3
   m_IsStructure: 0
@@ -69,3 +59,4 @@ MonoBehaviour:
   m_HitSprite: {fileID: 21300000, guid: c680662f4171e384e9ed210f1f0e765b, type: 3}
   m_CombatAnimator: {fileID: 9100000, guid: 1c359b05f9be0e845b04d84e27b05d19, type: 2}
   m_ScaleOffset: 0.9
+  m_YOffset: 1

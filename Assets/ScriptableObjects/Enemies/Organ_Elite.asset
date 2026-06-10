@@ -10,39 +10,38 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d3451d3a4df902f4492fbf42b744e5ec, type: 3}
-  m_Name: RaptureElite_EnemyData
+  m_Name: Organ_Elite
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  m_EnemyName: "\uB2E5\uD130"
+  m_EnemyName: "\uC624\uB974\uAC04"
   m_EnemyType: 1
-  m_Element: 2
+  m_Element: 4
   m_SlotSize: 2
-  m_ActionsPerRound: 2
+  m_ActionsPerRound: 1
   m_BaseStats:
-    maxHp: 63
+    maxHp: 42
     minDamage: 0
     maxDamage: 0
     accuracyMod: 0
     critChance: 0
-    defense: 15
-    dodge: 13
+    defense: 10
+    dodge: 10
     deathBlowResist: 0
     speed: 4
     moveRange: 0
     resistance:
-      stun: 70
+      stun: 50
       move: 82
-      poison: 40
+      poison: 30
       disease: 0
-      bleed: 40
-      debuff: 40
+      bleed: 30
+      debuff: 20
       trap: 0
     damageMultiplier: 0
     eblaMultiplier: 0
   m_Skills:
-  - {fileID: 11400000, guid: b2c1c07580803d34e838d9474f47429c, type: 2}
-  - {fileID: 11400000, guid: 94ac3ba7bf11c9f4aae15c3989969c3d, type: 2}
-  - {fileID: 11400000, guid: 30b978f1a33cb0841b3142cd7bbd65dc, type: 2}
-  - {fileID: 11400000, guid: 58918d3817cc37b478c73c5cee0ae3c1, type: 2}
+  - {fileID: 11400000, guid: a15dcbb266a531f488418a28cb38f68c, type: 2}
+  - {fileID: 11400000, guid: 13a49b9bc521f7640bfb89c814b3894b, type: 2}
+  - {fileID: 11400000, guid: 23760ef6d3fa92047b94b353312d508f, type: 2}
   m_DropTable:
     MinCredit: 100
     MaxCredit: 150
@@ -59,12 +58,12 @@ MonoBehaviour:
     - Type: 2
       Min: 0
       Max: 1
-  m_CorpseHp: 25
+  m_CorpseHp: 30
   m_CorpseDecayTurns: 3
   m_IsStructure: 0
-  m_Sprite: {fileID: -9028174854095376850, guid: 1d2cd198ff55ba24ab63ab1252194b71, type: 3}
-  m_CorpseSprite: {fileID: 8489385813877351179, guid: d45cc4269d0bb63408255658389eb757, type: 3}
-  m_HitSprite: {fileID: 21300000, guid: d71e7b14fad560e48898feafa6fbe314, type: 3}
-  m_CombatAnimator: {fileID: 9100000, guid: 479db99f14079e841a9d8caaac4a4a44, type: 2}
-  m_ScaleOffset: 1
+  m_Sprite: {fileID: 21300000, guid: 6a29ef11cc4bb824e899ab298b19cf8f, type: 3}
+  m_CorpseSprite: {fileID: 21300000, guid: 5b0f8e7fbbffb35439f1c4a781675208, type: 3}
+  m_HitSprite: {fileID: 21300000, guid: ea31ec293583f9c409a04f0352b7c8b3, type: 3}
+  m_CombatAnimator: {fileID: 9100000, guid: b979123a4566478479a54c2bdc02b44f, type: 2}
+  m_ScaleOffset: 0.8
   m_YOffset: 0

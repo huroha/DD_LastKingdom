@@ -11,7 +11,7 @@ public class ExpeditionManager : Singleton<ExpeditionManager>
     private int m_BattlesWon;
     private ExpeditionOutcome m_Outcome;
     private readonly List<NikkeInstance> m_DeadNikkes = new List<NikkeInstance>();
-
+    private DungeonData m_Dungeon;
 
 
 
@@ -21,6 +21,7 @@ public class ExpeditionManager : Singleton<ExpeditionManager>
     public bool IsActive => m_IsActive;
     public ExpeditionOutcome Outcome => m_Outcome;
     public IReadOnlyList<NikkeInstance> DeadNikkes => m_DeadNikkes;
+    public DungeonData Dungeon => m_Dungeon;
     public void SetOutcome(ExpeditionOutcome outcome)
     {
         m_Outcome = outcome;
@@ -39,7 +40,7 @@ public class ExpeditionManager : Singleton<ExpeditionManager>
         }
     }
 
-    public void BeginExpedition(List<NikkeInstance> party, EncounterData encounter)
+    public void BeginExpedition(List<NikkeInstance> party, EncounterData encounter, DungeonData dungeon)
     {
         if (party == null || encounter == null) return;
         m_DeadNikkes.Clear();
@@ -49,12 +50,14 @@ public class ExpeditionManager : Singleton<ExpeditionManager>
         m_IsActive = true;
         m_BattlesWon = 0;
         m_Inventory = new ExpeditionInventory(DataManager.Instance.InventoryConfig);
+        m_Dungeon = dungeon;
     }
     public void EndExpedition()
     {
         m_Party.Clear();
         m_Encounter = null;
         m_IsActive=false;
+        m_Dungeon = null;
     }
     public void RecordBattleWon()
     {

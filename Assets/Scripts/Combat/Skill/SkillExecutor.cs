@@ -277,7 +277,7 @@ public class SkillExecutor
         return finalResult;
     }
     // 타겟 리스트 결정
-    private void ResolveTargets(CombatUnit user, BaseSkillData skill, CombatUnit selectedTarget, List<CombatUnit> result)
+    public void ResolveTargets(CombatUnit user, BaseSkillData skill, CombatUnit selectedTarget, List<CombatUnit> result)
     {
         result.Clear();
         // TargetType이 EnemyAll이면: 살아있는 모든 적 반환 (TargetPositions 무시)

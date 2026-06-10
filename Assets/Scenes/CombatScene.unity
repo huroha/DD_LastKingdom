@@ -4941,9 +4941,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0b580711d03aa9844a2479c00e55cfdf, type: 2}
   - {fileID: 11400000, guid: 0b580711d03aa9844a2479c00e55cfdf, type: 2}
   m_TestEnemies:
-  - {fileID: 11400000, guid: 2ce80a07af5690a478cc992ff086a187, type: 2}
-  - {fileID: 11400000, guid: 2ce80a07af5690a478cc992ff086a187, type: 2}
-  - {fileID: 11400000, guid: 3ed94efa5a575d74f8ba18c9b815b48e, type: 2}
+  - {fileID: 11400000, guid: 067779630d0707547871ebf06fa001b7, type: 2}
+  - {fileID: 11400000, guid: 067779630d0707547871ebf06fa001b7, type: 2}
   m_EnemyActionDelay: 1
   m_SkillSelectPanel: {fileID: 1281108709}
   m_TargetSelectPanel: {fileID: 1148400936}
@@ -16014,6 +16013,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1695783089}
   - component: {fileID: 1695783088}
+  - component: {fileID: 1695783090}
   m_Layer: 0
   m_Name: bg_tutorial_battle_0
   m_TagString: Untagged
@@ -16095,6 +16095,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1453125319}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1695783090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1695783087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adf4448c2b5f7b64981ee8c2a74eaa2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonBgView
+  m_Kind: 0
+  m_Renderer: {fileID: 1695783088}
 --- !u!1001 &1703699173
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21118,6 +21132,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2535179017121868539, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
       propertyPath: m_fontColor32.rgba
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2964854583093826311, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3954379099348496421, guid: ff6357175f1ba8f459ad57ab0d0e9976, type: 3}

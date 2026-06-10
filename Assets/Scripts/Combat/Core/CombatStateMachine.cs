@@ -85,6 +85,7 @@ public class CombatStateMachine : MonoBehaviour
 
     private List<CombatUnit> m_TargetExtractBuffer = new List<CombatUnit>(4);
     private List<EnemyData> m_DefeatedEnemies = new List<EnemyData>();
+    private List<CombatUnit> m_EnemyTargetBuffer = new List<CombatUnit>(4);
 
     // 외부 읽기용 프로퍼티
     public CombatState CurrentState => m_CurrentState;
@@ -421,8 +422,8 @@ public class CombatStateMachine : MonoBehaviour
         {
             if (m_CombatHUD != null)
             {
-                if (action.Target != null)
-                    m_CombatHUD.ShowEnemyTargetHighlight(action.Target.SlotIndex);
+                m_SkillExecutor.ResolveTargets(m_ActiveUnit, action.Skill, action.Target, m_EnemyTargetBuffer);
+                m_CombatHUD.ShowEnemyTargetHighlights(m_EnemyTargetBuffer);
                 yield return m_CombatHUD.PlayEnemySkillAnnounce(action.Skill.SkillName);
             }
 

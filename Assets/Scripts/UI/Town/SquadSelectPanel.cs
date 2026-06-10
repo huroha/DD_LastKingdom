@@ -211,7 +211,7 @@ public class SquadSelectPanel : MonoBehaviour
             NikkeInstance inst = m_PartyAssignment.Get(i);
             if (inst != null) party.Add(inst);
         }
-        ExpeditionManager.Instance.BeginExpedition(party, m_SelectedEncounter);
+        ExpeditionManager.Instance.BeginExpedition(party, m_SelectedEncounter, FindDungeon(m_SelectedEncounter));
         GameManager.Instance.ChangeState(GameState.Combat);
     }
 
@@ -244,5 +244,16 @@ public class SquadSelectPanel : MonoBehaviour
                 if (roster[j] == inst) { found = true; break; }
             if (!found) m_PartyAssignment.Clear(i);
         }
+    }
+    private DungeonData FindDungeon(EncounterData enc)
+    {
+        if (enc == null) return null;
+        for (int i=0; i< m_Dungeons.Length; ++i)
+        {
+            IReadOnlyList<EncounterData> list = m_Dungeons[i].Encounters;
+            for (int j =0; j < list.Count; ++j)
+                if (list[j] == enc) return m_Dungeons[i];
+        }
+        return null;
     }
 }

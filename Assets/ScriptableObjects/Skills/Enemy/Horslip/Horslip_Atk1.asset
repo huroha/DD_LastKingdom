@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73eb8c2d958ea824f9300f9e22732aa2, type: 3}
+  m_Name: Horslip_Atk1
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySkillData
+  m_SkillName: "\uB808\uC774\uC838 \uAD00\uD1B5"
+  m_SkillType: 1
+  m_UsablePositions: 01010000
+  m_TargetPositions: 01000100
+  m_TargetType: 1
+  m_MoveUserAmount: 0
+  m_MoveTargetAmount: 0
+  m_TargetMoveMode: 0
+  m_BypassGuard: 0
+  m_AttackSprite: {fileID: 21300000, guid: 6b248350e9125ee4f9f4c8ced5cec7e2, type: 3}
+  m_AttackEffect: {fileID: 0}
+  m_AttackMovement: 0
+  m_ProjectileSpeed: 20
+  m_HitEffect: {fileID: 11400000, guid: 9885b5070e9d7a94eab48c15bebd31ae, type: 2}
+  m_MinDamage: 4
+  m_MaxDamage: 6
+  m_AccuracyMod: 85
+  m_CritMod: 5
+  m_Cooldown: 0
+  m_EblaDamage: 0
+  m_OnHitEffects: []
+  m_OnSelfEffects: []
+  m_OnAllyEffects: []

@@ -479,11 +479,17 @@ public class CombatHUD : MonoBehaviour
         m_EnemyInfoPanel.Hide();
     }
 
-
-    public void ShowEnemyTargetHighlight(int slotIndex)
+    public void ShowEnemyTargetHighlights(IReadOnlyList<CombatUnit> targets)
     {
         HideEnemyTargetHighlights();
-        m_NTargetHighlights[slotIndex].gameObject.SetActive(true);
+        for (int i = 0; i < targets.Count; ++i)
+        {
+            CombatUnit u = targets[i];
+            if (u == null || u.UnitType != CombatUnitType.Nikke) continue;   // 니케 슬롯만
+            int idx = u.SlotIndex;
+            if (idx < 0 || idx >= m_NTargetHighlights.Length) continue;
+            m_NTargetHighlights[idx].gameObject.SetActive(true);
+        }
     }
 
     public void HideEnemyTargetHighlights()

@@ -17,3 +17,5 @@ MonoBehaviour:
   m_Encounters:
   - {fileID: 11400000, guid: f02f1af4ca323f149a314f99f66b3c08, type: 2}
   - {fileID: 11400000, guid: 1a9057fa6690c004094145d7112576c4, type: 2}
+  m_CombatBg: {fileID: 21300000, guid: 415a655f139706a48a6a276a1076d336, type: 3}
+  m_SettleBg: {fileID: 21300000, guid: fdee71e3a04617c49857b58161da121d, type: 3}
